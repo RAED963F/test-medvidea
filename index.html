@@ -1777,6 +1777,47 @@
       color: var(--copper)
     }
 
+    /* ── linked treatment card (opens a dedicated page) ── */
+    .tcard-link {
+      padding: 0
+    }
+
+    .tcard-link .tcard-anchor {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      color: inherit;
+      padding: 30px 28px 26px
+    }
+
+    .tview {
+      align-self: flex-start;
+      margin-top: 14px;
+      font-family: var(--body);
+      font-size: .8rem;
+      font-weight: 500;
+      letter-spacing: .02em;
+      color: var(--copper-ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: color .25s
+    }
+
+    .tview::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-inline-end: 1.5px solid currentColor;
+      border-block-end: 1.5px solid currentColor;
+      rotate: -45deg;
+      margin-top: -1px
+    }
+
+    .tcard-link:hover .tview {
+      color: var(--copper)
+    }
+
 
     /* ── i18n / RTL ───────────────────────────── */
     .lang-switcher {
@@ -2137,14 +2178,16 @@
           <button aria-expanded="false" class="tmore" data-i18n="common.readMore" hidden="" type="button">Read
             more</button>
         </article>
-        <article class="tcard rv">
-          <h3 data-i18n="treatments.plastic.title">Plastic Surgery</h3>
-          <p class="tbody" data-i18n="treatments.plastic.text">The highest standard of aesthetics and beauty, given to
-            Russia by nature itself, has set the highest bar for Russian plastic surgeons in performing any type of
-            procedure. A Russian plastic surgeon is a surgeon equipped with acrylic technologies* in the field of
-            plastic surgery, possessing an exceptionally high level of understanding of aesthetics.</p>
-          <button aria-expanded="false" class="tmore" data-i18n="common.readMore" hidden="" type="button">Read
-            more</button>
+        <article class="tcard rv tcard-link">
+          <a class="tcard-anchor" href="plastic-surgery.html" aria-label="Plastic Surgery — Damas Medical Center">
+            <h3 data-i18n="treatments.plastic.title">Plastic Surgery</h3>
+            <p class="tbody noclamp" data-i18n="treatments.plastic.text">The highest standard of aesthetics and beauty,
+              given to
+              Russia by nature itself, has set the highest bar for Russian plastic surgeons in performing any type of
+              procedure. A Russian plastic surgeon is a surgeon equipped with acrylic technologies* in the field of
+              plastic surgery, possessing an exceptionally high level of understanding of aesthetics.</p>
+            <span class="tview"><span data-i18n="common.readMore">Read more</span></span>
+          </a>
         </article>
         <article class="tcard rv">
           <h3 data-i18n="treatments.aesthetic.title">Aesthetic Medicine</h3>
