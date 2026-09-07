@@ -1,0 +1,7 @@
+# Minimal Supabase CLI config. Set your real project ref before deploying:
+#   supabase link --project-ref <your-project-ref>
+project_id = "medivia"
+
+# The intake endpoint must be callable by the public site without a user JWT.
+[functions.submit-case]
+verify_jwt = false

@@ -1551,7 +1551,8 @@
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 18px;
       max-width: 900px;
-      margin-inline: auto
+      margin-inline: auto;
+      direction: ltr;
     }
 
     .chan {
@@ -1562,7 +1563,29 @@
       border: 1px solid var(--line);
       border-radius: 3px;
       background: #fff;
-      transition: .3s
+      transition: .3s;
+      direction: ltr;
+    }
+
+    .chan > span {
+      direction: ltr;
+      text-align: left;
+      min-width: 0;
+    }
+
+    [dir="rtl"] .chan > span {
+      direction: rtl;
+      text-align: right;
+    }
+
+    /* Keep contact values readable in their native LTR direction
+       even when the surrounding Arabic card is RTL. */
+    .chan .v {
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
+      white-space: nowrap;
+      text-align: left;
     }
 
     .chan:hover {
@@ -1776,12 +1799,432 @@
     }
 
 
+    /* ── header actions / language ─────────────── */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex: none;
+    }
+
+    .header-actions .lang-switcher {
+      flex: none;
+    }
+
+    /* ══ VIDEO CARD ══ the same two-layer component as the home page: a
+       light-blue BACK layer with the white FRONT layer offset on top of it,
+       holding the copy and the video side by side. Copy first, video second,
+       so [dir="rtl"] mirrors it automatically:
+         LTR → text left / video right · RTL → video left / text right
+       It sits between the hero and the stats band and lifts slightly into the
+       hero. Being a *sibling* of .hero, the hero's overflow:hidden never clips
+       it, and the offset is pure padding, so nothing escapes the wrapper — no
+       horizontal overflow at any width.                                    */
+    .psv {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      padding-inline: var(--pad);
+      margin-block: -56px 0;
+    }
+
+    .psv-media {
+      position: relative;
+      width: 100%;
+      max-width: 1060px;
+      padding-block: 8px 26px;
+      padding-inline: 10px 30px;
+    }
+
+    .psv-media::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(158deg, #C6DDE7 0%, #9DC1D1 100%);
+      box-shadow: 0 34px 76px -42px rgba(13, 32, 41, .85);
+    }
+
+    .psv-card {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.68fr);
+      gap: clamp(20px, 2.6vw, 30px);
+      align-items: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px clamp(20px, 2.2vw, 26px);
+      box-shadow: 0 18px 40px -26px rgba(13, 32, 41, .5);
+    }
+
+    .psv-copy .eyebrow {
+      display: block;
+      margin-bottom: 9px;
+    }
+
+    .psv-copy h3 {
+      font-size: clamp(1.18rem, 1.9vw, 1.45rem);
+      font-weight: 300;
+      color: var(--ink);
+    }
+
+    .psv-copy p {
+      margin-top: 9px;
+      font-size: .88rem;
+      line-height: 1.62;
+      color: var(--muted);
+    }
+
+    .psv-video {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #1f4a5b 0%, var(--aqua-ink) 100%);
+      border: 1px solid rgba(22, 50, 61, .1);
+    }
+
+    .psv-video iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    /* click-to-play facade — defers the YouTube iframe until the visitor
+       chooses to play (fast, no raw embed chrome) */
+    .psv-facade {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 0;
+      padding: 0;
+      background-color: transparent;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .psv-facade::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(120% 90% at 70% 30%, rgba(36, 88, 107, .32), transparent 60%),
+        linear-gradient(180deg, rgba(13, 32, 41, .12), rgba(13, 32, 41, .52));
+    }
+
+    .psv-play {
+      position: relative;
+      z-index: 2;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(200, 138, 102, .94);
+      display: grid;
+      place-items: center;
+      transition: transform .25s, background .25s;
+    }
+
+    .psv-facade:hover .psv-play,
+    .psv-facade:focus-visible .psv-play {
+      transform: scale(1.06);
+      background: var(--copper);
+    }
+
+    .psv-play svg {
+      width: 18px;
+      height: 18px;
+      margin-inline-start: 3px;
+      /* optically centre the triangle */
+    }
+
+    @media (max-width: 940px) {
+      .psv {
+        margin-block: -48px 0;
+      }
+
+      .psv-media {
+        max-width: 520px;
+      }
+
+      .psv-card {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .psv {
+        margin-block: -40px 0;
+      }
+
+      .psv-media {
+        padding-block: 8px 22px;
+        padding-inline: 8px 22px;
+      }
+
+      .psv-media::before {
+        border-radius: 18px;
+      }
+
+      .psv-card {
+        border-radius: 14px;
+      }
+
+      .psv-play {
+        width: 48px;
+        height: 48px;
+      }
+
+      .psv-play svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    /* ══ DOCTORS ══ 5 cards: 3 across, then 2 centred. A 6-column grid with
+       each card spanning 2 does that without any extra wrappers, and it
+       mirrors under [dir="rtl"] on its own.                              */
+    .docs-head {
+      max-width: 60ch;
+      margin-bottom: clamp(28px, 3.4vw, 44px);
+    }
+
+    .docs-head .eyebrow {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .docs-head p {
+      margin-top: 14px;
+      color: var(--muted);
+    }
+
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: clamp(18px, 2.2vw, 28px);
+    }
+
+    .doc-card {
+      grid-column: span 2;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 18px 44px -34px rgba(22, 50, 61, .5);
+      transition: transform .25s, box-shadow .25s;
+    }
+
+    .doc-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 26px 56px -34px rgba(22, 50, 61, .6);
+    }
+
+    /* the two cards on the second row sit centred under the first three */
+    .doc-card:nth-child(4) {
+      grid-column: 2 / span 2;
+    }
+
+    .doc-card:nth-child(5) {
+      grid-column: 4 / span 2;
+    }
+
+    .doc-shot {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      background: linear-gradient(160deg, var(--mist) 0%, var(--fog) 100%);
+      overflow: hidden;
+    }
+
+    .doc-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      display: block;
+    }
+
+    /* a missing portrait leaves the tinted panel — never a broken-image icon */
+    .doc-shot img.is-missing {
+      display: none;
+    }
+
+    .doc-body {
+      padding: clamp(16px, 1.6vw, 22px);
+      border-top: 1px solid var(--line);
+    }
+
+    .doc-name {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .doc-spec {
+      margin-top: 7px;
+      font-size: .74rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--copper-ink);
+    }
+
+    .doc-years {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      font-size: .74rem;
+      color: var(--muted);
+      background: var(--fog);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+
+    .doc-bio {
+      margin-top: 12px;
+      font-size: .86rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      /* two per row, the last one centred */
+      .doc-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .doc-card,
+      .doc-card:nth-child(4),
+      .doc-card:nth-child(5) {
+        grid-column: span 2;
+      }
+
+      .doc-card:nth-child(5) {
+        grid-column: 2 / span 2;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .doc-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .doc-card,
+      .doc-card:nth-child(4),
+      .doc-card:nth-child(5) {
+        grid-column: 1 / -1;
+      }
+
+      .doc-shot {
+        aspect-ratio: 3 / 2;
+      }
+
+      .doc-shot img {
+        object-position: center 25%;
+      }
+    }
+
+    /* ══ NEWSLETTER ══ same compact strip as the home page ═══════════ */
+    .nl {
+      border-block: 1px solid var(--line);
+    }
+
+    .nl-in {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: clamp(22px, 4vw, 52px);
+      align-items: center;
+      padding-block: clamp(38px, 5vw, 60px);
+    }
+
+    .nl-copy {
+      max-width: 48ch;
+    }
+
+    .nl-copy .eyebrow {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .nl-copy h2 {
+      font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    }
+
+    .nl-copy p {
+      margin-top: 10px;
+    }
+
+    .nl-form {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      min-width: min(420px, 100%);
+    }
+
+    .nl-form input[type="email"] {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .nl-form .btn {
+      white-space: nowrap;
+    }
+
+    .nl-status {
+      margin-top: 12px;
+      font-size: .82rem;
+      line-height: 1.5;
+      min-height: 1.2em;
+      display: none;
+    }
+
+    .nl-status.show {
+      display: block;
+    }
+
+    .nl-status.ok {
+      color: var(--sage);
+    }
+
+    .nl-status.err {
+      color: var(--copper-ink);
+    }
+
+    @media (max-width: 760px) {
+      .nl-in {
+        grid-template-columns: 1fr;
+      }
+
+      .nl-form {
+        flex-direction: column;
+      }
+
+      .nl-form .btn {
+        width: 100%;
+      }
+    }
+
     /* ── i18n / RTL ───────────────────────────── */
     .lang-switcher {
+      flex: none;
       display: inline-flex;
       align-items: center;
       gap: 2px;
-      margin-inline-start: 8px;
       padding: 3px;
       border: 1px solid rgba(255, 255, 255, .28);
       border-radius: 3px;
@@ -1880,10 +2323,6 @@
     }
 
     @media(max-width:520px) {
-      .lang-switcher {
-        margin-inline-start: 4px;
-      }
-
       .lang-btn {
         padding-inline: 6px;
       }
@@ -2360,11 +2799,13 @@
         <a data-i18n="nav.how" href="index.html#services">How it works</a>
         <a data-i18n="nav.treatments" href="index.html#treatments">Treatments</a>
       </nav>
-      <div aria-label="Language" class="lang-switcher" role="group">
-        <button aria-pressed="true" class="lang-btn" data-lang="en" type="button">EN</button>
-        <button aria-pressed="false" class="lang-btn" data-lang="ar" type="button">العربية</button>
+      <div class="header-actions">
+        <a class="cta-top" data-i18n="nav.start" href="#request">Start a case</a>
+        <div aria-label="Language" class="lang-switcher" role="group">
+          <button aria-pressed="true" class="lang-btn" data-lang="en" type="button">EN</button>
+          <button aria-pressed="false" class="lang-btn" data-lang="ar" type="button">العربية</button>
+        </div>
       </div>
-      <a class="cta-top" data-i18n="nav.start" href="#request">Start a case</a>
     </div>
   </header>
 
@@ -2392,6 +2833,33 @@
       </div>
     </div>
   </section>
+
+  <!-- ══ VIDEO ══ the page's only video. Same two-layer card as the home page,
+       bridging the hero → stats transition. Copy first, video second, so the
+       columns mirror with [dir="rtl"]. Click-to-play facade below. -->
+  <div class="psv">
+    <div class="psv-media">
+      <div class="psv-card">
+        <div class="psv-copy">
+          <span class="eyebrow" data-i18n="psv.eyebrow">WATCH</span>
+          <h3 data-i18n="psv.heading">See how MediVia works</h3>
+          <p data-i18n="psv.text">See how we support you from your first contact through your complete treatment
+            journey.</p>
+        </div>
+        <div class="psv-video" id="psvVideo" data-yt="1FuKLTJtXJo"
+          data-i18n-aria-label="psv.title" aria-label="MediVia — a short introduction">
+          <button class="psv-facade" id="psvFacade" type="button" data-i18n-aria-label="psv.play"
+            aria-label="Play video">
+            <span class="psv-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="#0D2029" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 4.5v15l13-7.5-13-7.5z"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ══ STATS ══ -->
   <section class="stats">
@@ -2464,6 +2932,81 @@
           <img alt="Damas Medical Center entrance in Moscow"
                 src="photo/plastic-surgery/2.webp"
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DOCTORS ══ placeholder roster — every name, specialty, years and bio
+       is a data-i18n key in the TR dictionary below, and every portrait is a
+       file in photo/plastic-surgery/. Swap either without touching the CSS. -->
+  <section class="pad" id="doctors">
+    <div class="wrap">
+      <div class="docs-head">
+        <span class="eyebrow" data-i18n="doc.eyebrow">Our medical team</span>
+        <h2 data-i18n="doc.title">Our doctors</h2>
+        <p data-i18n="doc.intro">The specialists who look after your treatment at Damas Medical Center.</p>
+      </div>
+      <div class="doc-grid">
+        <article class="doc-card">
+          <div class="doc-shot">
+            <img src="photo/plastic-surgery/doctor-1.webp" alt="" loading="lazy" decoding="async" width="640"
+              height="800" />
+          </div>
+          <div class="doc-body">
+            <h3 class="doc-name" data-i18n="doc1.n">Doctor 01</h3>
+            <p class="doc-spec" data-i18n="doc1.s">Specialist</p>
+            <p class="doc-years" data-i18n="doc1.y">10+ years experience</p>
+            <p class="doc-bio" data-i18n="doc1.b">Short professional description.</p>
+          </div>
+        </article>
+        <article class="doc-card">
+          <div class="doc-shot">
+            <img src="photo/plastic-surgery/doctor-2.webp" alt="" loading="lazy" decoding="async" width="640"
+              height="800" />
+          </div>
+          <div class="doc-body">
+            <h3 class="doc-name" data-i18n="doc2.n">Doctor 02</h3>
+            <p class="doc-spec" data-i18n="doc2.s">Specialist</p>
+            <p class="doc-years" data-i18n="doc2.y">12+ years experience</p>
+            <p class="doc-bio" data-i18n="doc2.b">Short professional description.</p>
+          </div>
+        </article>
+        <article class="doc-card">
+          <div class="doc-shot">
+            <img src="photo/plastic-surgery/doctor-3.webp" alt="" loading="lazy" decoding="async" width="640"
+              height="800" />
+          </div>
+          <div class="doc-body">
+            <h3 class="doc-name" data-i18n="doc3.n">Doctor 03</h3>
+            <p class="doc-spec" data-i18n="doc3.s">Specialist</p>
+            <p class="doc-years" data-i18n="doc3.y">15+ years experience</p>
+            <p class="doc-bio" data-i18n="doc3.b">Short professional description.</p>
+          </div>
+        </article>
+        <article class="doc-card">
+          <div class="doc-shot">
+            <img src="photo/plastic-surgery/doctor-4.webp" alt="" loading="lazy" decoding="async" width="640"
+              height="800" />
+          </div>
+          <div class="doc-body">
+            <h3 class="doc-name" data-i18n="doc4.n">Doctor 04</h3>
+            <p class="doc-spec" data-i18n="doc4.s">Specialist</p>
+            <p class="doc-years" data-i18n="doc4.y">18+ years experience</p>
+            <p class="doc-bio" data-i18n="doc4.b">Short professional description.</p>
+          </div>
+        </article>
+        <article class="doc-card">
+          <div class="doc-shot">
+            <img src="photo/plastic-surgery/doctor-5.webp" alt="" loading="lazy" decoding="async" width="640"
+              height="800" />
+          </div>
+          <div class="doc-body">
+            <h3 class="doc-name" data-i18n="doc5.n">Doctor 05</h3>
+            <p class="doc-spec" data-i18n="doc5.s">Specialist</p>
+            <p class="doc-years" data-i18n="doc5.y">20+ years experience</p>
+            <p class="doc-bio" data-i18n="doc5.b">Short professional description.</p>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -2636,65 +3179,74 @@
           </div>
           <div class="ref"><b data-i18n="ref.b">Reference</b><span id="refno">MV-2026-000</span></div>
         </div>
+        <div class="steps" id="steps">
+          <div class="step-h active" data-step="1"><span class="n">01</span><span data-i18n="intake.step1">About you</span></div>
+          <div class="step-h" data-step="2"><span class="n">02</span><span data-i18n="intake.step2">Your case</span></div>
+          <div class="step-h" data-step="3"><span class="n">03</span><span data-i18n="intake.step3">Documents</span></div>
+          <div class="step-h" data-step="4"><span class="n">04</span><span data-i18n="intake.step4">Review</span></div>
+        </div>
         <div class="panes">
-          <form id="intake" novalidate>
-            <div id="formBody">
-              <div class="pane-h" data-i18n="form.paneH">Tell us about you and your case</div>
-              <div class="pane-s" data-i18n="form.paneS">Plain words are enough — we handle the medical language.</div>
+          <form id="intake" novalidate="">
+            <div class="pane show" data-pane="1">
+              <div class="pane-s" data-i18n="intake.basics" style="margin-top:4px">Basics only. Nothing here reaches a
+                hospital until you say so.
+              </div>
               <div class="f-grid">
                 <div class="field">
-                  <label for="first"><span data-i18n="form.first">First name</span><span class="req">*</span></label>
-                  <input autocomplete="given-name" id="first" name="firstName" required type="text" />
-                  <span class="errmsg" data-i18n="v.first" data-err="first">Please enter your first name.</span>
+                  <label for="first"><span data-i18n="form.firstName">First name</span><span
+                      class="req">*</span></label>
+                  <input autocomplete="given-name" id="first" name="firstName" required="" type="text" />
+                  <span class="errmsg" data-i18n="validation.firstName">Please enter your first name.</span>
                 </div>
                 <div class="field">
-                  <label for="last"><span data-i18n="form.last">Last name</span><span class="req">*</span></label>
-                  <input autocomplete="family-name" id="last" name="lastName" required type="text" />
-                  <span class="errmsg" data-i18n="v.last" data-err="last">Please enter your last name.</span>
+                  <label for="last"><span data-i18n="form.lastName">Last name</span><span class="req">*</span></label>
+                  <input autocomplete="family-name" id="last" name="lastName" required="" type="text" />
+                  <span class="errmsg" data-i18n="validation.lastName">Please enter your last name.</span>
                 </div>
                 <div class="field">
-                  <label for="nat"><span data-i18n="form.nat">Nationality</span><span class="req">*</span></label>
-                  <input autocomplete="country-name" id="nat" list="nats" name="nationality" required type="text" />
+                  <label for="nat"><span data-i18n="form.nationality">Nationality</span><span
+                      class="req">*</span></label>
+                  <input autocomplete="country-name" id="nat" list="nats" name="nationality" required="" type="text" />
                   <datalist id="nats">
-                    <option>Saudi Arabia</option>
-                    <option>United Arab Emirates</option>
-                    <option>Kuwait</option>
-                    <option>Qatar</option>
-                    <option>Bahrain</option>
-                    <option>Oman</option>
-                    <option>Yemen</option>
-                    <option>Iraq</option>
-                    <option>Jordan</option>
-                    <option>Syria</option>
-                    <option>Lebanon</option>
-                    <option>Palestine</option>
-                    <option>Egypt</option>
-                    <option>Sudan</option>
-                    <option>Libya</option>
-                    <option>Algeria</option>
-                    <option>Morocco</option>
-                    <option>Tunisia</option>
-                    <option>Mauritania</option>
-                    <option>Somalia</option>
-                    <option>Djibouti</option>
-                    <option>Turkey</option>
-                    <option>Iran</option>
-                    <option>Afghanistan</option>
-                    <option>Pakistan</option>
-                    <option>India</option>
-                    <option>Bangladesh</option>
-                    <option>Kazakhstan</option>
-                    <option>Uzbekistan</option>
-                    <option>Azerbaijan</option>
-                    <option>Russia</option>
-                    <option>Other</option>
+                    <option data-i18n="country.0">Saudi Arabia</option>
+                    <option data-i18n="country.1">United Arab Emirates</option>
+                    <option data-i18n="country.2">Kuwait</option>
+                    <option data-i18n="country.3">Qatar</option>
+                    <option data-i18n="country.4">Bahrain</option>
+                    <option data-i18n="country.5">Oman</option>
+                    <option data-i18n="country.6">Yemen</option>
+                    <option data-i18n="country.7">Iraq</option>
+                    <option data-i18n="country.8">Jordan</option>
+                    <option data-i18n="country.9">Syria</option>
+                    <option data-i18n="country.10">Lebanon</option>
+                    <option data-i18n="country.11">Palestine</option>
+                    <option data-i18n="country.12">Egypt</option>
+                    <option data-i18n="country.13">Sudan</option>
+                    <option data-i18n="country.14">Libya</option>
+                    <option data-i18n="country.15">Algeria</option>
+                    <option data-i18n="country.16">Morocco</option>
+                    <option data-i18n="country.17">Tunisia</option>
+                    <option data-i18n="country.18">Mauritania</option>
+                    <option data-i18n="country.19">Somalia</option>
+                    <option data-i18n="country.20">Djibouti</option>
+                    <option data-i18n="country.21">Turkey</option>
+                    <option data-i18n="country.22">Iran</option>
+                    <option data-i18n="country.23">Afghanistan</option>
+                    <option data-i18n="country.24">Pakistan</option>
+                    <option data-i18n="country.25">India</option>
+                    <option data-i18n="country.26">Bangladesh</option>
+                    <option data-i18n="country.27">Kazakhstan</option>
+                    <option data-i18n="country.28">Uzbekistan</option>
+                    <option data-i18n="country.29">Azerbaijan</option>
+                    <option data-i18n="country.30">Russia</option>
+                    <option data-i18n="country.31">Other</option>
                   </datalist>
-                  <span class="errmsg" data-i18n="v.nat" data-err="nat">Please enter your nationality.</span>
+                  <span class="errmsg" data-i18n="validation.nationality">Please enter your nationality.</span>
                 </div>
                 <div class="field">
                   <label for="age"><span data-i18n="form.age">Age</span><span class="req">*</span></label>
-                  <input id="age" inputmode="numeric" max="120" min="0" name="age" required step="1" type="number" />
-                  <span class="errmsg" data-i18n="v.age" data-err="age">Enter an age between 0 and 120.</span>
+                  <input id="age" inputmode="numeric" max="120" min="0" name="age" required="" step="1" type="number" />
+                  <span class="errmsg" data-i18n="validation.age">Enter an age between 0 and 120.</span>
                 </div>
                 <div class="field full">
                   <label><span data-i18n="form.sex">Sex</span><span class="req">*</span></label>
@@ -2704,63 +3256,148 @@
                     <input id="sx-f" name="sex" type="radio" value="female" /><label data-i18n="form.female"
                       for="sx-f">Female</label>
                   </div>
-                  <span class="hint" data-i18n="form.sexHint">Hospitals require this on every referral.</span>
-                  <span class="errmsg" data-i18n="v.sex" data-err="sex">Please select one.</span>
+                  <span class="hint" data-i18n="form.sexHint">Hospitals require this on every referral — it's a clinical
+                    field, not a
+                    preference.</span>
+                  <span class="errmsg" data-i18n="validation.sex">Please select one.</span>
                 </div>
                 <div class="field">
-                  <label data-i18n="form.wa" for="wa">WhatsApp number</label>
-                  <input autocomplete="tel" id="wa" name="whatsapp" placeholder="+966 ..." type="tel" />
-                  <span class="hint" data-i18n="form.waHint">Optional — but it's how we reply fastest.</span>
+                  <label data-i18n="form.whatsapp" for="wa">WhatsApp number</label>
+                  <input autocomplete="tel" data-i18n-placeholder="form.whatsappPlaceholder" id="wa" name="whatsapp"
+                    placeholder="+966 ..." type="tel" />
+                  <span class="hint" data-i18n="form.whatsappHint">Optional — but it's how we reply fastest.</span>
                 </div>
                 <div class="field">
-                  <label data-i18n="form.email" for="mail">Email</label>
+                  <label data-i18n="review.email" for="mail">Email</label>
                   <input autocomplete="email" id="mail" name="email" type="email" />
+                  <span class="errmsg" data-i18n="validation.email">That email doesn't look right.</span>
                 </div>
+              </div>
+              <div class="nav-row"><span></span><button class="btn btn-dark nxt" data-go="2"
+                  data-i18n="form.continueCase" type="button">Continue to
+                  your case</button></div>
+            </div>
+            <div class="pane" data-pane="2">
+              <div class="pane-h" data-i18n="form.caseTitle">What's happening?</div>
+              <div class="pane-s" data-i18n="form.caseIntro">Write it the way you'd say it out loud. Plain words are
+                enough — we handle the medical
+                language.</div>
+              <div class="f-grid">
                 <div class="field full">
-                  <label for="reason"><span data-i18n="form.problem">The procedure or concern, in one line</span><span
+                  <label for="reason"><span data-i18n="form.problem">The problem, in one line</span><span
                       class="req">*</span></label>
-                  <input data-i18n-ph="form.problemPh" id="reason" maxlength="140" name="reason"
-                    placeholder="e.g. Rhinoplasty · or facelift consultation" required type="text" />
+                  <input data-i18n-placeholder="form.problemPlaceholder" id="reason" maxlength="140" name="reason"
+                    placeholder="e.g. Herniated disc, L4–L5, surgery advised" required="" type="text" />
                   <span class="hint" data-i18n="form.problemHint">Up to 140 characters.</span>
-                  <span class="errmsg" data-i18n="v.problem" data-err="reason">Please describe it in one line.</span>
+                  <span class="errmsg" data-i18n="validation.problem">Please describe the problem in one line.</span>
                 </div>
                 <div class="field full">
                   <label for="detail"><span data-i18n="form.details">The full story</span><span
                       class="req">*</span></label>
-                  <textarea data-i18n-ph="form.detailsPh" id="detail" maxlength="4000" name="details"
-                    placeholder="What you're hoping for..." required></textarea>
+                  <textarea data-i18n-placeholder="form.detailsPlaceholder" id="detail" maxlength="4000" name="details"
+                    placeholder="When it started, what you've been told so far, treatments already tried, medications, other conditions, and what you're hoping for."
+                    required=""></textarea>
                   <div class="counter" id="cnt"><span data-i18n="form.detailsHint">Take the space you
-                      need.</span><span><b id="cn">0</b> / 4000</span></div>
-                  <span class="errmsg" data-i18n="v.details" data-err="detail">Please tell us a little more.</span>
+                      need.</span><span><b id="cn">0</b> /
+                      4000</span></div>
+                  <span class="errmsg" data-i18n="validation.details">Please tell us a little more — at least a few
+                    sentences.</span>
                 </div>
               </div>
-              <label class="consent" for="ok">
-                <input id="ok" name="consent" type="checkbox" />
-                <p data-i18n="form.consent">I agree that MediVia may review my information to assess and coordinate my
-                  case.</p>
-              </label>
-              <span class="errmsg" data-i18n="v.consent" data-err="ok" id="okErr" style="margin-top:8px">Please agree
-                before sending.</span>
-              <div class="nav-row" style="justify-content:flex-end;margin-top:26px">
-                <button class="btn btn-p" data-i18n="form.send" id="send" type="submit">Send my case</button>
+              <div class="nav-row"><button class="btn btn-line prv" data-go="1" data-i18n="form.back"
+                  type="button">Back</button><button class="btn btn-dark nxt" data-go="3" data-i18n="form.continueDocs"
+                  type="button">Continue to documents</button></div>
+            </div>
+            <div class="pane" data-pane="3">
+              <div class="pane-h" data-i18n="docs.title">Anything you already have</div>
+              <div class="pane-s" data-i18n="docs.intro">Scans, lab results, a doctor's letter, a photo of the report on
+                your desk. A phone
+                photo is fine — we translate it.</div>
+              <label data-i18n="docs.imagesLabel" style="margin-bottom:9px;display:block">Images — up to 5, max 10 MB
+                each</label>
+              <div aria-label="Add images" class="drop" data-i18n-aria-label="docs.addImagesAria" id="dropImg"
+                role="button" tabindex="0">
+                <svg aria-hidden="true" fill="none" viewbox="0 0 60 60">
+                  <circle cx="30" cy="30" fill="#1A3E4C" r="30"></circle>
+                  <circle cx="30" cy="30" r="27" stroke="#7A8B7B" stroke-width=".5"></circle>
+                  <rect height="24" rx="2" stroke="#EEF0EC" stroke-width="1.3" width="32" x="14" y="18"></rect>
+                  <path d="M14 36 L23 27 L31 35 L37 30 L46 38" stroke="#EEF0EC" stroke-linejoin="round"
+                    stroke-width="1.3"></path>
+                  <circle cx="38" cy="24.5" fill="#C88A66" r="2.4"></circle>
+                </svg>
+                <div class="dt" data-i18n="docs.imagesDrop">Drop images here, or browse</div>
+                <div class="ds" data-i18n="docs.imagesHint">JPG, PNG, HEIC or WebP · 5 files · 10 MB each</div>
+                <input accept="image/*" id="imgs" multiple="" type="file" />
+              </div>
+              <div class="files" id="thumbs"></div>
+              <div class="errmsg" id="imgErr"></div>
+              <label data-i18n="docs.pdfLabel" style="margin:28px 0 9px;display:block">PDF report — one file, max 10
+                MB</label>
+              <div aria-label="Add a PDF" class="drop" data-i18n-aria-label="docs.addPdfAria" id="dropPdf" role="button"
+                tabindex="0">
+                <svg aria-hidden="true" fill="none" viewbox="0 0 60 60">
+                  <circle cx="30" cy="30" fill="#1A3E4C" r="30"></circle>
+                  <circle cx="30" cy="30" r="27" stroke="#7A8B7B" stroke-width=".5"></circle>
+                  <path d="M21 15 h11 l7 7 v23 a2 2 0 0 1 -2 2 H21 a2 2 0 0 1 -2 -2 V17 a2 2 0 0 1 2 -2 Z"
+                    stroke="#EEF0EC" stroke-linejoin="round" stroke-width="1.3"></path>
+                  <path d="M32 15 v7 h7" stroke="#C88A66" stroke-linejoin="round" stroke-width="1.3"></path>
+                  <line stroke="#EEF0EC" stroke-width="1" x1="24" x2="35" y1="31" y2="31"></line>
+                  <line stroke="#EEF0EC" stroke-width="1" x1="24" x2="35" y1="36" y2="36"></line>
+                  <line stroke="#EEF0EC" stroke-width="1" x1="24" x2="30" y1="41" y2="41"></line>
+                </svg>
+                <div class="dt" data-i18n="docs.pdfDrop">Drop a PDF here, or browse</div>
+                <div class="ds" data-i18n="docs.pdfHint">One PDF · up to 10 MB</div>
+                <input accept="application/pdf,.pdf" id="pdf" type="file" />
+              </div>
+              <div id="pdfBox"></div>
+              <div class="errmsg" id="pdfErr"></div>
+              <div class="safebar">
+                <svg aria-hidden="true" fill="none" viewbox="0 0 24 24">
+                  <rect height="11" rx="2" stroke="#1A3E4C" stroke-width="1.6" width="16" x="4" y="10"></rect>
+                  <path d="M7.5 10V6.5a4.5 4.5 0 0 1 9 0V10" stroke="#1A3E4C" stroke-width="1.6"></path>
+                  <circle cx="12" cy="15.5" fill="#92512E" r="1.6"></circle>
+                </svg>
+                <p data-i18n="docs.privacy">Your documents go to your coordinator and nowhere else. They reach a
+                  hospital only after you have
+                  chosen that hospital — and you can ask us to delete everything at any time.</p>
+              </div>
+              <div class="nav-row"><button class="btn btn-line prv" data-go="2" data-i18n="form.back"
+                  type="button">Back</button><button class="btn btn-dark nxt" data-go="4" data-i18n="review.title"
+                  type="button">Review before sending</button></div>
+            </div>
+            <div class="pane" data-pane="4">
+              <div id="reviewWrap">
+                <div class="pane-h" data-i18n="review.subtitle">Read it once more</div>
+                <div class="pane-s" data-i18n="review.intro">This is exactly what lands on a coordinator's desk.</div>
+                <div class="review" id="review"></div>
+                <label class="consent" for="ok">
+                  <input id="ok" name="consent" type="checkbox" />
+                  <p data-i18n="review.consent">I agree that MediVia may review these documents and share them with
+                    hospitals and specialists in
+                    Russia for the purpose of assessing my case. I understand that MediVia is a coordination service and
+                    does not provide medical diagnosis or treatment.</p>
+                </label>
+                <span class="errmsg" data-i18n="validation.consent" id="okErr">Please agree before sending.</span>
+                <div class="nav-row"><button class="btn btn-line prv" data-go="3" data-i18n="form.back"
+                    type="button">Back</button><button class="btn btn-p" data-i18n="review.send" id="send"
+                    type="submit">Send my case</button></div>
+              </div>
+              <div class="done-panel" id="done">
+                <svg aria-hidden="true" class="tick" viewbox="0 0 100 100">
+                  <circle cx="50" cy="50" fill="none" r="46" stroke="#D4DDD5"></circle>
+                  <circle cx="50" cy="50" fill="#1A3E4C" r="38"></circle>
+                  <path d="M34 51 L45 62 L67 39" fill="none" stroke="#C88A66" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="3.4"></path>
+                </svg>
+                <h3 data-i18n="done.title">Your file is open.</h3>
+                <p data-i18n="done.text">A coordinator has it now. You'll hear back within the hour — and the first
+                  message will come from a
+                  person, with your name on it.</p>
+                <div class="done-ref" id="doneRef">MV-2026-000</div>
               </div>
             </div>
-            <div class="done-panel" id="done" style="display:none;text-align:center">
-              <svg aria-hidden="true" class="tick" viewBox="0 0 100 100"
-                style="width:74px;height:74px;margin-inline:auto">
-                <circle cx="50" cy="50" fill="none" r="46" stroke="#D4DDD5"></circle>
-                <circle cx="50" cy="50" fill="#1A3E4C" r="38"></circle>
-                <path d="M34 51 L45 62 L67 39" fill="none" stroke="#C88A66" stroke-linecap="round"
-                  stroke-linejoin="round" stroke-width="3.4"></path>
-              </svg>
-              <h3 data-i18n="done.title" style="margin-top:18px">Your file is open.</h3>
-              <p data-i18n="done.text" style="max-width:48ch;margin:12px auto 0">A coordinator has it now.</p>
-              <div class="done-ref" id="doneRef"
-                style="margin-top:20px;font-size:.8rem;letter-spacing:.14em;color:var(--copper-ink);font-weight:600">
-                MV-2026-000</div>
-            </div>
           </form>
-        </div>
+      
       </div>
     </div>
   </section>
@@ -2814,6 +3451,25 @@
     </div>
   </section>
 
+  <!-- ══ NEWSLETTER ══ same component as the home page; posts to the existing
+       subscribe-newsletter Edge Function via MEDIVIA_CONFIG.NEWSLETTER_URL. -->
+  <section class="nl tint" id="newsletter">
+    <div class="wrap nl-in">
+      <div class="nl-copy">
+        <span class="eyebrow" data-i18n="newsletter.eyebrow">Stay informed</span>
+        <h2 data-i18n="newsletter.title">Stay updated with MediVia</h2>
+        <p data-i18n="newsletter.description">Leave your email and we'll keep you informed about what's new.</p>
+      </div>
+      <form class="nl-form" id="nlForm" novalidate="">
+        <input id="nlEmail" name="email" type="email" autocomplete="email" required=""
+          data-i18n-placeholder="newsletter.emailPlaceholder" placeholder="Email address"
+          data-i18n-aria-label="newsletter.emailPlaceholder" aria-label="Email address" />
+        <button class="btn btn-p" id="nlBtn" type="submit" data-i18n="newsletter.button">Subscribe</button>
+      </form>
+    </div>
+    <div aria-live="polite" class="wrap nl-status" id="nlStatus" role="status"></div>
+  </section>
+
   <!-- ══ FOOTER ══ -->
   <footer class="dark" style="padding-block:clamp(56px,7vw,88px)">
     <div class="wrap">
@@ -2831,64 +3487,447 @@
   </footer>
   <div class="stripe"></div>
 
+  <script src="js/supabase-config.js"></script>
   <script>
-    const TR = { "en": { "seo.title": "Plastic Surgery · Damas Medical Center — MediVia", "nav.about": "Who we are", "nav.how": "How it works", "nav.treatments": "Treatments", "nav.start": "Start a case", "lang.ar": "العربية", "crumb.home": "Home", "crumb.treat": "Treatments", "crumb.cur": "Plastic Surgery", "hero.eyebrow": "Treatments · Plastic Surgery", "hero.title": "Plastic &amp; <em>Reconstructive</em> Surgery", "hero.lead": "World-class aesthetic and reconstructive care in Moscow — coordinated end to end by MediVia, from your first message to your flight home.", "hero.cta1": "Start a case — free review", "hero.cta2": "WhatsApp us", "hero.back": "Back to all treatments", "stat1.l": "Patients treated", "stat2.l": "Annual visits", "stat3.l": "Years of experience", "clinic.tag": "Partner clinic", "clinic.loc": "Moscow · Russia", "clinic.desc": "A premium multidisciplinary centre in Moscow, specialising in aesthetic and reconstructive medicine — where experienced surgeons, modern operating suites and a calm, private setting come together under one roof.", "clinic.desc2": "Through MediVia, international patients reach Damas Medical Center with everything handled around them: one coordinator, one agreed price, and their documents protected at every step.", "clinic.specTitle": "Key specialties", "spec.0": "Plastic & Reconstructive Surgery", "spec.1": "Hair Transplantation", "spec.2": "Aesthetic Medicine & Cosmetology", "spec.3": "Dermatology & Trichology", "spec.4": "Vascular Surgery & Phlebology", "spec.5": "Gynecology — Outpatient & Surgical Care", "gallery.eyebrow": "Inside the clinic", "gallery.title": "A closer look at Damas Medical Center", "gallery.intro": "A quiet, private environment built around the patient — from the first consultation to the operating suite.", "shot1.b": "Clinic entrance", "shot1.t": "The Damas Medical Center in Moscow — discreet and easy to reach.", "shot2.b": "Specialist consultation", "shot2.t": "Every plan starts with an unhurried conversation with your surgeon.", "shot3.b": "Operating suite", "shot3.t": "Modern, fully-equipped theatres held to international standards.", "proc.eyebrow": "What we coordinate", "proc.title": "Procedures within plastic surgery", "proc.intro": "Damas Medical Center covers the full spectrum of aesthetic and reconstructive work. These are the areas patients most often ask us to coordinate — your final plan is always set with your surgeon.", "p1.t": "Rhinoplasty", "p1.x": "Reshaping and functional correction of the nose, balancing profile and breathing.", "p2.t": "Face & Eyelids", "p2.x": "Facelift, blepharoplasty and rejuvenation for a natural, well-rested look.", "p3.t": "Breast Surgery", "p3.x": "Augmentation, reduction, lift and reconstruction, tailored to each patient.", "p4.t": "Body Contouring", "p4.x": "Liposuction, abdominoplasty and post–weight-loss contouring of the figure.", "p5.t": "Reconstructive Surgery", "p5.x": "Restoring form and function after trauma, surgery or congenital differences.", "p6.t": "Hair Transplantation", "p6.x": "Modern follicular techniques for natural, lasting hair restoration.", "cost.eyebrow": "Indicative treatment costs", "cost.title": "Transparent starting prices", "cost.intro": "Clear starting points, agreed with you before anything begins — no surprises later.", "price.from": "From", "pr1.t": "Plastic Surgery", "pr2.t": "Hair Transplantation", "pr3.t": "Aesthetic Medicine & Cosmetology", "cost.disc": "Final treatment costs depend on the individual case, the selected physician and the treatment plan. MediVia confirms one agreed price with you before anything begins.", "proc2.eyebrow": "With MediVia beside you", "proc2.title": "How your journey works", "s1.t": "You reach out", "s1.x": "Send your case and any documents. A coordinator replies within the hour.", "s2.t": "Medical review", "s2.x": "Your file is reviewed with Damas surgeons, and a clear plan and price are prepared.", "s3.t": "Your visit", "s3.x": "We arrange the invitation, travel, translation and everything around your surgery.", "s4.t": "Recovery & home", "s4.x": "Aftercare, follow-up and a smooth return — we stay with you to full recovery.", "form.eyebrow": "Start a case", "form.title": "Open your case file", "intake.label": "Patient intake", "intake.conf": "Confidential · Reviewed by a coordinator", "ref.b": "Reference", "form.paneH": "Tell us about you and your case", "form.paneS": "Plain words are enough — we handle the medical language.", "form.first": "First name", "form.last": "Last name", "form.nat": "Nationality", "form.age": "Age", "form.sex": "Sex", "form.male": "Male", "form.female": "Female", "form.sexHint": "Hospitals require this on every referral — a clinical field, not a preference.", "form.wa": "WhatsApp number", "form.waHint": "Optional — but it's how we reply fastest.", "form.email": "Email", "form.interest": "Area of interest", "form.problem": "The procedure or concern, in one line", "form.problemPh": "e.g. Rhinoplasty · or facelift consultation", "form.problemHint": "Up to 140 characters.", "form.details": "The full story", "form.detailsPh": "What you're hoping for, anything you've already been told, past procedures, medications and other conditions.", "form.detailsHint": "Take the space you need.", "form.consent": "I agree that MediVia may review my information to assess and coordinate my case. I understand MediVia is a coordination service and does not provide medical diagnosis or treatment.", "form.send": "Send my case", "v.first": "Please enter your first name.", "v.last": "Please enter your last name.", "v.nat": "Please enter your nationality.", "v.age": "Enter an age between 0 and 120.", "v.sex": "Please select one.", "v.problem": "Please describe it in one line.", "v.details": "Please tell us a little more — at least a few sentences.", "v.consent": "Please agree before sending.", "done.title": "Your file is open.", "done.text": "A coordinator has it now. You'll hear back within the hour — and the first message will come from a person, with your name on it.", "done.ref": "Reference", "contact.eyebrow": "Speak to MediVia today", "contact.title": "Not ready for a form? Write to a person.", "chan.wa": "WhatsApp", "chan.email": "Email", "chan.web": "Website", "foot.sub": "Medical Concierge · Russia", "foot.disc": "MediVia is a medical concierge and coordination service. It does not provide medical diagnosis or treatment. Damas Medical Center is a licensed partner clinic in Moscow.", "foot.rights": "© 2026 MediVia · Medical Concierge" }, "ar": { "seo.title": "الجراحة التجميلية · مركز داماس الطبي — مديفيا", "nav.about": "من نحن", "nav.how": "كيف نعمل", "nav.treatments": "التخصصات", "nav.start": "ابدأ ملفك", "lang.ar": "English", "crumb.home": "الرئيسية", "crumb.treat": "التخصصات", "crumb.cur": "الجراحة التجميلية", "hero.eyebrow": "التخصصات · الجراحة التجميلية", "hero.title": "الجراحة التجميلية <em>والترميمية</em>", "hero.lead": "رعاية تجميلية وترميمية بمعايير عالمية في موسكو — تُنسّقها مديفيا من أول رسالة حتى عودتك إلى بلدك.", "hero.cta1": "ابدأ ملفك — مراجعة مجانية", "hero.cta2": "تواصل عبر واتساب", "hero.back": "العودة إلى كل التخصصات", "stat1.l": "مريض تمّت رعايته", "stat2.l": "زيارة سنوية", "stat3.l": "سنوات من الخبرة", "clinic.tag": "المستشفى الشريك", "clinic.loc": "موسكو · روسيا", "clinic.desc": "مركز راقٍ متعدّد التخصصات في موسكو، متخصّص في الطب التجميلي والترميمي — يجمع بين جرّاحين ذوي خبرة، وغرف عمليات حديثة، وأجواء هادئة وخاصة تحت سقف واحد.", "clinic.desc2": "من خلال مديفيا، يصل المرضى من خارج روسيا إلى مركز داماس الطبي وكل شيء مُنظّم حولهم: منسّق واحد، وسعر واحد متّفق عليه، ومستنداتهم محمية في كل خطوة.", "clinic.specTitle": "أبرز التخصصات", "spec.0": "الجراحة التجميلية والترميمية", "spec.1": "زراعة الشعر", "spec.2": "الطب التجميلي والكوزمتولوجي", "spec.3": "الأمراض الجلدية وطب الشعر", "spec.4": "جراحة الأوعية والدوالي", "spec.5": "أمراض النساء — رعاية عيادية وجراحية", "gallery.eyebrow": "داخل المستشفى", "gallery.title": "نظرة أقرب على مركز داماس الطبي", "gallery.intro": "بيئة هادئة وخاصة مبنية حول المريض — من أول استشارة حتى غرفة العمليات.", "shot1.b": "مدخل المستشفى", "shot1.t": "مركز داماس الطبي في موسكو — بموقع هادئ يسهل الوصول إليه.", "shot2.b": "استشارة تخصصية", "shot2.t": "كل خطة تبدأ بحديث متأنٍّ مع جرّاحك.", "shot3.b": "غرفة العمليات", "shot3.t": "غرف عمليات حديثة ومجهّزة بالكامل وفق المعايير العالمية.", "proc.eyebrow": "ما ننسّقه لك", "proc.title": "الإجراءات ضمن الجراحة التجميلية", "proc.intro": "يغطّي مركز داماس الطبي مجال الجراحة التجميلية والترميمية بالكامل. هذه أكثر المجالات التي يطلب المرضى تنسيقها معنا — وتُحدَّد خطتك النهائية دائماً مع جرّاحك.", "p1.t": "تجميل الأنف", "p1.x": "إعادة تشكيل الأنف وتصحيح وظيفته بما يوازن بين الشكل والتنفّس.", "p2.t": "الوجه والجفون", "p2.x": "شدّ الوجه وتجميل الجفون وإجراءات التجديد للحصول على مظهر طبيعي ومرتاح.", "p3.t": "جراحة الثدي", "p3.x": "التكبير والتصغير والرفع وإعادة البناء بما يناسب كل مريضة.", "p4.t": "نحت الجسم", "p4.x": "شفط الدهون وشدّ البطن ونحت القوام بعد إنقاص الوزن.", "p5.t": "الجراحة الترميمية", "p5.x": "استعادة الشكل والوظيفة بعد الإصابات أو العمليات أو الحالات الخِلقية.", "p6.t": "زراعة الشعر", "p6.x": "تقنيات حديثة لزراعة البصيلات لاستعادة طبيعية ودائمة للشعر.", "cost.eyebrow": "التكاليف التقريبية", "cost.title": "أسعار بداية واضحة وشفافة", "cost.intro": "نقاط بداية واضحة يُتّفق عليها معك قبل أن يبدأ أي شيء — دون مفاجآت لاحقة.", "price.from": "تبدأ من", "pr1.t": "الجراحة التجميلية", "pr2.t": "زراعة الشعر", "pr3.t": "الطب التجميلي والكوزمتولوجي", "cost.disc": "تعتمد التكلفة النهائية على الحالة الفردية والطبيب المختار وخطة العلاج. تؤكّد مديفيا معك سعراً واحداً متّفقاً عليه قبل أن يبدأ أي شيء.", "proc2.eyebrow": "مديفيا إلى جانبك", "proc2.title": "كيف تسير رحلتك", "s1.t": "تتواصل معنا", "s1.x": "أرسل حالتك وأي مستندات لديك، ويردّ عليك منسّق خلال ساعة.", "s2.t": "المراجعة الطبية", "s2.x": "تُراجَع حالتك مع جرّاحي داماس، ويُجهَّز لك خطة واضحة وسعر متّفق عليه.", "s3.t": "زيارتك", "s3.x": "نرتّب الدعوة والسفر والترجمة وكل ما يحيط بعمليتك.", "s4.t": "التعافي والعودة", "s4.x": "رعاية بعد العملية ومتابعة وعودة سلسة — نبقى معك حتى التعافي الكامل.", "form.eyebrow": "ابدأ ملفك", "form.title": "افتح ملفك الطبي", "intake.label": "استقبال المريض", "intake.conf": "سرّي · يراجعه منسّق", "ref.b": "المرجع", "form.paneH": "أخبرنا عنك وعن حالتك", "form.paneS": "كلماتك البسيطة تكفي — نحن نتولّى الصياغة الطبية.", "form.first": "الاسم الأول", "form.last": "اسم العائلة", "form.nat": "الجنسية", "form.age": "العمر", "form.sex": "الجنس", "form.male": "ذكر", "form.female": "أنثى", "form.sexHint": "تطلب المستشفيات هذا في كل إحالة — حقل سريري وليس تفضيلاً.", "form.wa": "رقم واتساب", "form.waHint": "اختياري — لكنه أسرع وسيلة للردّ عليك.", "form.email": "البريد الإلكتروني", "form.interest": "مجال الاهتمام", "form.problem": "الإجراء أو ما يشغلك، في سطر واحد", "form.problemPh": "مثال: تجميل أنف · أو استشارة شدّ وجه", "form.problemHint": "حتى ١٤٠ حرفاً.", "form.details": "التفاصيل كاملة", "form.detailsPh": "ما الذي تأمله، وأي شيء قيل لك سابقاً، والإجراءات السابقة والأدوية والحالات الأخرى.", "form.detailsHint": "خذ المساحة التي تحتاجها.", "form.consent": "أوافق على أن تطّلع مديفيا على معلوماتي لتقييم حالتي وتنسيقها. وأفهم أن مديفيا خدمة تنسيق ولا تقدّم تشخيصاً أو علاجاً طبياً.", "form.send": "أرسل حالتي", "v.first": "يرجى إدخال اسمك الأول.", "v.last": "يرجى إدخال اسم العائلة.", "v.nat": "يرجى إدخال جنسيتك.", "v.age": "أدخل عمراً بين ٠ و ١٢٠.", "v.sex": "يرجى اختيار واحد.", "v.problem": "يرجى وصف الأمر في سطر واحد.", "v.details": "أخبرنا بالمزيد — بضع جمل على الأقل.", "v.consent": "يرجى الموافقة قبل الإرسال.", "done.title": "تم فتح ملفك.", "done.text": "وصل ملفك إلى أحد المنسّقين الآن. ستسمع منّا خلال ساعة — وأول رسالة ستصلك من شخص حقيقي يحمل اسمك.", "done.ref": "المرجع", "contact.eyebrow": "تحدّث إلى مديفيا اليوم", "contact.title": "لست مستعداً للنموذج؟ راسل شخصاً مباشرة.", "chan.wa": "واتساب", "chan.email": "البريد", "chan.web": "الموقع", "foot.sub": "خدمة تنسيق طبي · روسيا", "foot.disc": "مديفيا خدمة تنسيق ورعاية طبية، ولا تقدّم تشخيصاً أو علاجاً طبياً. مركز داماس الطبي هو مستشفى شريك مرخّص في موسكو.", "foot.rights": "© 2026 مديفيا · خدمة تنسيق طبي" } };
+    const TR = { "en": { "seo.title": "Plastic Surgery · Damas Medical Center — MediVia", "nav.about": "Who we are", "nav.how": "How it works", "nav.treatments": "Treatments", "nav.start": "Start a case", "lang.ar": "العربية", "crumb.home": "Home", "crumb.treat": "Treatments", "crumb.cur": "Plastic Surgery", "hero.eyebrow": "Treatments · Plastic Surgery", "hero.title": "Plastic &amp; <em>Reconstructive</em> Surgery", "hero.lead": "World-class aesthetic and reconstructive care in Moscow — coordinated end to end by MediVia, from your first message to your flight home.", "hero.cta1": "Start a case — free review", "hero.cta2": "WhatsApp us", "hero.back": "Back to all treatments", "psv.eyebrow": "WATCH", "psv.heading": "See how MediVia works", "psv.text": "See how we support you from your first contact through your complete treatment journey.", "psv.title": "MediVia — a short introduction", "psv.play": "Play video", "doc.eyebrow": "Our medical team", "doc.title": "Our doctors", "doc.intro": "The specialists who look after your treatment at Damas Medical Center.", "doc1.n": "Doctor 01", "doc1.s": "Specialist", "doc1.y": "10+ years experience", "doc1.b": "Short professional description.", "doc2.n": "Doctor 02", "doc2.s": "Specialist", "doc2.y": "12+ years experience", "doc2.b": "Short professional description.", "doc3.n": "Doctor 03", "doc3.s": "Specialist", "doc3.y": "15+ years experience", "doc3.b": "Short professional description.", "doc4.n": "Doctor 04", "doc4.s": "Specialist", "doc4.y": "18+ years experience", "doc4.b": "Short professional description.", "doc5.n": "Doctor 05", "doc5.s": "Specialist", "doc5.y": "20+ years experience", "doc5.b": "Short professional description.", "newsletter.eyebrow": "Stay informed", "newsletter.title": "Stay updated with MediVia", "newsletter.description": "Leave your email and we'll keep you informed about what's new.", "newsletter.emailPlaceholder": "Email address", "newsletter.button": "Subscribe", "newsletter.sending": "Subscribing…", "newsletter.success": "You're subscribed. We'll keep you updated.", "newsletter.alreadySubscribed": "You're already subscribed.", "newsletter.invalid": "Please enter a valid email address.", "newsletter.error": "We couldn't complete your subscription. Please try again.", "newsletter.notConfigured": "Subscriptions are not configured yet. Please contact us on WhatsApp.", "stat1.l": "Patients treated", "stat2.l": "Annual visits", "stat3.l": "Years of experience", "clinic.tag": "Partner clinic", "clinic.loc": "Moscow · Russia", "clinic.desc": "A premium multidisciplinary centre in Moscow, specialising in aesthetic and reconstructive medicine — where experienced surgeons, modern operating suites and a calm, private setting come together under one roof.", "clinic.desc2": "Through MediVia, international patients reach Damas Medical Center with everything handled around them: one coordinator, one agreed price, and their documents protected at every step.", "clinic.specTitle": "Key specialties", "spec.0": "Plastic & Reconstructive Surgery", "spec.1": "Hair Transplantation", "spec.2": "Aesthetic Medicine & Cosmetology", "spec.3": "Dermatology & Trichology", "spec.4": "Vascular Surgery & Phlebology", "spec.5": "Gynecology — Outpatient & Surgical Care", "gallery.eyebrow": "Inside the clinic", "gallery.title": "A closer look at Damas Medical Center", "gallery.intro": "A quiet, private environment built around the patient — from the first consultation to the operating suite.", "shot1.b": "Clinic entrance", "shot1.t": "The Damas Medical Center in Moscow — discreet and easy to reach.", "shot2.b": "Specialist consultation", "shot2.t": "Every plan starts with an unhurried conversation with your surgeon.", "shot3.b": "Operating suite", "shot3.t": "Modern, fully-equipped theatres held to international standards.", "proc.eyebrow": "What we coordinate", "proc.title": "Procedures within plastic surgery", "proc.intro": "Damas Medical Center covers the full spectrum of aesthetic and reconstructive work. These are the areas patients most often ask us to coordinate — your final plan is always set with your surgeon.", "p1.t": "Rhinoplasty", "p1.x": "Reshaping and functional correction of the nose, balancing profile and breathing.", "p2.t": "Face & Eyelids", "p2.x": "Facelift, blepharoplasty and rejuvenation for a natural, well-rested look.", "p3.t": "Breast Surgery", "p3.x": "Augmentation, reduction, lift and reconstruction, tailored to each patient.", "p4.t": "Body Contouring", "p4.x": "Liposuction, abdominoplasty and post–weight-loss contouring of the figure.", "p5.t": "Reconstructive Surgery", "p5.x": "Restoring form and function after trauma, surgery or congenital differences.", "p6.t": "Hair Transplantation", "p6.x": "Modern follicular techniques for natural, lasting hair restoration.", "cost.eyebrow": "Indicative treatment costs", "cost.title": "Transparent starting prices", "cost.intro": "Clear starting points, agreed with you before anything begins — no surprises later.", "price.from": "From", "pr1.t": "Plastic Surgery", "pr2.t": "Hair Transplantation", "pr3.t": "Aesthetic Medicine & Cosmetology", "cost.disc": "Final treatment costs depend on the individual case, the selected physician and the treatment plan. MediVia confirms one agreed price with you before anything begins.", "proc2.eyebrow": "With MediVia beside you", "proc2.title": "How your journey works", "s1.t": "You reach out", "s1.x": "Send your case and any documents. A coordinator replies within the hour.", "s2.t": "Medical review", "s2.x": "Your file is reviewed with Damas surgeons, and a clear plan and price are prepared.", "s3.t": "Your visit", "s3.x": "We arrange the invitation, travel, translation and everything around your surgery.", "s4.t": "Recovery & home", "s4.x": "Aftercare, follow-up and a smooth return — we stay with you to full recovery.", "form.eyebrow": "Start a case", "form.title": "Open your case file", "intake.label": "Patient intake", "intake.conf": "Confidential · Reviewed by a coordinator", "ref.b": "Reference", "form.paneH": "Tell us about you and your case", "form.paneS": "Plain words are enough — we handle the medical language.", "form.first": "First name", "form.last": "Last name", "form.nat": "Nationality", "form.age": "Age", "form.sex": "Sex", "form.male": "Male", "form.female": "Female", "form.sexHint": "Hospitals require this on every referral — a clinical field, not a preference.", "form.wa": "WhatsApp number", "form.waHint": "Optional — but it's how we reply fastest.", "form.email": "Email", "form.interest": "Area of interest", "form.problem": "The procedure or concern, in one line", "form.problemPh": "e.g. Rhinoplasty · or facelift consultation", "form.problemHint": "Up to 140 characters.", "form.details": "The full story", "form.detailsPh": "What you're hoping for, anything you've already been told, past procedures, medications and other conditions.", "form.detailsHint": "Take the space you need.", "form.consent": "I agree that MediVia may review my information to assess and coordinate my case. I understand MediVia is a coordination service and does not provide medical diagnosis or treatment.", "form.send": "Send my case", "v.first": "Please enter your first name.", "v.last": "Please enter your last name.", "v.nat": "Please enter your nationality.", "v.age": "Enter an age between 0 and 120.", "v.sex": "Please select one.", "v.problem": "Please describe it in one line.", "v.details": "Please tell us a little more — at least a few sentences.", "v.consent": "Please agree before sending.", "done.title": "Your file is open.", "done.text": "A coordinator has it now. You'll hear back within the hour — and the first message will come from a person, with your name on it.", "done.ref": "Reference", "contact.eyebrow": "Speak to MediVia today", "contact.title": "Not ready for a form? Write to a person.", "chan.wa": "WhatsApp", "chan.email": "Email", "chan.web": "Website", "foot.sub": "Medical Concierge · Russia", "foot.disc": "MediVia is a medical concierge and coordination service. It does not provide medical diagnosis or treatment. Damas Medical Center is a licensed partner clinic in Moscow.", "foot.rights": "© 2026 MediVia · Medical Concierge" }, "ar": { "seo.title": "الجراحة التجميلية · مركز داماس الطبي — مديفيا", "nav.about": "من نحن", "nav.how": "آلية العمل", "nav.treatments": "التخصصات الطبية", "nav.start": "املأ ملفك الطبي", "lang.ar": "English", "crumb.home": "الرئيسية", "crumb.treat": "التخصصات", "crumb.cur": "الجراحة التجميلية", "hero.eyebrow": "التخصصات · الجراحة التجميلية", "hero.title": "الجراحة التجميلية <em>والترميمية</em>", "hero.lead": "رعاية تجميلية وترميمية بمعايير عالمية في موسكو — تُنسّقها مديفيا من أول رسالة حتى عودتك إلى بلدك.", "hero.cta1": "ابدأ ملفك — مراجعة مجانية", "hero.cta2": "تواصل عبر واتساب", "hero.back": "العودة إلى كل التخصصات", "psv.eyebrow": "شاهد", "psv.heading": "تعرّف على MediVia", "psv.text": "شاهد كيف نرافقك من أول تواصل حتى اكتمال رحلتك العلاجية.", "psv.title": "MediVia — مقدّمة قصيرة", "psv.play": "تشغيل الفيديو", "doc.eyebrow": "فريقنا الطبي", "doc.title": "أطباؤنا", "doc.intro": "الأخصائيون الذين يشرفون على علاجك في مركز داماس الطبي.", "doc1.n": "الطبيب ٠١", "doc1.s": "أخصائي", "doc1.y": "خبرة أكثر من ١٠ سنوات", "doc1.b": "وصف مهني مختصر.", "doc2.n": "الطبيب ٠٢", "doc2.s": "أخصائي", "doc2.y": "خبرة أكثر من ١٢ سنة", "doc2.b": "وصف مهني مختصر.", "doc3.n": "الطبيب ٠٣", "doc3.s": "أخصائي", "doc3.y": "خبرة أكثر من ١٥ سنة", "doc3.b": "وصف مهني مختصر.", "doc4.n": "الطبيب ٠٤", "doc4.s": "أخصائي", "doc4.y": "خبرة أكثر من ١٨ سنة", "doc4.b": "وصف مهني مختصر.", "doc5.n": "الطبيب ٠٥", "doc5.s": "أخصائي", "doc5.y": "خبرة أكثر من ٢٠ سنة", "doc5.b": "وصف مهني مختصر.", "newsletter.eyebrow": "ابقَ على اطلاع", "newsletter.title": "ابقَ على اطلاع مع MediVia", "newsletter.description": "اترك بريدك الإلكتروني وسنطلعك على كل جديد.", "newsletter.emailPlaceholder": "البريد الإلكتروني", "newsletter.button": "اشتراك", "newsletter.sending": "جارٍ الاشتراك…", "newsletter.success": "تم الاشتراك بنجاح. سنبقيك على اطلاع بكل جديد.", "newsletter.alreadySubscribed": "هذا البريد مشترك بالفعل.", "newsletter.invalid": "يرجى إدخال بريد إلكتروني صحيح.", "newsletter.error": "تعذّر إكمال الاشتراك. يرجى المحاولة مرة أخرى.", "newsletter.notConfigured": "خدمة الاشتراك غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.", "stat1.l": "مريض تمّت رعايته", "stat2.l": "زيارة سنوية", "stat3.l": "سنوات من الخبرة", "clinic.tag": "المستشفى الشريك", "clinic.loc": "موسكو · روسيا", "clinic.desc": "مركز راقٍ متعدّد التخصصات في موسكو، متخصّص في الطب التجميلي والترميمي — يجمع بين جرّاحين ذوي خبرة، وغرف عمليات حديثة، وأجواء هادئة وخاصة تحت سقف واحد.", "clinic.desc2": "من خلال مديفيا، يصل المرضى من خارج روسيا إلى مركز داماس الطبي وكل شيء مُنظّم حولهم: منسّق واحد، وسعر واحد متّفق عليه، ومستنداتهم محمية في كل خطوة.", "clinic.specTitle": "أبرز التخصصات", "spec.0": "الجراحة التجميلية والترميمية", "spec.1": "زراعة الشعر", "spec.2": "الطب التجميلي والكوزمتولوجي", "spec.3": "الأمراض الجلدية وطب الشعر", "spec.4": "جراحة الأوعية والدوالي", "spec.5": "أمراض النساء — رعاية عيادية وجراحية", "gallery.eyebrow": "داخل المستشفى", "gallery.title": "نظرة أقرب على مركز داماس الطبي", "gallery.intro": "بيئة هادئة وخاصة مبنية حول المريض — من أول استشارة حتى غرفة العمليات.", "shot1.b": "مدخل المستشفى", "shot1.t": "مركز داماس الطبي في موسكو — بموقع هادئ يسهل الوصول إليه.", "shot2.b": "استشارة تخصصية", "shot2.t": "كل خطة تبدأ بحديث متأنٍّ مع جرّاحك.", "shot3.b": "غرفة العمليات", "shot3.t": "غرف عمليات حديثة ومجهّزة بالكامل وفق المعايير العالمية.", "proc.eyebrow": "ما ننسّقه لك", "proc.title": "الإجراءات ضمن الجراحة التجميلية", "proc.intro": "يغطّي مركز داماس الطبي مجال الجراحة التجميلية والترميمية بالكامل. هذه أكثر المجالات التي يطلب المرضى تنسيقها معنا — وتُحدَّد خطتك النهائية دائماً مع جرّاحك.", "p1.t": "تجميل الأنف", "p1.x": "إعادة تشكيل الأنف وتصحيح وظيفته بما يوازن بين الشكل والتنفّس.", "p2.t": "الوجه والجفون", "p2.x": "شدّ الوجه وتجميل الجفون وإجراءات التجديد للحصول على مظهر طبيعي ومرتاح.", "p3.t": "جراحة الثدي", "p3.x": "التكبير والتصغير والرفع وإعادة البناء بما يناسب كل مريضة.", "p4.t": "نحت الجسم", "p4.x": "شفط الدهون وشدّ البطن ونحت القوام بعد إنقاص الوزن.", "p5.t": "الجراحة الترميمية", "p5.x": "استعادة الشكل والوظيفة بعد الإصابات أو العمليات أو الحالات الخِلقية.", "p6.t": "زراعة الشعر", "p6.x": "تقنيات حديثة لزراعة البصيلات لاستعادة طبيعية ودائمة للشعر.", "cost.eyebrow": "التكاليف التقريبية", "cost.title": "أسعار بداية واضحة وشفافة", "cost.intro": "نقاط بداية واضحة يُتّفق عليها معك قبل أن يبدأ أي شيء — دون مفاجآت لاحقة.", "price.from": "تبدأ من", "pr1.t": "الجراحة التجميلية", "pr2.t": "زراعة الشعر", "pr3.t": "الطب التجميلي والكوزمتولوجي", "cost.disc": "تعتمد التكلفة النهائية على الحالة الفردية والطبيب المختار وخطة العلاج. تؤكّد مديفيا معك سعراً واحداً متّفقاً عليه قبل أن يبدأ أي شيء.", "proc2.eyebrow": "مديفيا إلى جانبك", "proc2.title": "كيف تسير رحلتك", "s1.t": "تتواصل معنا", "s1.x": "أرسل حالتك وأي مستندات لديك، ويردّ عليك منسّق خلال ساعة.", "s2.t": "المراجعة الطبية", "s2.x": "تُراجَع حالتك مع جرّاحي داماس، ويُجهَّز لك خطة واضحة وسعر متّفق عليه.", "s3.t": "زيارتك", "s3.x": "نرتّب الدعوة والسفر والترجمة وكل ما يحيط بعمليتك.", "s4.t": "التعافي والعودة", "s4.x": "رعاية بعد العملية ومتابعة وعودة سلسة — نبقى معك حتى التعافي الكامل.", "form.eyebrow": "ابدأ ملفك", "form.title": "افتح ملفك الطبي", "intake.label": "استقبال المريض", "intake.conf": "سرّي · يراجعه منسّق", "ref.b": "المرجع", "form.paneH": "أخبرنا عنك وعن حالتك", "form.paneS": "كلماتك البسيطة تكفي — نحن نتولّى الصياغة الطبية.", "form.first": "الاسم الأول", "form.last": "اسم العائلة", "form.nat": "الجنسية", "form.age": "العمر", "form.sex": "الجنس", "form.male": "ذكر", "form.female": "أنثى", "form.sexHint": "تطلب المستشفيات هذا في كل إحالة — حقل سريري وليس تفضيلاً.", "form.wa": "رقم واتساب", "form.waHint": "اختياري — لكنه أسرع وسيلة للردّ عليك.", "form.email": "البريد الإلكتروني", "form.interest": "مجال الاهتمام", "form.problem": "الإجراء أو ما يشغلك، في سطر واحد", "form.problemPh": "مثال: تجميل أنف · أو استشارة شدّ وجه", "form.problemHint": "حتى ١٤٠ حرفاً.", "form.details": "التفاصيل كاملة", "form.detailsPh": "ما الذي تأمله، وأي شيء قيل لك سابقاً، والإجراءات السابقة والأدوية والحالات الأخرى.", "form.detailsHint": "خذ المساحة التي تحتاجها.", "form.consent": "أوافق على أن تطّلع مديفيا على معلوماتي لتقييم حالتي وتنسيقها. وأفهم أن مديفيا خدمة تنسيق ولا تقدّم تشخيصاً أو علاجاً طبياً.", "form.send": "أرسل حالتي", "v.first": "يرجى إدخال اسمك الأول.", "v.last": "يرجى إدخال اسم العائلة.", "v.nat": "يرجى إدخال جنسيتك.", "v.age": "أدخل عمراً بين ٠ و ١٢٠.", "v.sex": "يرجى اختيار واحد.", "v.problem": "يرجى وصف الأمر في سطر واحد.", "v.details": "أخبرنا بالمزيد — بضع جمل على الأقل.", "v.consent": "يرجى الموافقة قبل الإرسال.", "done.title": "تم فتح ملفك.", "done.text": "وصل ملفك إلى أحد المنسّقين الآن. ستسمع منّا خلال ساعة — وأول رسالة ستصلك من شخص حقيقي يحمل اسمك.", "done.ref": "المرجع", "contact.eyebrow": "تحدّث إلى مديفيا اليوم", "contact.title": "لست مستعداً للنموذج؟ راسل شخصاً مباشرة.", "chan.wa": "واتساب", "chan.email": "البريد", "chan.web": "الموقع", "foot.sub": "خدمة تنسيق طبي · روسيا", "foot.disc": "مديفيا خدمة تنسيق ورعاية طبية، ولا تقدّم تشخيصاً أو علاجاً طبياً. مركز داماس الطبي هو مستشفى شريك مرخّص في موسكو.", "foot.rights": "© 2026 مديفيا · خدمة تنسيق طبي" } };
     (function () {
-      const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+      const $ = s => document.querySelector(s);
+      const $$ = s => [...document.querySelectorAll(s)];
+
+      const EXTRA = {
+        en: {
+          "intake.confidential": "Confidential · Reviewed by a coordinator",
+          "intake.reference": "Reference",
+          "intake.step1": "About you",
+          "intake.step2": "Your case",
+          "intake.step3": "Documents",
+          "intake.step4": "Review",
+          "intake.basics": "Basics only. Nothing here reaches a hospital until you say so.",
+          "form.firstName": "First name", "form.lastName": "Last name", "form.nationality": "Nationality",
+          "form.whatsapp": "WhatsApp number", "form.whatsappHint": "Optional — but it's how we reply fastest.",
+          "form.whatsappPlaceholder": "+966 ...", "form.continueCase": "Continue to your case",
+          "form.caseTitle": "What's happening?",
+          "form.caseIntro": "Write it the way you'd say it out loud. Plain words are enough — we handle the medical language.",
+          "form.problemPlaceholder": "e.g. Rhinoplasty · or facelift consultation",
+          "form.detailsPlaceholder": "What you're hoping for, anything you've already been told, past procedures, medications, other conditions, and what you're hoping for.",
+          "form.back": "Back", "form.continueDocs": "Continue to documents",
+          "docs.title": "Anything you already have",
+          "docs.intro": "Scans, lab results, a doctor's letter, a photo of the report on your desk. A phone photo is fine — we translate it.",
+          "docs.imagesLabel": "Images — up to 5, max 10 MB each",
+          "docs.imagesDrop": "Drop images here, or browse",
+          "docs.imagesHint": "JPG, PNG, HEIC or WebP · 5 files · 10 MB each",
+          "docs.pdfLabel": "PDF report — one file, max 10 MB",
+          "docs.pdfDrop": "Drop a PDF here, or browse",
+          "docs.pdfHint": "One PDF · up to 10 MB",
+          "docs.privacy": "Your documents go to your coordinator and nowhere else. They reach a hospital only after you have chosen that hospital — and you can ask us to delete everything at any time.",
+          "review.title": "Review before sending", "review.subtitle": "Read it once more",
+          "review.intro": "This is exactly what lands on a coordinator's desk.",
+          "review.consent": "I agree that MediVia may review these documents and share them with hospitals and specialists in Russia for the purpose of assessing my case. I understand that MediVia is a coordination service and does not provide medical diagnosis or treatment.",
+          "review.send": "Send my case", "review.name": "Name", "review.nationality": "Nationality", "review.age": "Age",
+          "review.years": "years", "review.sex": "Sex", "review.whatsapp": "WhatsApp", "review.email": "Email",
+          "review.problem": "Procedure / concern", "review.details": "Details", "review.images": "Images", "review.files": "files", "review.pdf": "PDF", "review.notProvided": "Not provided",
+          "action.sending": "Sending…",
+          "upload.notImage": "{{name}} is not an image.", "upload.tooLarge": "{{name}} is too large ({{size}}). Max 10 MB.",
+          "upload.maxImages": "You can upload up to 5 images.", "upload.notPdf": "Please choose a PDF file.", "upload.pdfTooLarge": "The PDF is too large ({{size}}). Max 10 MB.",
+          "common.removeImage": "Remove image", "common.removeFile": "Remove PDF",
+          "v.email": "That email doesn't look right.",
+          "done.title": "Your file is open.", "done.text": "A coordinator has it now. You'll hear back within the hour — and the first message will come from a person, with your name on it."
+        },
+        ar: {
+          "intake.confidential": "سرّي · يراجعه منسّق",
+          "intake.reference": "المرجع",
+          "intake.step1": "بياناتك", "intake.step2": "حالتك", "intake.step3": "المستندات", "intake.step4": "المراجعة",
+          "intake.basics": "معلومات أساسية فقط. لا يصل أي شيء إلى مستشفى قبل موافقتك.",
+          "form.firstName": "الاسم الأول", "form.lastName": "اسم العائلة", "form.nationality": "الجنسية",
+          "form.whatsapp": "رقم واتساب", "form.whatsappHint": "اختياري — لكنه أسرع وسيلة للردّ عليك.",
+          "form.whatsappPlaceholder": "+966 ...", "form.continueCase": "تابع إلى حالتك",
+          "form.caseTitle": "ما الذي يحدث؟",
+          "form.caseIntro": "اكتب الأمر كما تشرحه بالكلام. الكلمات البسيطة تكفي — نحن نتولى الصياغة الطبية.",
+          "form.problemPlaceholder": "مثال: تجميل الأنف · أو استشارة شدّ الوجه",
+          "form.detailsPlaceholder": "ما الذي تأمله، وما الذي قيل لك سابقاً، والإجراءات السابقة والأدوية والحالات الأخرى، وما الذي تتوقعه.",
+          "form.back": "رجوع", "form.continueDocs": "تابع إلى المستندات",
+          "docs.title": "أي مستندات لديك",
+          "docs.intro": "تحاليل، تقارير، رسالة من طبيب، أو صورة لتقرير لديك. صورة الهاتف تكفي — ونحن نتولى ترجمتها.",
+          "docs.imagesLabel": "الصور — حتى ٥ صور، بحد أقصى ١٠ ميغابايت للصورة",
+          "docs.imagesDrop": "اسحب الصور إلى هنا أو اخترها",
+          "docs.imagesHint": "JPG أو PNG أو HEIC أو WebP · ٥ ملفات · ١٠ ميغابايت لكل ملف",
+          "docs.pdfLabel": "تقرير PDF — ملف واحد، بحد أقصى ١٠ ميغابايت",
+          "docs.pdfDrop": "اسحب ملف PDF إلى هنا أو اختره",
+          "docs.pdfHint": "ملف PDF واحد · حتى ١٠ ميغابايت",
+          "docs.privacy": "تصل مستنداتك إلى منسّقك فقط. ولا تُرسل إلى مستشفى إلا بعد اختيارك له — ويمكنك طلب حذف كل شيء في أي وقت.",
+          "review.title": "راجع قبل الإرسال", "review.subtitle": "اقرأه مرة أخيرة",
+          "review.intro": "هذه هي المعلومات التي ستصل فعلياً إلى مكتب المنسّق.",
+          "review.consent": "أوافق على أن تطّلع مديفيا على هذه المستندات ومشاركتها مع المستشفيات والأطباء المختصين في روسيا لغرض تقييم حالتي. وأفهم أن مديفيا خدمة تنسيق ولا تقدّم تشخيصاً أو علاجاً طبياً.",
+          "review.send": "أرسل حالتي", "review.name": "الاسم", "review.nationality": "الجنسية", "review.age": "العمر",
+          "review.years": "سنة", "review.sex": "الجنس", "review.whatsapp": "واتساب", "review.email": "البريد الإلكتروني",
+          "review.problem": "الإجراء / ما يشغلك", "review.details": "التفاصيل", "review.images": "الصور", "review.files": "ملفات", "review.pdf": "PDF", "review.notProvided": "غير مذكور",
+          "action.sending": "جارٍ الإرسال…",
+          "upload.notImage": "{{name}} ليس ملف صورة.", "upload.tooLarge": "الملف {{name}} كبير جداً ({{size}}). الحد الأقصى ١٠ ميغابايت.",
+          "upload.maxImages": "يمكنك رفع ٥ صور كحد أقصى.", "upload.notPdf": "يرجى اختيار ملف PDF.", "upload.pdfTooLarge": "ملف PDF كبير جداً ({{size}}). الحد الأقصى ١٠ ميغابايت.",
+          "common.removeImage": "حذف الصورة", "common.removeFile": "حذف PDF",
+          "v.email": "صيغة البريد الإلكتروني غير صحيحة.",
+          "done.title": "تم فتح ملفك.", "done.text": "وصل ملفك إلى أحد المنسّقين الآن. ستسمع منّا خلال ساعة — وستصلك الرسالة الأولى من شخص حقيقي يحمل اسمك."
+        }
+      };
+
+      function dict(lang) { return { ...(TR[lang] || TR.en), ...(EXTRA[lang] || EXTRA.en) }; }
+      function t(key, vars) {
+        let text = dict(document.documentElement.lang === 'ar' ? 'ar' : 'en')[key] || key;
+        if (vars) Object.entries(vars).forEach(([k, v]) => { text = text.replaceAll('{{' + k + '}}', v); });
+        return text;
+      }
       function apply(lang) {
-        const d = TR[lang] || TR.en;
+        const d = dict(lang);
         document.documentElement.lang = lang;
         document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
         $$('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (d[k] != null) el.textContent = d[k]; });
         $$('[data-i18n-html]').forEach(el => { const k = el.getAttribute('data-i18n-html'); if (d[k] != null) el.innerHTML = d[k]; });
-        $$('[data-i18n-ph]').forEach(el => { const k = el.getAttribute('data-i18n-ph'); if (d[k] != null) el.placeholder = d[k]; });
+        $$('[data-i18n-ph], [data-i18n-placeholder]').forEach(el => {
+          const k = el.getAttribute('data-i18n-ph') || el.getAttribute('data-i18n-placeholder');
+          if (d[k] != null) el.placeholder = d[k];
+        });
+        $$('[data-i18n-aria-label]').forEach(el => { const k = el.getAttribute('data-i18n-aria-label'); if (d[k] != null) el.setAttribute('aria-label', d[k]); });
+        $$('option[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (d[k] != null) el.textContent = d[k]; });
         $$('.lang-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
-        try { localStorage.setItem('medivia_lang', lang); } catch (e) { }
+        try { localStorage.setItem('medivia_lang', lang); } catch (e) {}
       }
+
       let start = 'en';
-      try { const s = localStorage.getItem('medivia_lang'); if (s) start = s; } catch (e) { }
-      const p = new URLSearchParams(location.search).get('lang'); if (p === 'ar' || p === 'en') start = p;
+      try { const saved = localStorage.getItem('medivia_lang'); if (saved) start = saved; } catch (e) {}
+      const qp = new URLSearchParams(location.search).get('lang');
+      if (qp === 'ar' || qp === 'en') start = qp;
       $$('.lang-btn').forEach(b => b.addEventListener('click', () => apply(b.dataset.lang)));
       apply(start);
 
-      /* sticky header */
       const hdr = $('#hdr');
       addEventListener('scroll', () => hdr.classList.toggle('stuck', scrollY > 40), { passive: true });
-
-      /* reveal on scroll */
       const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
       $$('.rv').forEach(n => io.observe(n));
 
-      /* reference number */
       const REF = 'MV-2026-' + String(Math.floor(Math.random() * 9000) + 1000);
-      $('#refno').textContent = REF; $('#doneRef').textContent = REF;
+      $('#refno').textContent = REF;
+      $('#doneRef').textContent = REF;
 
-      /* char counter */
-      const detail = $('#detail'), cn = $('#cn'), cnt = $('#cnt');
-      detail.addEventListener('input', () => { const v = detail.value.length; cn.textContent = v; cnt.classList.toggle('near', v > 3600); cnt.classList.toggle('over', v > 4000); });
-
-      /* clear error on input */
-      function clearErr(el) { el.classList.remove('err'); const m = document.querySelector('[data-err="' + el.id + '"]'); if (m) m.classList.remove('show'); }
-      ['first', 'last', 'nat', 'age', 'reason', 'detail'].forEach(id => { const el = document.getElementById(id); el && el.addEventListener('input', () => clearErr(el)); });
-      $$('input[name="sex"]').forEach(r => r.addEventListener('change', () => { const m = document.querySelector('[data-err="sex"]'); if (m) m.classList.remove('show'); }));
-      $('#ok').addEventListener('change', () => { const m = document.querySelector('[data-err="ok"]'); if (m) m.classList.remove('show'); });
-
-      /* validation + submit */
+      const panes = $$('.pane');
+      const heads = $$('.step-h');
       const form = $('#intake');
-      function showErr(id) { const el = document.getElementById(id); if (el) { el.classList.add('err'); } const m = document.querySelector('[data-err="' + id + '"]'); if (m) m.classList.add('show'); }
-      form.addEventListener('submit', ev => {
-        ev.preventDefault();
-        let ok = true, firstBad = null;
-        const req = ['first', 'last', 'nat', 'reason', 'detail'];
-        req.forEach(id => { const el = document.getElementById(id); if (!el.value.trim()) { showErr(id); ok = false; firstBad = firstBad || el; } });
-        const age = $('#age'); const av = Number(age.value);
-        if (age.value === '' || isNaN(av) || av < 0 || av > 120) { showErr('age'); ok = false; firstBad = firstBad || age; }
-        if (!document.querySelector('input[name="sex"]:checked')) { const m = document.querySelector('[data-err="sex"]'); if (m) m.classList.add('show'); ok = false; firstBad = firstBad || $('#sx-m'); }
-        if (!$('#ok').checked) { const m = document.querySelector('[data-err="ok"]'); if (m) m.classList.add('show'); ok = false; firstBad = firstBad || $('#ok'); }
-        if (!ok) { if (firstBad && firstBad.focus) firstBad.focus(); return; }
-        $('#formBody').style.display = 'none';
-        const done = $('#done'); done.style.display = 'block';
-        scrollTo({ top: $('.sheet').getBoundingClientRect().top + scrollY - 90, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      const MAX_IMG = 5, MAX_IMG_BYTES = 10 * 1024 * 1024, MAX_PDF_BYTES = 10 * 1024 * 1024;
+      let images = [], pdfFile = null, submitting = false, submitted = false;
+
+      const fmt = b => b < 1024 * 1024 ? Math.max(1, Math.round(b / 1024)) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+      const sleepScroll = () => scrollTo({ top: $('.sheet').getBoundingClientRect().top + scrollY - 90, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+
+      function goto(n) {
+        panes.forEach(p => p.classList.toggle('show', Number(p.dataset.pane) === n));
+        heads.forEach(h => { const s = Number(h.dataset.step); h.classList.toggle('active', s === n); h.classList.toggle('done', s < n); });
+        if (n === 4) buildReview();
+        sleepScroll();
+      }
+
+      function mark(el, bad) {
+        if (!el) return !bad;
+        el.classList.toggle('err', bad);
+        const m = el.parentElement && el.parentElement.querySelector('.errmsg');
+        if (m) m.classList.toggle('show', bad);
+        return !bad;
+      }
+
+      function validate(step) {
+        let ok = true;
+        if (step === 1) {
+          ok = mark($('#first'), !$('#first').value.trim()) && ok;
+          ok = mark($('#last'), !$('#last').value.trim()) && ok;
+          ok = mark($('#nat'), !$('#nat').value.trim()) && ok;
+          const age = $('#age'), av = Number(age.value);
+          ok = mark(age, age.value === '' || !Number.isFinite(av) || av < 0 || av > 120) && ok;
+          const sex = $('input[name="sex"]:checked');
+          const sexMsg = $('#sexseg').parentElement.querySelector('.errmsg');
+          if (sexMsg) sexMsg.classList.toggle('show', !sex);
+          if (!sex) ok = false;
+          const mail = $('#mail');
+          if (mail.value.trim()) ok = mark(mail, !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail.value.trim())) && ok;
+          else mark(mail, false);
+        }
+        if (step === 2) {
+          ok = mark($('#reason'), !$('#reason').value.trim()) && ok;
+          ok = mark($('#detail'), $('#detail').value.trim().length < 30) && ok;
+        }
+        if (!ok) {
+          const bad = document.querySelector('.pane.show .err, .pane.show .errmsg.show');
+          if (bad) bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        return ok;
+      }
+
+      $$('.nxt').forEach(b => b.addEventListener('click', () => {
+        const current = Number(b.closest('.pane').dataset.pane);
+        if (validate(current)) goto(Number(b.dataset.go));
+      }));
+      $$('.prv').forEach(b => b.addEventListener('click', () => goto(Number(b.dataset.go))));
+      heads.forEach(h => h.addEventListener('click', () => {
+        const target = Number(h.dataset.step);
+        const cur = Number(document.querySelector('.pane.show').dataset.pane);
+        if (target < cur) goto(target);
+      }));
+
+      ['first','last','nat','age','reason','detail','mail'].forEach(id => {
+        const el = $('#' + id);
+        if (!el) return;
+        el.addEventListener('input', () => { el.classList.remove('err'); const m = el.parentElement.querySelector('.errmsg'); if (m) m.classList.remove('show'); });
+      });
+      $$('input[name="sex"]').forEach(r => r.addEventListener('change', () => { const m = $('#sexseg').parentElement.querySelector('.errmsg'); if (m) m.classList.remove('show'); }));
+      $('#ok').addEventListener('change', () => $('#okErr').classList.remove('show'));
+
+      const detail = $('#detail'), cn = $('#cn'), cnt = $('#cnt');
+      detail.addEventListener('input', () => { const n = detail.value.length; cn.textContent = n; cnt.classList.toggle('near', n > 3500 && n < 4000); cnt.classList.toggle('over', n >= 4000); });
+
+      function showUploadErr(el, msg) { el.textContent = msg; el.classList.add('show'); clearTimeout(el._tm); el._tm = setTimeout(() => el.classList.remove('show'), 5000); }
+      function addImages(list) {
+        const err = $('#imgErr');
+        for (const f of [...list]) {
+          if (!f.type.startsWith('image/')) { showUploadErr(err, t('upload.notImage', { name: f.name })); continue; }
+          if (f.size > MAX_IMG_BYTES) { showUploadErr(err, t('upload.tooLarge', { name: f.name, size: fmt(f.size) })); continue; }
+          if (images.length >= MAX_IMG) { showUploadErr(err, t('upload.maxImages')); break; }
+          images.push({ file: f, url: URL.createObjectURL(f) });
+        }
+        renderThumbs();
+      }
+      function renderThumbs() {
+        const box = $('#thumbs'); box.innerHTML = '';
+        images.forEach((im, i) => {
+          const d = document.createElement('div'); d.className = 'thumb';
+          const img = document.createElement('img'); img.alt = ''; img.src = im.url;
+          const sz = document.createElement('span'); sz.className = 'sz'; sz.textContent = fmt(im.file.size);
+          const b = document.createElement('button'); b.className = 'rm'; b.type = 'button'; b.innerHTML = '&times;'; b.setAttribute('aria-label', t('common.removeImage'));
+          b.onclick = () => { URL.revokeObjectURL(im.url); images.splice(i, 1); renderThumbs(); };
+          d.append(img, sz, b); box.appendChild(d);
+        });
+      }
+      function setPdf(f) {
+        const err = $('#pdfErr');
+        if (!f) return;
+        if (f.type !== 'application/pdf' && !/\.pdf$/i.test(f.name)) { showUploadErr(err, t('upload.notPdf')); return; }
+        if (f.size > MAX_PDF_BYTES) { showUploadErr(err, t('upload.pdfTooLarge', { size: fmt(f.size) })); return; }
+        pdfFile = f; renderPdf();
+      }
+      function renderPdf() {
+        const box = $('#pdfBox'); box.innerHTML = '';
+        if (!pdfFile) return;
+        const d = document.createElement('div'); d.className = 'pdfrow';
+        const ic = document.createElement('span'); ic.className = 'pi-ic'; ic.textContent = 'PDF';
+        const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = pdfFile.name;
+        const mt = document.createElement('span'); mt.className = 'mt'; mt.textContent = fmt(pdfFile.size);
+        const b = document.createElement('button'); b.className = 'rm2'; b.type = 'button'; b.innerHTML = '&times;'; b.setAttribute('aria-label', t('common.removeFile'));
+        b.onclick = () => { pdfFile = null; $('#pdf').value = ''; renderPdf(); };
+        d.append(ic, nm, mt, b); box.appendChild(d);
+      }
+      function wireDrop(zone, input, handler) {
+        zone.addEventListener('click', () => input.click());
+        zone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
+        ['dragenter','dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('hot'); }));
+        ['dragleave','drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('hot'); }));
+        zone.addEventListener('drop', e => handler(e.dataTransfer.files));
+        input.addEventListener('change', () => { handler(input.files); if (input.multiple) input.value = ''; });
+      }
+      wireDrop($('#dropImg'), $('#imgs'), addImages);
+      wireDrop($('#dropPdf'), $('#pdf'), files => setPdf(files[0]));
+
+      function buildReview() {
+        const sexEl = $('input[name="sex"]:checked');
+        const rows = [
+          [t('review.name'), ($('#first').value + ' ' + $('#last').value).trim()],
+          [t('review.nationality'), $('#nat').value],
+          [t('review.age'), $('#age').value ? $('#age').value + ' ' + t('review.years') : ''],
+          [t('review.sex'), sexEl ? (sexEl.value === 'male' ? t('form.male') : t('form.female')) : ''],
+          [t('review.whatsapp'), $('#wa').value], [t('review.email'), $('#mail').value],
+          [t('review.problem'), $('#reason').value], [t('review.details'), $('#detail').value],
+          [t('review.images'), images.length ? images.length + ' ' + t('review.files') + ' · ' + fmt(images.reduce((s, i) => s + i.file.size, 0)) : ''],
+          [t('review.pdf'), pdfFile ? pdfFile.name + ' · ' + fmt(pdfFile.size) : '']
+        ];
+        const box = $('#review'); box.innerHTML = '';
+        rows.forEach(([k, v]) => {
+          const r = document.createElement('div'); r.className = 'rrow';
+          const kk = document.createElement('div'); kk.className = 'rk'; kk.textContent = k;
+          const vv = document.createElement('div'); vv.className = 'rval' + (v ? '' : ' empty'); vv.textContent = v || t('review.notProvided');
+          r.append(kk, vv); box.appendChild(r);
+        });
+      }
+
+      const CFG = window.MEDIVIA_CONFIG || {};
+      const IDEM = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+      const MSG = {
+        en: { sending:'Sending…', netErr:"We couldn't reach the server. Check your connection and try again.", srvErr:'Something went wrong on our side. Please try again in a moment.', validation:'Please review the highlighted fields and try again.', notConfigured:'Submission is not configured yet. Please contact us on WhatsApp.' },
+        ar: { sending:'جارٍ الإرسال…', netErr:'تعذّر الوصول إلى الخادم. تحقّق من اتصالك وحاول مرة أخرى.', srvErr:'حدث خطأ لدينا. يرجى المحاولة بعد قليل.', validation:'يرجى مراجعة الحقول المميّزة والمحاولة مرة أخرى.', notConfigured:'خدمة الإرسال غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.' }
+      };
+      const M = k => (MSG[document.documentElement.lang === 'ar' ? 'ar' : 'en'])[k];
+      function submitStatus(text, isError) {
+        let el = $('#submitStatus');
+        if (!el) { el = document.createElement('div'); el.id='submitStatus'; el.setAttribute('role','status'); el.setAttribute('aria-live','polite'); el.style.cssText='margin-top:14px;font-size:.86rem;line-height:1.5;text-align:center'; $('#reviewWrap').appendChild(el); }
+        el.textContent = text || ''; el.style.color = isError ? 'var(--copper-ink)' : 'var(--sage)'; el.style.display = text ? 'block' : 'none';
+      }
+
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        if (submitted || submitting) return;
+        if (!validate(1)) { goto(1); return; }
+        if (!validate(2)) { goto(2); return; }
+        if (!$('#ok').checked) { $('#okErr').classList.add('show'); return; }
+        $('#okErr').classList.remove('show');
+        if (!CFG.SUBMIT_URL || /YOUR-PROJECT-REF/.test(CFG.SUPABASE_URL || '')) { submitStatus(M('notConfigured'), true); return; }
+
+        const fd = new FormData();
+        fd.append('reference', REF);
+        fd.append('firstName', $('#first').value.trim());
+        fd.append('lastName', $('#last').value.trim());
+        fd.append('nationality', $('#nat').value.trim());
+        fd.append('age', $('#age').value);
+        fd.append('sex', $('input[name="sex"]:checked').value);
+        fd.append('whatsapp', $('#wa').value.trim());
+        fd.append('email', $('#mail').value.trim());
+        fd.append('reason', $('#reason').value.trim());
+        fd.append('details', $('#detail').value.trim());
+        fd.append('consent', 'true');
+        fd.append('source', 'website-plastic-surgery');
+        fd.append('submittedAt', new Date().toISOString());
+        fd.append('idempotencyKey', IDEM);
+        images.forEach((im, i) => fd.append('images[' + i + ']', im.file, im.file.name));
+        if (pdfFile) fd.append('report', pdfFile, pdfFile.name);
+
+        const btn = $('#send'), label = btn.textContent;
+        submitting = true; btn.disabled = true; btn.textContent = M('sending'); submitStatus('', false);
+        try {
+          const res = await fetch(CFG.SUBMIT_URL, { method:'POST', headers:{ 'apikey':CFG.SUPABASE_ANON_KEY, 'Authorization':'Bearer '+CFG.SUPABASE_ANON_KEY }, body:fd });
+          let data = null; try { data = await res.json(); } catch (_) {}
+          if (res.ok && data && data.reference) {
+            submitted = true;
+            $('#doneRef').textContent = data.reference; $('#refno').textContent = data.reference;
+            $('#reviewWrap').style.display = 'none'; $('#done').classList.add('show');
+            heads.forEach(h => { h.classList.add('done'); h.classList.remove('active'); });
+            scrollTo({ top: $('.sheet').getBoundingClientRect().top + scrollY - 110, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+            return;
+          }
+          submitStatus(data && data.error === 'validation' ? M('validation') : M('srvErr'), true);
+          submitting = false; btn.disabled = false; btn.textContent = label;
+        } catch (err) {
+          submitStatus(M('netErr'), true); submitting = false; btn.disabled = false; btn.textContent = label;
+        }
+      });
+    })();
+  </script>
+
+  <!-- ══ VIDEO ══ click-to-play facade: nothing is embedded until the visitor
+       clicks, then one youtube-nocookie iframe replaces the facade. -->
+  <script>
+    (function () {
+      var box = document.getElementById('psvVideo');
+      var facade = document.getElementById('psvFacade');
+      if (!box || !facade) return;
+
+      var CFG = window.MEDIVIA_CONFIG || {};
+      var id = (CFG.YOUTUBE_ID && String(CFG.YOUTUBE_ID).trim()) || box.getAttribute('data-yt') || '';
+      if (!id || id === 'REPLACE_WITH_YOUTUBE_ID') {
+        console.warn('[MediVia] No YouTube ID set for the plastic-surgery video card.');
+        return;
+      }
+
+      /* remote thumbnail only (never stored in the repo) */
+      facade.style.backgroundImage = "url('https://i.ytimg.com/vi/" + id + "/hqdefault.jpg')";
+
+      /* a portrait that fails to load leaves the tinted panel showing,
+         so the grid never breaks while the photos are being added */
+      Array.prototype.forEach.call(document.querySelectorAll('.doc-shot img'), function (img) {
+        img.addEventListener('error', function () { img.classList.add('is-missing'); });
+        if (img.complete && img.naturalWidth === 0) img.classList.add('is-missing');
+      });
+
+      facade.addEventListener('click', function () {
+        var f = document.createElement('iframe');
+        f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        f.setAttribute('allowfullscreen', '');
+        /* the box's aria-label is kept translated by this page's own i18n */
+        f.setAttribute('title', box.getAttribute('aria-label') || 'MediVia');
+        f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+        box.innerHTML = '';
+        box.appendChild(f);
+      });
+    })();
+  </script>
+
+  <!-- ══ NEWSLETTER ══ posts to the existing subscribe-newsletter Edge Function
+       with the public anon key. No new backend, no second language system —
+       it reads this page's own TR dictionary. -->
+  <script>
+    (function () {
+      var form = document.getElementById('nlForm');
+      var input = document.getElementById('nlEmail');
+      var btn = document.getElementById('nlBtn');
+      var status = document.getElementById('nlStatus');
+      if (!form || !input || !btn || !status) return;
+
+      var CFG = window.MEDIVIA_CONFIG || {};
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      var busy = false;
+
+      /* same dictionary the rest of the page uses */
+      function T(key) {
+        var lang = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+        var pack = (typeof TR !== 'undefined' && TR[lang]) || {};
+        var fallback = (typeof TR !== 'undefined' && TR.en) || {};
+        return pack[key] != null ? pack[key] : (fallback[key] != null ? fallback[key] : key);
+      }
+
+      function say(key, ok) {
+        status.textContent = T(key);
+        status.classList.remove('ok', 'err');
+        status.classList.add('show', ok ? 'ok' : 'err');
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (busy) return;
+        var email = input.value.trim();
+        if (!EMAIL_RE.test(email)) { say('newsletter.invalid', false); input.focus(); return; }
+
+        var url = CFG.NEWSLETTER_URL;
+        if (!url) { say('newsletter.notConfigured', false); return; }
+
+        busy = true;
+        var label = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = T('newsletter.sending');
+        status.classList.remove('show', 'ok', 'err');
+
+        try {
+          var res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': CFG.SUPABASE_ANON_KEY || '',
+              'Authorization': 'Bearer ' + (CFG.SUPABASE_ANON_KEY || '')
+            },
+            body: JSON.stringify({
+              email: email,
+              source: 'website-plastic-surgery',
+              lang: document.documentElement.lang === 'ar' ? 'ar' : 'en'
+            })
+          });
+          var data = null; try { data = await res.json(); } catch (_) { }
+          var st = data && (data.status || data.error);
+
+          if (res.ok && (st === 'subscribed' || (data && data.subscribed === true))) {
+            say('newsletter.success', true); form.reset();
+          } else if (st === 'already' || st === 'already_subscribed' || res.status === 409) {
+            say('newsletter.alreadySubscribed', true);
+          } else if (st === 'invalid' || st === 'validation' || res.status === 400) {
+            say('newsletter.invalid', false);
+          } else {
+            say('newsletter.error', false);
+          }
+        } catch (err) {
+          say('newsletter.error', false);
+        } finally {
+          busy = false; btn.disabled = false; btn.textContent = label;
+        }
       });
     })();
   </script>

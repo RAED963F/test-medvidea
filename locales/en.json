@@ -182,5 +182,21 @@
   "docs.addPdfAria": "Add a PDF",
   "lang.switcher": "Language",
   "common.removeImage": "Remove image",
-  "common.removeFile": "Remove file"
+  "common.removeFile": "Remove file",
+  "video.title": "MediVia — a short introduction",
+  "video.play": "Play video",
+  "newsletter.eyebrow": "Stay informed",
+  "newsletter.title": "Stay updated with MediVia",
+  "newsletter.description": "Leave your email and we'll keep you informed about what's new.",
+  "newsletter.emailPlaceholder": "Email address",
+  "newsletter.button": "Subscribe",
+  "newsletter.sending": "Subscribing…",
+  "newsletter.success": "You're subscribed. We'll keep you updated.",
+  "newsletter.alreadySubscribed": "You're already subscribed.",
+  "newsletter.invalid": "Please enter a valid email address.",
+  "newsletter.error": "We couldn't complete your subscription. Please try again.",
+  "newsletter.notConfigured": "Subscriptions are not configured yet. Please contact us on WhatsApp.",
+  "video.eyebrow": "Watch",
+  "video.heading": "See how MediVia works",
+  "video.text": "A short introduction to how we coordinate your treatment in Russia — from your first message to your flight home."
 }

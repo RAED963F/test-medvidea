@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>MediVia · Case Admin</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" />
+  <style>
+    :root {
+      --fog: #EEF0EC;
+      --mist: #D4DDD5;
+      --sage: #7A8B7B;
+      --aqua: #1A3E4C;
+      --aqua-deep: #132D38;
+      --copper: #C88A66;
+      --copper-ink: #92512E;
+      --ink: #16323D;
+      --display: "Cormorant Garamond", Georgia, serif;
+      --body: "Inter", system-ui, sans-serif;
+      --line: #E2E6E1;
+      --card: #fff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--body);
+      color: var(--ink);
+      background: var(--fog);
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; }
+
+    button { font-family: var(--body); cursor: pointer; }
+
+    a { color: var(--copper-ink); }
+
+    .hidden { display: none !important; }
+
+    /* ── login ── */
+    .login-wrap {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 38px 32px;
+      box-shadow: 0 24px 60px -30px rgba(19, 45, 56, .35);
+    }
+
+    .brand {
+      font-family: var(--display);
+      font-size: 2rem;
+      letter-spacing: .04em;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .brand .via { color: var(--copper); }
+
+    .login-sub {
+      text-align: center;
+      color: var(--sage);
+      font-size: .8rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    label { display: block; font-size: .82rem; color: var(--sage); margin-bottom: 6px; }
+
+    input, select {
+      width: 100%;
+      font: inherit;
+      color: var(--ink);
+      padding: 11px 13px;
+      border: 1px solid var(--mist);
+      border-radius: 9px;
+      background: #fff;
+      outline: none;
+    }
+
+    input:focus, select:focus { border-color: var(--copper); }
+
+    .field { margin-bottom: 16px; }
+
+    .btn {
+      border: none;
+      border-radius: 9px;
+      padding: 11px 18px;
+      font-size: .9rem;
+      font-weight: 500;
+      letter-spacing: .02em;
+      transition: filter .15s, opacity .15s;
+    }
+
+    .btn:disabled { opacity: .55; cursor: default; }
+
+    .btn-p { background: var(--copper); color: #fff; width: 100%; }
+    .btn-p:hover:not(:disabled) { filter: brightness(.95); }
+
+    .btn-dark { background: var(--aqua); color: var(--fog); }
+    .btn-dark:hover:not(:disabled) { background: var(--aqua-deep); }
+
+    .btn-line {
+      background: transparent;
+      border: 1px solid var(--mist);
+      color: var(--ink);
+    }
+    .btn-line:hover:not(:disabled) { border-color: var(--sage); }
+
+    .msg { font-size: .82rem; margin-top: 12px; min-height: 1em; text-align: center; }
+    .msg.err { color: var(--copper-ink); }
+    .msg.ok { color: var(--sage); }
+
+    /* ── app shell ── */
+    .topbar {
+      background: var(--aqua);
+      color: var(--fog);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar .brand { font-size: 1.4rem; margin: 0; color: var(--fog); text-align: left; }
+    .topbar .brand .via { color: var(--copper); }
+
+    .topbar .who { margin-left: auto; font-size: .8rem; color: var(--mist); }
+
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 22px; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .toolbar input[type=search] { max-width: 320px; }
+    .toolbar select { max-width: 190px; }
+    .toolbar .spacer { flex: 1; }
+    .count { font-size: .82rem; color: var(--sage); }
+
+    /* ── table ── */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+
+    thead th {
+      text-align: left;
+      font-weight: 500;
+      color: var(--sage);
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfb;
+    }
+
+    tbody td { padding: 13px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { cursor: pointer; }
+    tbody tr:hover { background: #fafbfa; }
+
+    .ref { font-variant-numeric: tabular-nums; letter-spacing: .04em; color: var(--copper-ink); font-weight: 500; }
+    .muted { color: var(--sage); }
+    .nowrap { white-space: nowrap; }
+
+    .empty { padding: 48px 16px; text-align: center; color: var(--sage); }
+
+    /* ── status pill ── */
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: .72rem;
+      letter-spacing: .04em;
+      font-weight: 500;
+      white-space: nowrap;
+      text-transform: capitalize;
+    }
+
+    .s-new        { background: #E7EFF2; color: #1A3E4C; }
+    .s-reviewing  { background: #FBEDE2; color: #92512E; }
+    .s-contacted  { background: #EAF0E9; color: #4F6350; }
+    .s-in_progress{ background: #E3ECF0; color: #23566A; }
+    .s-completed  { background: #E4EFE6; color: #2F6B3F; }
+    .s-rejected   { background: #F3E4E1; color: #8A3B2E; }
+
+    /* ── drawer / detail ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(19, 45, 56, .45);
+      backdrop-filter: blur(2px);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+
+    .overlay.show { opacity: 1; pointer-events: auto; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100dvh;
+      width: min(560px, 100%);
+      background: var(--fog);
+      z-index: 50;
+      transform: translateX(100%);
+      transition: transform .25s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -30px 0 60px -30px rgba(19, 45, 56, .5);
+    }
+
+    .drawer.show { transform: none; }
+
+    .drawer-head {
+      background: var(--aqua);
+      color: var(--fog);
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .drawer-head h2 { font-size: 1.3rem; color: var(--fog); }
+    .drawer-head .ref2 { color: var(--copper); font-family: var(--body); font-size: .82rem; letter-spacing: .06em; }
+    .x {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      color: var(--fog);
+      font-size: 1.5rem;
+      line-height: 1;
+      padding: 4px 8px;
+    }
+
+    .drawer-body { padding: 22px; overflow-y: auto; }
+
+    .sec-title {
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin: 22px 0 10px;
+    }
+    .sec-title:first-child { margin-top: 0; }
+
+    .kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 14px; font-size: .9rem; }
+    .kv dt { color: var(--sage); }
+    .kv dd { margin: 0; word-break: break-word; }
+    .kv dd.empty-v { color: #b9c3bb; }
+
+    .story {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: .92rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .thumbs { display: flex; flex-wrap: wrap; gap: 10px; }
+    .thumbs a { display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+    .thumbs img { width: 92px; height: 92px; object-fit: cover; display: block; background: #fff; }
+
+    .filerow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: .88rem;
+      margin-top: 8px;
+    }
+    .filerow .fi { font-size: .68rem; font-weight: 600; letter-spacing: .08em; color: var(--copper-ink); }
+    .filerow .fn { flex: 1; word-break: break-all; }
+
+    .status-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+    .status-row select { max-width: 220px; }
+
+    @media (max-width: 620px) {
+      .col-nat, .col-created { display: none; }
+      .kv { grid-template-columns: 108px 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ══ LOGIN ══ -->
+  <div id="loginView" class="login-wrap">
+    <div class="login-card">
+      <div class="brand">Medi<span class="via">Via</span></div>
+      <div class="login-sub">Case Administration</div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="pass">Password</label>
+        <input id="pass" type="password" autocomplete="current-password" />
+      </div>
+      <button id="loginBtn" class="btn btn-p">Sign in</button>
+      <div id="loginMsg" class="msg"></div>
+    </div>
+  </div>
+
+  <!-- ══ APP ══ -->
+  <div id="appView" class="hidden">
+    <div class="topbar">
+      <div class="brand">Medi<span class="via">Via</span></div>
+      <span class="who" id="whoami"></span>
+      <button id="signOut" class="btn btn-line" style="padding:7px 14px;font-size:.8rem">Sign out</button>
+    </div>
+
+    <div class="wrap">
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search reference, name, nationality, email…" />
+        <select id="statusFilter">
+          <option value="">All statuses</option>
+          <option value="new">New</option>
+          <option value="reviewing">Reviewing</option>
+          <option value="contacted">Contacted</option>
+          <option value="in_progress">In progress</option>
+          <option value="completed">Completed</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <button id="refresh" class="btn btn-line" style="padding:9px 14px">Refresh</button>
+        <span class="spacer"></span>
+        <span class="count" id="count"></span>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Patient</th>
+              <th class="col-nat">Nationality</th>
+              <th>Concern</th>
+              <th>Status</th>
+              <th class="col-created nowrap">Received</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div id="empty" class="empty hidden">No cases match your view.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DETAIL DRAWER ══ -->
+  <div id="overlay" class="overlay"></div>
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <h2 id="dName">—</h2>
+        <div class="ref2" id="dRef">—</div>
+      </div>
+      <button class="x" id="closeDrawer" aria-label="Close">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+
+  <script src="js/supabase-config.js"></script>
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+
+    const CFG = window.MEDIVIA_CONFIG || {};
+    const $ = s => document.querySelector(s);
+
+    if (!CFG.SUPABASE_URL || /YOUR-PROJECT-REF/.test(CFG.SUPABASE_URL)) {
+      $("#loginMsg").textContent = "Set your Supabase URL and anon key in js/supabase-config.js first.";
+      $("#loginMsg").className = "msg err";
+    }
+
+    const sb = createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    const STATUSES = ["new", "reviewing", "contacted", "in_progress", "completed", "rejected"];
+    const statusLabel = s => ({ in_progress: "In progress" }[s] || (s ? s[0].toUpperCase() + s.slice(1) : ""));
+    const esc = t => (t ?? "").toString();
+    const fmtBytes = b => b == null ? "" : (b < 1048576 ? (b / 1024).toFixed(0) + " KB" : (b / 1048576).toFixed(1) + " MB");
+    const fmtDate = iso => {
+      if (!iso) return "";
+      const d = new Date(iso);
+      return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" }) +
+        " · " + d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    };
+
+    let ALL = [];         // all cases loaded
+    let current = null;   // open case
+
+    /* ── auth boot ─────────────────────────────────────────── */
+    async function boot() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) return afterLogin();
+      showLogin();
+    }
+
+    function showLogin() {
+      $("#appView").classList.add("hidden");
+      $("#loginView").classList.remove("hidden");
+    }
+
+    async function afterLogin() {
+      // Verify admin membership explicitly (RLS also enforces it).
+      const { data: isAdmin, error } = await sb.rpc("is_admin");
+      if (error || !isAdmin) {
+        await sb.auth.signOut();
+        showLogin();
+        $("#loginMsg").textContent = "This account is not authorised for the admin area.";
+        $("#loginMsg").className = "msg err";
+        return;
+      }
+      const { data: { user } } = await sb.auth.getUser();
+      $("#whoami").textContent = user?.email || "";
+      $("#loginView").classList.add("hidden");
+      $("#appView").classList.remove("hidden");
+      loadCases();
+    }
+
+    /* ── login handlers ────────────────────────────────────── */
+    async function doLogin() {
+      const email = $("#email").value.trim();
+      const password = $("#pass").value;
+      if (!email || !password) return;
+      const btn = $("#loginBtn");
+      btn.disabled = true; btn.textContent = "Signing in…";
+      $("#loginMsg").textContent = "";
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      btn.disabled = false; btn.textContent = "Sign in";
+      if (error) {
+        $("#loginMsg").textContent = "Sign-in failed. Check your email and password.";
+        $("#loginMsg").className = "msg err";
+        return;
+      }
+      afterLogin();
+    }
+    $("#loginBtn").addEventListener("click", doLogin);
+    $("#pass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+    $("#email").addEventListener("keydown", e => { if (e.key === "Enter") $("#pass").focus(); });
+
+    $("#signOut").addEventListener("click", async () => {
+      await sb.auth.signOut();
+      ALL = [];
+      showLogin();
+      $("#loginMsg").textContent = "";
+    });
+
+    /* ── load + render list ────────────────────────────────── */
+    async function loadCases() {
+      $("#count").textContent = "Loading…";
+      const { data, error } = await sb
+        .from("cases")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1000);
+      if (error) {
+        $("#count").textContent = "Could not load cases.";
+        return;
+      }
+      ALL = data || [];
+      render();
+    }
+
+    function currentFilter() {
+      return {
+        q: $("#search").value.trim().toLowerCase(),
+        status: $("#statusFilter").value
+      };
+    }
+
+    function render() {
+      const { q, status } = currentFilter();
+      const rows = ALL.filter(c => {
+        if (status && c.status !== status) return false;
+        if (!q) return true;
+        const hay = [c.reference, c.first_name, c.last_name, c.nationality, c.email, c.reason]
+          .join(" ").toLowerCase();
+        return hay.includes(q);
+      });
+
+      const tbody = $("#rows");
+      tbody.innerHTML = "";
+      $("#empty").classList.toggle("hidden", rows.length > 0);
+      $("#count").textContent = rows.length + " of " + ALL.length + " case" + (ALL.length === 1 ? "" : "s");
+
+      for (const c of rows) {
+        const tr = document.createElement("tr");
+        tr.addEventListener("click", () => openCase(c.id));
+
+        const tdRef = document.createElement("td");
+        tdRef.className = "ref nowrap"; tdRef.textContent = c.reference;
+
+        const tdName = document.createElement("td");
+        const name = document.createElement("div");
+        name.textContent = (c.first_name + " " + c.last_name).trim();
+        const sub = document.createElement("div");
+        sub.className = "muted"; sub.style.fontSize = ".78rem";
+        sub.textContent = [c.age ? c.age + "y" : "", c.sex].filter(Boolean).join(" · ");
+        tdName.append(name, sub);
+
+        const tdNat = document.createElement("td");
+        tdNat.className = "col-nat muted"; tdNat.textContent = c.nationality || "";
+
+        const tdReason = document.createElement("td");
+        tdReason.textContent = c.reason || "";
+        tdReason.style.maxWidth = "260px";
+        tdReason.style.overflow = "hidden";
+        tdReason.style.textOverflow = "ellipsis";
+        tdReason.style.whiteSpace = "nowrap";
+
+        const tdStatus = document.createElement("td");
+        const pill = document.createElement("span");
+        pill.className = "pill s-" + c.status;
+        pill.textContent = statusLabel(c.status);
+        tdStatus.appendChild(pill);
+
+        const tdDate = document.createElement("td");
+        tdDate.className = "col-created muted nowrap";
+        tdDate.style.fontSize = ".8rem";
+        tdDate.textContent = fmtDate(c.created_at);
+
+        tr.append(tdRef, tdName, tdNat, tdReason, tdStatus, tdDate);
+        tbody.appendChild(tr);
+      }
+    }
+
+    $("#search").addEventListener("input", render);
+    $("#statusFilter").addEventListener("change", render);
+    $("#refresh").addEventListener("click", loadCases);
+
+    /* ── detail drawer ─────────────────────────────────────── */
+    function kvRow(dl, label, value) {
+      const dt = document.createElement("dt"); dt.textContent = label;
+      const dd = document.createElement("dd");
+      if (value) dd.textContent = value; else { dd.textContent = "—"; dd.className = "empty-v"; }
+      dl.append(dt, dd);
+    }
+
+    async function openCase(id) {
+      const c = ALL.find(x => x.id === id);
+      if (!c) return;
+      current = c;
+
+      $("#dName").textContent = (c.first_name + " " + c.last_name).trim() || "Case";
+      $("#dRef").textContent = c.reference;
+
+      const body = $("#drawerBody");
+      body.innerHTML = "";
+
+      // patient
+      const t1 = document.createElement("div"); t1.className = "sec-title"; t1.textContent = "Patient";
+      const dl = document.createElement("dl"); dl.className = "kv";
+      kvRow(dl, "Reference", c.reference);
+      kvRow(dl, "Nationality", c.nationality);
+      kvRow(dl, "Age", c.age != null ? c.age + " years" : "");
+      kvRow(dl, "Sex", statusLabel(c.sex));
+      kvRow(dl, "WhatsApp", c.whatsapp);
+      kvRow(dl, "Email", c.email);
+      kvRow(dl, "Source", c.source);
+      kvRow(dl, "Received", fmtDate(c.created_at));
+      body.append(t1, dl);
+
+      // concern
+      const t2 = document.createElement("div"); t2.className = "sec-title"; t2.textContent = "Concern";
+      const one = document.createElement("div"); one.className = "story"; one.style.marginBottom = "10px";
+      one.textContent = c.reason || "—";
+      const story = document.createElement("div"); story.className = "story";
+      story.textContent = c.details || "—";
+      body.append(t2, one, story);
+
+      // files
+      const t3 = document.createElement("div"); t3.className = "sec-title"; t3.textContent = "Documents";
+      body.append(t3);
+      const filesWrap = document.createElement("div");
+      body.append(filesWrap);
+      renderFiles(filesWrap, c);
+
+      // status
+      const t4 = document.createElement("div"); t4.className = "sec-title"; t4.textContent = "Status";
+      const row = document.createElement("div"); row.className = "status-row";
+      const sel = document.createElement("select");
+      STATUSES.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s; o.textContent = statusLabel(s);
+        if (s === c.status) o.selected = true;
+        sel.appendChild(o);
+      });
+      const saveMsg = document.createElement("span");
+      saveMsg.style.cssText = "font-size:.8rem;color:var(--sage)";
+      sel.addEventListener("change", async () => {
+        const newStatus = sel.value;
+        sel.disabled = true; saveMsg.textContent = "Saving…";
+        const { error } = await sb.from("cases").update({ status: newStatus }).eq("id", c.id);
+        sel.disabled = false;
+        if (error) { saveMsg.textContent = "Save failed"; saveMsg.style.color = "var(--copper-ink)"; return; }
+        c.status = newStatus;
+        saveMsg.textContent = "Saved"; saveMsg.style.color = "var(--sage)";
+        setTimeout(() => saveMsg.textContent = "", 1500);
+        render();
+      });
+      row.append(sel, saveMsg);
+      body.append(t4, row);
+
+      openDrawer();
+    }
+
+    async function renderFiles(wrap, c) {
+      const images = Array.isArray(c.images) ? c.images : [];
+      const report = c.report || null;
+      if (!images.length && !report) {
+        const none = document.createElement("div");
+        none.className = "muted"; none.style.fontSize = ".88rem";
+        none.textContent = "No files were uploaded with this case.";
+        wrap.appendChild(none);
+        return;
+      }
+
+      // Signed URLs (short-lived) for all paths in one batch.
+      const paths = [...images.map(i => i.path), ...(report ? [report.path] : [])];
+      let signed = {};
+      try {
+        const { data } = await sb.storage.from("case-files").createSignedUrls(paths, 300);
+        (data || []).forEach(d => { if (d && d.path && d.signedUrl) signed[d.path] = d.signedUrl; });
+      } catch (_) { /* handled per-file below */ }
+
+      if (images.length) {
+        const thumbs = document.createElement("div"); thumbs.className = "thumbs";
+        images.forEach(im => {
+          const url = signed[im.path];
+          if (url) {
+            const a = document.createElement("a");
+            a.href = url; a.target = "_blank"; a.rel = "noopener";
+            const img = document.createElement("img");
+            img.src = url; img.alt = im.name || "image"; img.loading = "lazy";
+            a.appendChild(img); thumbs.appendChild(a);
+          } else {
+            const box = document.createElement("div");
+            box.className = "filerow"; box.textContent = (im.name || "image") + " (unavailable)";
+            thumbs.appendChild(box);
+          }
+        });
+        wrap.appendChild(thumbs);
+      }
+
+      if (report) {
+        const url = signed[report.path];
+        const row = document.createElement("div"); row.className = "filerow";
+        const fi = document.createElement("span"); fi.className = "fi"; fi.textContent = "PDF";
+        const fn = document.createElement("span"); fn.className = "fn";
+        fn.textContent = report.name || "report.pdf";
+        const meta = document.createElement("span"); meta.className = "muted"; meta.textContent = fmtBytes(report.size);
+        row.append(fi, fn, meta);
+        if (url) {
+          const open = document.createElement("a");
+          open.href = url; open.target = "_blank"; open.rel = "noopener";
+          open.className = "btn btn-dark"; open.style.padding = "6px 14px"; open.style.fontSize = ".8rem";
+          open.textContent = "Open";
+          row.appendChild(open);
+        }
+        wrap.appendChild(row);
+      }
+    }
+
+    function openDrawer() {
+      $("#overlay").classList.add("show");
+      $("#drawer").classList.add("show");
+      $("#drawer").setAttribute("aria-hidden", "false");
+    }
+    function closeDrawer() {
+      $("#overlay").classList.remove("show");
+      $("#drawer").classList.remove("show");
+      $("#drawer").setAttribute("aria-hidden", "true");
+      current = null;
+    }
+    $("#closeDrawer").addEventListener("click", closeDrawer);
+    $("#overlay").addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+
+    boot();
+  </script>
+</body>
+
+</html>

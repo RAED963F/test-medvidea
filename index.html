@@ -231,9 +231,11 @@
     }
 
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    direction: ltr;
+    unicode-bidi: isolate;
     }
 
     .brand svg {
@@ -1819,6 +1821,280 @@
     }
 
 
+    /* ══ ADDED · VIDEO CARD + NEWSLETTER ═══════════════════════
+       The page's single video lives in a landscape two-layer card that floats
+       on the seam between the hero and the section below it. Layout uses
+       logical grid order and logical insets only, so [dir="rtl"] mirrors the
+       whole composition automatically:
+         LTR → text left / video right · RTL → video left / text right
+
+       .vbridge  → centring wrapper; the negative margin lifts the card into
+                   the hero. It is a *sibling* of .hero, so the hero's
+                   overflow:hidden never clips it.
+       .vb-media → the light-blue BACK layer (painted by ::before)
+       .vb-card  → the white FRONT layer, offset toward the block/inline start,
+                   holding the copy and the video side by side.
+       The offset is pure padding, so nothing escapes the wrapper — no
+       horizontal overflow at any width.                                   */
+    .vbridge {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      padding-inline: var(--pad);
+      margin-block: -132px -46px;
+    }
+
+    .vb-media {
+      position: relative;
+      width: 100%;
+      max-width: 898px;
+      padding-block: 10px 30px;
+      padding-inline: 10px 30px;
+    }
+
+    .vb-media::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(158deg, #C6DDE7 0%, #9DC1D1 100%);
+      box-shadow: 0 34px 76px -42px rgba(13, 32, 41, .85);
+    }
+
+    .vb-card {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+      gap: clamp(20px, 3vw, 34px);
+      align-items: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: clamp(18px, 2.2vw, 24px);
+      box-shadow: 0 18px 40px -26px rgba(13, 32, 41, .5);
+    }
+
+    .vb-copy .eyebrow {
+      display: block;
+      margin-bottom: 9px;
+    }
+
+    .vb-copy h3 {
+      font-size: clamp(1.18rem, 1.9vw, 1.45rem);
+      font-weight: 300;
+      color: var(--ink);
+    }
+
+    .vb-copy p {
+      margin-top: 9px;
+      font-size: .88rem;
+      line-height: 1.62;
+      color: var(--muted);
+    }
+
+    .vb-video {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #1f4a5b 0%, var(--aqua-ink) 100%);
+      border: 1px solid rgba(22, 50, 61, .1);
+    }
+
+    .vb-video iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    /* click-to-play facade — keeps it native, defers the YouTube iframe
+       until the visitor chooses to play (fast, no raw embed chrome) */
+    .hv-facade {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 0;
+      padding: 0;
+      background-color: transparent;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hv-facade::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(120% 90% at 70% 30%, rgba(36, 88, 107, .32), transparent 60%),
+        linear-gradient(180deg, rgba(13, 32, 41, .12), rgba(13, 32, 41, .52));
+    }
+
+    .hv-play {
+      position: relative;
+      z-index: 2;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(200, 138, 102, .94);
+      display: grid;
+      place-items: center;
+      transition: transform .25s, background .25s;
+    }
+
+    .hv-facade:hover .hv-play,
+    .hv-facade:focus-visible .hv-play {
+      transform: scale(1.06);
+      background: var(--copper);
+    }
+
+    .hv-play svg {
+      width: 18px;
+      height: 18px;
+      margin-inline-start: 3px;
+      /* optically centre the triangle */
+    }
+
+    /* below ~1400px the next section's own padding shrinks with the viewport,
+       so give back some of the negative bottom margin to keep the gap open */
+    @media (max-width: 1000px) {
+      .vbridge {
+        margin-block-end: -22px;
+      }
+    }
+
+    /* stack the card, and ease the lift so it clears the hero's buttons */
+    @media (max-width: 760px) {
+      .vbridge {
+        margin-block: -96px -34px;
+      }
+
+      .vb-media {
+        max-width: 460px;
+        padding-block: 8px 24px;
+        padding-inline: 8px 24px;
+      }
+
+      .vb-card {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        border-radius: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .vbridge {
+        margin-block: -78px -28px;
+      }
+
+      .vb-media {
+        padding-block: 7px 20px;
+        padding-inline: 7px 20px;
+      }
+
+      .vb-media::before {
+        border-radius: 18px;
+      }
+
+      .hv-play {
+        width: 48px;
+        height: 48px;
+      }
+
+      .hv-play svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    /* ── newsletter strip ─────────────────── */
+    .nl {
+      border-block: 1px solid var(--line);
+    }
+
+    .nl-in {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: clamp(22px, 4vw, 52px);
+      align-items: center;
+      padding-block: clamp(38px, 5vw, 60px);
+    }
+
+    .nl-copy {
+      max-width: 48ch;
+    }
+
+    .nl-copy .eyebrow {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .nl-copy h2 {
+      font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    }
+
+    .nl-copy p {
+      margin-top: 10px;
+    }
+
+    .nl-form {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      min-width: min(420px, 100%);
+    }
+
+    .nl-form input[type="email"] {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .nl-form .btn {
+      white-space: nowrap;
+    }
+
+    .nl-status {
+      margin-top: 12px;
+      font-size: .82rem;
+      line-height: 1.5;
+      min-height: 1.2em;
+      display: none;
+    }
+
+    .nl-status.show {
+      display: block;
+    }
+
+    .nl-status.ok {
+      color: var(--sage);
+    }
+
+    .nl-status.err {
+      color: var(--copper-ink);
+    }
+
+    @media (max-width: 760px) {
+      .nl-in {
+        grid-template-columns: 1fr;
+      }
+
+      .nl-form {
+        flex-direction: column;
+      }
+
+      .nl-form .btn {
+        width: 100%;
+      }
+    }
+
     /* ── i18n / RTL ───────────────────────────── */
     .lang-switcher {
       display: inline-flex;
@@ -1931,6 +2207,8 @@
         padding-inline: 6px;
       }
     }
+
+    
   </style>
   <meta content="MediVia — Medical Concierge · Russia" data-i18n-content="seo.title" property="og:title" />
   <meta
@@ -2002,6 +2280,35 @@
       </div>
     </div>
   </section>
+
+  <!-- ══ VIDEO ══ the page's only video. A landscape two-layer card floating on
+       the seam between the hero and "Who we are". Copy first, video second, so
+       [dir="rtl"] mirrors it: LTR → text left / video right, RTL → reversed.
+       Click-to-play facade — no iframe until the visitor asks for one. -->
+  <div class="vbridge">
+    <div class="vb-media">
+      <div class="vb-card">
+        <div class="vb-copy">
+          <span class="eyebrow" data-i18n="video.eyebrow">Watch</span>
+          <h3 data-i18n="video.heading">See how MediVia works</h3>
+          <p data-i18n="video.text">A short introduction to how we coordinate your treatment in Russia — from
+            your first message to your flight home.</p>
+        </div>
+        <div class="vb-video" data-yt="1FuKLTJtXJo"
+          data-i18n-aria-label="video.title" aria-label="MediVia — introduction">
+          <button class="hv-facade" type="button" data-i18n-aria-label="video.play"
+            aria-label="Play video">
+            <span class="hv-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="#0D2029" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 4.5v15l13-7.5-13-7.5z"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ══ STATS ══ 
   <section class="stats">
     <div class="wrap" style="padding-inline:0">
@@ -2079,6 +2386,23 @@
         </div>
       </div>
     </div>
+  </section>
+  <!-- ══ NEWSLETTER (compact strip · between Who we are / How it works) ══ -->
+  <section class="nl tint" id="newsletter">
+    <div class="wrap nl-in">
+      <div class="nl-copy">
+        <span class="eyebrow" data-i18n="newsletter.eyebrow">Stay informed</span>
+        <h2 data-i18n="newsletter.title">Stay updated with MediVia</h2>
+        <p data-i18n="newsletter.description">Leave your email and we'll keep you informed about what's new.</p>
+      </div>
+      <form class="nl-form" id="nlForm" novalidate="">
+        <input id="nlEmail" name="email" type="email" autocomplete="email" required=""
+          data-i18n-placeholder="newsletter.emailPlaceholder" placeholder="Email address"
+          data-i18n-aria-label="newsletter.emailPlaceholder" aria-label="Email address" />
+        <button class="btn btn-p" id="nlBtn" type="submit" data-i18n="newsletter.button">Subscribe</button>
+      </form>
+    </div>
+    <div aria-live="polite" class="wrap nl-status" id="nlStatus" role="status"></div>
   </section>
   <!-- ══ SERVICES (How it works — dual path) ══ -->
   <section class="pad" id="services">
@@ -2579,6 +2903,7 @@
   </section>
   <div class="stripe"></div>
   <script src="js/i18n.js"></script>
+  <script src="js/supabase-config.js"></script>
   <script>
     window.i18nReady.then(() => {
 
@@ -2626,10 +2951,64 @@
       }
 
 
-      /* reference */
+      /* provisional reference shown while filling in — the authoritative
+         MV-2026-XXXX is minted by the backend and shown on success */
       const REF = 'MV-2026-' + String(Math.floor(Math.random() * 9000) + 1000);
       document.getElementById('refno').textContent = REF;
       document.getElementById('doneRef').textContent = REF;
+
+      /* ── backend submission plumbing ─────────────────────────── */
+      const CFG = window.MEDIVIA_CONFIG || {};
+      const IDEM = (crypto.randomUUID ? crypto.randomUUID()
+        : Date.now() + '-' + Math.random().toString(16).slice(2));
+      let submitting = false, submitted = false;
+
+      const MSG = {
+        en: {
+          sending: 'Sending…',
+          netErr: "We couldn't reach the server. Check your connection and try again.",
+          srvErr: 'Something went wrong on our side. Please try again in a moment.',
+          tooLarge: 'A file is too large. Each image and the PDF must be 10 MB or less.',
+          badType: "One of your files isn't a supported type. Use JPG, PNG, WebP, HEIC or PDF.",
+          validation: 'Please review the highlighted fields and try again.',
+          notConfigured: 'Submission is not configured yet. Please contact us on WhatsApp.'
+        },
+        ar: {
+          sending: 'جارٍ الإرسال…',
+          netErr: 'تعذّر الوصول إلى الخادم. تحقّق من اتصالك وحاول مرة أخرى.',
+          srvErr: 'حدث خطأ لدينا. يرجى المحاولة بعد قليل.',
+          tooLarge: 'أحد الملفات كبير جداً. يجب ألّا يتجاوز كل ملف 10 ميغابايت.',
+          badType: 'أحد الملفات بصيغة غير مدعومة. استخدم JPG أو PNG أو WebP أو HEIC أو PDF.',
+          validation: 'يرجى مراجعة الحقول المميّزة والمحاولة مرة أخرى.',
+          notConfigured: 'خدمة الإرسال غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.'
+        }
+      };
+      const lang = () => (document.documentElement.lang === 'ar' ? 'ar' : 'en');
+      const msg = k => (MSG[lang()] || MSG.en)[k];
+
+      /* one persistent status line under the send button */
+      function submitStatus(text, isError) {
+        let el = document.getElementById('submitStatus');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'submitStatus';
+          el.setAttribute('role', 'status');
+          el.setAttribute('aria-live', 'polite');
+          el.style.cssText = 'margin-top:12px;font-size:.86rem;line-height:1.5;text-align:center';
+          const wrap = document.getElementById('reviewWrap');
+          if (wrap) wrap.appendChild(el);
+        }
+        el.textContent = text || '';
+        el.style.color = isError ? 'var(--copper-ink)' : 'var(--sage)';
+        el.style.display = text ? 'block' : 'none';
+      }
+      function serverMessage(payload) {
+        if (!payload || !payload.error) return msg('srvErr');
+        if (payload.error === 'validation') return msg('validation');
+        if (payload.error === 'too_many_images' || payload.error === 'image_too_large' || payload.error === 'pdf_too_large') return msg('tooLarge');
+        if (payload.error === 'image_bad_type' || payload.error === 'pdf_bad_type') return msg('badType');
+        return msg('srvErr');
+      }
 
       /* intake */
       const MAX_IMG = 5, MAX_IMG_BYTES = 10 * 1024 * 1024, MAX_PDF_BYTES = 10 * 1024 * 1024;
@@ -2785,16 +3164,37 @@
         });
       }
 
-      $('#intake').addEventListener('submit', e => {
+      function showSuccess(reference) {
+        submitted = true;
+        if (reference) {
+          $('#doneRef').textContent = reference;
+          $('#refno').textContent = reference;
+        }
+        submitStatus('', false);
+        $('#reviewWrap').style.display = 'none';
+        $('#done').classList.add('show');
+        heads.forEach(h => { h.classList.add('done'); h.classList.remove('active'); });
+        scrollTo({
+          top: $('.sheet').getBoundingClientRect().top + scrollY - 110,
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+        });
+      }
+
+      $('#intake').addEventListener('submit', async e => {
         e.preventDefault();
+        if (submitted || submitting) return;                 // guard duplicates
         if (!validate(1)) { goto(1); return; }
         if (!validate(2)) { goto(2); return; }
         if (!$('#ok').checked) { $('#okErr').classList.add('show'); return; }
         $('#okErr').classList.remove('show');
 
-        /* ── Payload for the backend phase ───────────────────────── */
+        if (!CFG.SUBMIT_URL || /YOUR-PROJECT-REF/.test(CFG.SUPABASE_URL || '')) {
+          submitStatus(msg('notConfigured'), true);
+          return;
+        }
+
+        /* ── build payload ───────────────────────────────────────── */
         const fd = new FormData();
-        fd.append('reference', REF);
         fd.append('firstName', $('#first').value.trim());
         fd.append('lastName', $('#last').value.trim());
         fd.append('nationality', $('#nat').value.trim());
@@ -2804,25 +3204,49 @@
         fd.append('email', $('#mail').value.trim());
         fd.append('reason', $('#reason').value.trim());
         fd.append('details', $('#detail').value.trim());
+        fd.append('consent', 'true');
+        fd.append('source', 'website-home');
         fd.append('submittedAt', new Date().toISOString());
+        fd.append('idempotencyKey', IDEM);
         images.forEach((im, i) => fd.append('images[' + i + ']', im.file, im.file.name));
         if (pdfFile) fd.append('report', pdfFile, pdfFile.name);
 
-        console.log('MediVia intake — ready to POST /api/cases');
-        console.table([...fd.entries()].map(([k, v]) => ({ field: k, value: v instanceof File ? v.name + ' (' + fmt(v.size) + ')' : v })));
-        // TODO (next phase): await fetch('/api/cases', { method:'POST', body: fd })
-
         const btn = $('#send');
-        btn.disabled = true; btn.textContent = t('action.sending');
-        setTimeout(() => {
-          $('#reviewWrap').style.display = 'none';
-          $('#done').classList.add('show');
-          heads.forEach(h => { h.classList.add('done'); h.classList.remove('active'); });
-          scrollTo({
-            top: $('.sheet').getBoundingClientRect().top + scrollY - 110,
-            behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+        const label = btn.textContent;
+        submitting = true;
+        btn.disabled = true;
+        btn.textContent = msg('sending');
+        submitStatus('', false);
+
+        try {
+          const res = await fetch(CFG.SUBMIT_URL, {
+            method: 'POST',
+            headers: {
+              'apikey': CFG.SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + CFG.SUPABASE_ANON_KEY
+            },
+            body: fd
           });
-        }, 700);
+
+          let data = null;
+          try { data = await res.json(); } catch (_) { /* ignore parse errors */ }
+
+          if (res.ok && data && data.reference) {
+            showSuccess(data.reference);                    // only on real confirmation
+            return;
+          }
+          // server responded but not a success
+          submitStatus(serverMessage(data), true);
+          submitting = false;
+          btn.disabled = false;
+          btn.textContent = label;
+        } catch (err) {
+          // network / CORS / offline
+          submitStatus(msg('netErr'), true);
+          submitting = false;
+          btn.disabled = false;
+          btn.textContent = label;
+        }
       });
 
     });
@@ -2862,6 +3286,188 @@
         addEventListener('load', measureAll);
         var t;
         addEventListener('resize', function () { clearTimeout(t); t = setTimeout(measureAll, 150); });
+      })();
+
+    });
+  </script>
+  <!-- ══ ADDED · hero video + newsletter (i18n-aware, no parallel language system) ══ -->
+  <script>
+    window.i18nReady.then(function () {
+      var CFG = window.MEDIVIA_CONFIG || {};
+
+      /* ---- fallback strings for the NEW keys only ----
+         Used only when locales/*.json don't yet provide them. Once you paste
+         the provided keys into locales/en.json + locales/ar.json this becomes
+         a no-op (safe to delete). It reads the site's own <html lang> state —
+         it is NOT a second language switcher. */
+      var STRINGS = {
+        en: {
+          'video.eyebrow': 'A short introduction to MediVia.',
+          'video.title': 'MediVia — a short introduction',
+          'video.play': 'Play video',
+          'video.subscribe': 'Stay updated with MediVia',
+          'newsletter.eyebrow': 'Stay informed',
+          'newsletter.title': 'Stay updated with MediVia',
+          'newsletter.description': "Leave your email and we'll keep you informed about what's new.",
+          'newsletter.emailPlaceholder': 'Email address',
+          'newsletter.button': 'Subscribe',
+          'newsletter.sending': 'Subscribing…',
+          'newsletter.success': "You're subscribed. We'll keep you updated.",
+          'newsletter.alreadySubscribed': "You're already subscribed.",
+          'newsletter.invalid': 'Please enter a valid email address.',
+          'newsletter.error': "We couldn't complete your subscription. Please try again.",
+          'newsletter.notConfigured': 'Subscriptions are not configured yet. Please contact us on WhatsApp.'
+        },
+        ar: {
+          'video.eyebrow': 'مقدّمة قصيرة عن MediVia.',
+          'video.title': 'MediVia — مقدّمة قصيرة',
+          'video.play': 'تشغيل الفيديو',
+          'video.subscribe': 'ابقَ على اطلاع مع MediVia',
+          'newsletter.eyebrow': 'ابقَ على اطلاع',
+          'newsletter.title': 'ابقَ على اطلاع مع MediVia',
+          'newsletter.description': 'اترك بريدك الإلكتروني وسنطلعك على كل جديد.',
+          'newsletter.emailPlaceholder': 'البريد الإلكتروني',
+          'newsletter.button': 'اشتراك',
+          'newsletter.sending': 'جارٍ الاشتراك…',
+          'newsletter.success': 'تم الاشتراك بنجاح. سنبقيك على اطلاع بكل جديد.',
+          'newsletter.alreadySubscribed': 'هذا البريد مشترك بالفعل.',
+          'newsletter.invalid': 'يرجى إدخال بريد إلكتروني صحيح.',
+          'newsletter.error': 'تعذّر إكمال الاشتراك. يرجى المحاولة مرة أخرى.',
+          'newsletter.notConfigured': 'خدمة الاشتراك غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.'
+        }
+      };
+
+      function lang() { return document.documentElement.lang === 'ar' ? 'ar' : 'en'; }
+
+      /* true when the real i18n system already provides this key */
+      function isTranslated(key) {
+        try { var v = (typeof t === 'function') ? t(key) : null; return !!(v && v !== key); }
+        catch (e) { return false; }
+      }
+
+      /* resolve a key: prefer real i18n, else fall back to STRINGS */
+      function tr(key) {
+        if (isTranslated(key)) { try { return t(key); } catch (e) {} }
+        var pack = STRINGS[lang()] || STRINGS.en;
+        return pack[key] != null ? pack[key] : key;
+      }
+
+      /* fill the NEW nodes with fallback text only where i18n hasn't */
+      var SCOPES = ['[data-yt]', '.hv-facade', '#newsletter'];
+      function applyFallback() {
+        SCOPES.forEach(function (sel) {
+          document.querySelectorAll(sel + '[data-i18n], ' + sel + ' [data-i18n]').forEach(function (n) {
+            var k = n.getAttribute('data-i18n');
+            if (!isTranslated(k)) { var v = tr(k); if (v && n.textContent !== v) n.textContent = v; }
+          });
+          document.querySelectorAll(sel + '[data-i18n-placeholder], ' + sel + ' [data-i18n-placeholder]').forEach(function (n) {
+            var k = n.getAttribute('data-i18n-placeholder'); if (!isTranslated(k)) n.setAttribute('placeholder', tr(k));
+          });
+          document.querySelectorAll(sel + '[data-i18n-aria-label], ' + sel + ' [data-i18n-aria-label]').forEach(function (n) {
+            var k = n.getAttribute('data-i18n-aria-label'); if (!isTranslated(k)) n.setAttribute('aria-label', tr(k));
+          });
+        });
+      }
+      applyFallback();
+      /* re-apply after the site flips <html lang>/dir (runs after i18n settles) */
+      new MutationObserver(function () { setTimeout(applyFallback, 0); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
+
+      /* ---- video facades: click-to-play, one handler per [data-yt] box ----
+         Covers the hero card and the standalone bridge card. No iframe is
+         created until the visitor clicks, so lazy-loading is preserved. */
+      (function () {
+        var boxes = document.querySelectorAll('[data-yt]');
+        if (!boxes.length) return;
+
+        Array.prototype.forEach.call(boxes, function (box) {
+          var facade = box.querySelector('.hv-facade');
+          if (!facade) return;
+
+          var id = (CFG.YOUTUBE_ID && String(CFG.YOUTUBE_ID).trim()) || box.getAttribute('data-yt') || '';
+          var configured = id && id !== 'REPLACE_WITH_YOUTUBE_ID';
+
+          /* remote thumbnail only (never stored in the repo) */
+          if (configured) {
+            facade.style.backgroundImage = "url('https://i.ytimg.com/vi/" + id + "/hqdefault.jpg')";
+          }
+
+          facade.addEventListener('click', function () {
+            if (!configured) {
+              console.warn('[MediVia] No YouTube ID set. Add it via data-yt or window.MEDIVIA_CONFIG.YOUTUBE_ID.');
+              return;
+            }
+            var f = document.createElement('iframe');
+            f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            f.setAttribute('allowfullscreen', '');
+            f.setAttribute('title', tr('video.title'));
+            f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+            box.innerHTML = '';
+            box.appendChild(f);
+          });
+        });
+      })();
+
+      /* ---- newsletter subscribe (mirrors the intake form's anon-key pattern) ---- */
+      (function () {
+        var form = document.getElementById('nlForm');
+        var input = document.getElementById('nlEmail');
+        var btn = document.getElementById('nlBtn');
+        var status = document.getElementById('nlStatus');
+        if (!form || !input || !btn || !status) return;
+
+        var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        var busy = false;
+
+        function say(key, ok) {
+          status.textContent = tr(key);
+          status.classList.remove('ok', 'err');
+          status.classList.add('show', ok ? 'ok' : 'err');
+        }
+
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          if (busy) return;
+          var email = input.value.trim();
+          if (!EMAIL_RE.test(email)) { say('newsletter.invalid', false); input.focus(); return; }
+
+          var url = CFG.NEWSLETTER_URL;
+          if (!url) { say('newsletter.notConfigured', false); return; }
+
+          busy = true;
+          var label = btn.textContent;
+          btn.disabled = true;
+          btn.textContent = tr('newsletter.sending');
+          status.classList.remove('show', 'ok', 'err');
+
+          try {
+            var res = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': CFG.SUPABASE_ANON_KEY || '',
+                'Authorization': 'Bearer ' + (CFG.SUPABASE_ANON_KEY || '')
+              },
+              body: JSON.stringify({ email: email, source: 'website-home', lang: lang() })
+            });
+            var data = null; try { data = await res.json(); } catch (_) { }
+            var st = data && (data.status || data.error);
+
+            if (res.ok && (st === 'subscribed' || (data && data.subscribed === true))) {
+              say('newsletter.success', true); form.reset();
+            } else if (st === 'already' || st === 'already_subscribed' || res.status === 409) {
+              say('newsletter.alreadySubscribed', true);
+            } else if (st === 'invalid' || st === 'validation' || res.status === 400) {
+              say('newsletter.invalid', false);
+            } else {
+              say('newsletter.error', false);
+            }
+          } catch (err) {
+            say('newsletter.error', false);
+          } finally {
+            busy = false; btn.disabled = false; btn.textContent = label;
+          }
+        });
       })();
 
     });
