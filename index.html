@@ -398,6 +398,43 @@
       pointer-events: none
     }
 
+    /* ── header → hero alignment tokens ─────
+       --brand-inset : the distance from the wrap's content edge to the "M" of
+                       MediVia in the header logo — the mark (34px) plus the
+                       brand's own gap (11px). The hero copy and the video card
+                       start on that same vertical line.
+                       In RTL the mark stays on the outer side of the wordmark
+                       (.brand is direction:ltr), so the logo word ends flush
+                       with the wrap edge and the mirrored inset is 0.
+       --nav-anchor  : the distance from the wrap's content edge to the inline
+                       start of "Who we are" in the header nav — where the
+                       video card ends. The nav's position depends on the width
+                       of its own translated labels, so the real number is
+                       measured at runtime and published as this variable; the
+                       value below is the no-JS fallback.
+       --vb-gap      : the intentional gap under the hero's CTA row before the
+                       video card begins.                                    */
+    :root {
+      --brand-inset: 45px;
+      --nav-anchor: 49%;
+      --vb-gap: 28px;
+      --vb-lift: 236px;
+    }
+
+    [dir="rtl"] {
+      --brand-inset: 0px;
+    }
+
+    /* on small screens the logo line stops being a useful measure — the hero
+       copy takes the full column back rather than losing a line of type */
+    @media (max-width:600px) {
+
+      :root,
+      [dir="rtl"] {
+        --brand-inset: 0px;
+      }
+    }
+
     /* ── hero ─────────────────────────────── */
     .hero {
       position: relative;
@@ -514,11 +551,20 @@
       }
     }
 
+    /* the hero copy is a full-width .wrap so its content edge is the header's
+       content edge; the extra inline-start padding walks it over to the logo's
+       "M". Logical padding, so RTL mirrors without duplicate markup. */
     .hero-in {
       position: relative;
       z-index: 2;
+      width: 100%;
       padding-block: 132px 84px;
-      max-width: 760px
+      padding-inline-start: calc(var(--pad) + var(--brand-inset))
+    }
+
+    /* keep the reading measure the 760px block used to give the copy */
+    .hero-in>* {
+      max-width: 620px
     }
 
     .hero .eyebrow {
@@ -1822,16 +1868,16 @@
 
 
     /* ══ ADDED · VIDEO CARD + NEWSLETTER ═══════════════════════
-       The page's single video lives in a landscape two-layer card that floats
-       on the seam between the hero and the section below it. Layout uses
-       logical grid order and logical insets only, so [dir="rtl"] mirrors the
-       whole composition automatically:
+       The page's single video lives in a wide landscape two-layer card that
+       floats on the seam between the hero and the section below it. Copy first,
+       video second, in logical grid order, so [dir="rtl"] mirrors the whole
+       composition automatically:
          LTR → text left / video right · RTL → video left / text right
 
-       .vbridge  → centring wrapper; the negative margin lifts the card into
-                   the hero. It is a *sibling* of .hero, so the hero's
+       .vbridge  → wrapper on the page grid; the negative margin lifts the card
+                   into the hero. It is a *sibling* of .hero, so the hero's
                    overflow:hidden never clips it.
-       .vb-media → the light-blue BACK layer (painted by ::before)
+       .vb-media → the sage BACK layer (painted by ::before)
        .vb-card  → the white FRONT layer, offset toward the block/inline start,
                    holding the copy and the video side by side.
        The offset is pure padding, so nothing escapes the wrapper — no
@@ -1841,16 +1887,21 @@
       z-index: 3;
       display: flex;
       justify-content: center;
+      max-width: 1200px;
+      margin-inline: auto;
       padding-inline: var(--pad);
       margin-block: -132px -46px;
     }
 
     .vb-media {
+      /* how far the rear layer is allowed to show past the white card */
+      --vb-front-start: 10px;
+      --vb-front-end: 30px;
       position: relative;
       width: 100%;
       max-width: 898px;
-      padding-block: 10px 30px;
-      padding-inline: 10px 30px;
+      padding-block: var(--vb-front-start) var(--vb-front-end);
+      padding-inline: var(--vb-front-start) var(--vb-front-end);
     }
 
     .vb-media::before {
@@ -1858,7 +1909,7 @@
       position: absolute;
       inset: 0;
       border-radius: 24px;
-      background: linear-gradient(158deg, #C6DDE7 0%, #9DC1D1 100%);
+      background: #7A8B7B;
       box-shadow: 0 34px 76px -42px rgba(13, 32, 41, .85);
     }
 
@@ -1866,10 +1917,15 @@
       position: relative;
       z-index: 1;
       display: grid;
+      /* two columns wherever there is room: copy in the first, video in the
+         second, both centred against each other */
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
       gap: clamp(20px, 3vw, 34px);
       align-items: center;
       background: #fff;
+      /* the same 1px copper hairline the CTA buttons are drawn with, so the
+         card reads as part of the button family and not as a boxed-in panel */
+      border: 1px solid rgba(200, 138, 102, .42);
       border-radius: 16px;
       padding: clamp(18px, 2.2vw, 24px);
       box-shadow: 0 18px 40px -26px rgba(13, 32, 41, .5);
@@ -1963,6 +2019,45 @@
       /* optically centre the triangle */
     }
 
+    /* ── the deliberate desktop grid (≥1200px) ──────────────────────
+       The card stops sharing the hero's centre line and takes the lower-inline-
+       end quarter of the hero instead: the white front card STARTS on the "Who
+       we are" line in the header nav and runs to the wrap's content edge, which
+       is where the header's own "Start a case" button ends. The lift is
+       computed so the card's top edge sits exactly --vb-gap below the bottom of
+       the CTA row, so the card reads as below-and-beside the hero copy rather
+       than under it. All logical properties, so RTL mirrors the whole thing. */
+    @media (min-width: 1200px) {
+      .vbridge {
+        justify-content: flex-start;
+        margin-block: calc(0px - var(--vb-lift)) var(--vb-drop, 0px);
+      }
+
+      .vb-media {
+        /* the inline end runs past the wrap's content edge into the page
+           gutter, which is what turns the card from a compact block into a
+           landscape rectangle. It never claims more than the gutter plus the
+           wrap's own centring margin, less a 24px safety strip, so the card
+           still cannot reach the viewport edge at any width. */
+        --vb-bleed: clamp(0px, calc(var(--pad) + max(0px, (100vw - 1200px) / 2) - 24px), 96px);
+        /* the bleed takes the card past the flex line, so opt it out of
+           shrinking rather than letting the wrapper claw the width back */
+        flex: none;
+        margin-inline-start: calc(var(--nav-anchor) - var(--vb-front-start));
+        width: calc(100% - var(--nav-anchor) + var(--vb-front-start) + var(--vb-bleed));
+        max-width: none;
+      }
+
+      /* the anchored card is narrower than the centred one, so the internal
+         rhythm tightens and the video column takes the larger share — it stays
+         the wide 16:9 feature the card is built around */
+      .vb-card {
+        grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+        gap: clamp(14px, 1.4vw, 18px);
+        padding: clamp(16px, 1.4vw, 18px);
+      }
+    }
+
     /* below ~1400px the next section's own padding shrinks with the viewport,
        so give back some of the negative bottom margin to keep the gap open */
     @media (max-width: 1000px) {
@@ -1971,20 +2066,20 @@
       }
     }
 
-    /* stack the card, and ease the lift so it clears the hero's buttons */
+    /* narrow the card, and ease the lift so it clears the hero's buttons */
     @media (max-width: 760px) {
       .vbridge {
         margin-block: -96px -34px;
       }
 
       .vb-media {
+        --vb-front-start: 8px;
+        --vb-front-end: 24px;
         max-width: 460px;
-        padding-block: 8px 24px;
-        padding-inline: 8px 24px;
       }
 
       .vb-card {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 18px;
         border-radius: 14px;
       }
@@ -1996,8 +2091,8 @@
       }
 
       .vb-media {
-        padding-block: 7px 20px;
-        padding-inline: 7px 20px;
+        --vb-front-start: 7px;
+        --vb-front-end: 20px;
       }
 
       .vb-media::before {
@@ -2039,6 +2134,18 @@
 
     .nl-copy h2 {
       font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    }
+
+    /* the wordmark inside running copy: "Via" carries the logo's copper, and
+       the pair stays LTR-isolated so Arabic never splits it */
+    .brandword {
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+
+    .brandword i {
+      font-style: normal;
+      color: var(--copper);
     }
 
     .nl-copy p {
@@ -2273,7 +2380,6 @@
     <div class="wrap hero-in">
       <p class="eyebrow" data-i18n="hero.eyebrow">Medical concierge · Russia</p>
       <h1 data-i18n-html="hero.title">From First Contact<br />to <em>Full Recovery</em></h1>
-      <p class="lead" data-i18n-html="hero.lead"><em>We're already at work</em> — the full site follows shortly.</p>
       <div class="hero-cta">
         <a class="btn btn-p" data-i18n="hero.cta" href="#request">Start a case — free review</a>
         <a class="btn btn-ghost" data-i18n="common.howItWorks" href="#services">How it works</a>
@@ -2281,9 +2387,11 @@
     </div>
   </section>
 
-  <!-- ══ VIDEO ══ the page's only video. A landscape two-layer card floating on
-       the seam between the hero and "Who we are". Copy first, video second, so
-       [dir="rtl"] mirrors it: LTR → text left / video right, RTL → reversed.
+  <!-- ══ VIDEO ══ the page's only video. A wide landscape two-layer card
+       floating on the seam between the hero and "Who we are": on desktop it
+       starts on the nav's "Who we are" line and runs to the content edge.
+       Copy first, video second, so [dir="rtl"] mirrors it: LTR → text left /
+       video right, RTL → video left / text right.
        Click-to-play facade — no iframe until the visitor asks for one. -->
   <div class="vbridge">
     <div class="vb-media">
@@ -3368,10 +3476,92 @@
           });
         });
       }
-      applyFallback();
+      /* ---- the wordmark inside the newsletter headline ----
+         Both languages keep "MediVia" in Latin script, so the word is found in
+         the already-translated text and its "Via" is given the logo's copper.
+         No new strings, no second translation system — it simply re-runs every
+         time the site re-applies its own. */
+      function markWordmark() {
+        var h = document.querySelector('#newsletter .nl-copy h2');
+        if (!h || h.querySelector('.brandword')) return;
+        var text = h.textContent, at = text.indexOf('MediVia');
+        if (at < 0) return;
+        var word = document.createElement('span');
+        word.className = 'brandword';
+        word.appendChild(document.createTextNode('Medi'));
+        var via = document.createElement('i');
+        via.textContent = 'Via';
+        word.appendChild(via);
+        h.textContent = '';
+        h.appendChild(document.createTextNode(text.slice(0, at)));
+        h.appendChild(word);
+        h.appendChild(document.createTextNode(text.slice(at + 'MediVia'.length)));
+      }
+
+      function refresh() { applyFallback(); markWordmark(); }
+
+      refresh();
       /* re-apply after the site flips <html lang>/dir (runs after i18n settles) */
-      new MutationObserver(function () { setTimeout(applyFallback, 0); })
+      new MutationObserver(function () { setTimeout(refresh, 0); })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
+      document.addEventListener('medivia:languagechange', function () { setTimeout(refresh, 0); });
+
+      /* ---- desktop alignment probe ------------------------------------
+         The hero copy and the video card are keyed to two lines in the header:
+         the "M" of MediVia and the inline start of "Who we are". The nav's
+         x position depends on the width of its own translated labels, so it
+         cannot be expressed in CSS — this measures it and publishes it as
+         --nav-anchor. --vb-lift is measured the same way so the card's top
+         edge always lands --vb-gap below the hero's CTA row. Layout itself
+         stays in the stylesheet; both values have CSS fallbacks. */
+      (function () {
+        var root = document.documentElement;
+        var bar = document.querySelector('.bar');
+        var navFirst = document.querySelector('nav.main a');
+        var hero = document.querySelector('.hero');
+        var cta = document.querySelector('.hero-cta');
+        var bridge = document.querySelector('.vbridge');
+        if (!bar || !navFirst || !hero || !cta || !bridge) return;
+
+        function measure() {
+          /* under 1200px the nav is either hidden or too tight to key to, and
+             the card falls back to the centred composition */
+          if (innerWidth < 1200 || !navFirst.offsetParent) {
+            root.style.removeProperty('--nav-anchor');
+            root.style.removeProperty('--vb-lift');
+            root.style.removeProperty('--vb-drop');
+            return;
+          }
+          var rtl = getComputedStyle(root).direction === 'rtl';
+          var box = bar.getBoundingClientRect();
+          var cs = getComputedStyle(bar);
+          var start = rtl
+            ? box.right - parseFloat(cs.paddingRight)
+            : box.left + parseFloat(cs.paddingLeft);
+          var content = box.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+          var n = navFirst.getBoundingClientRect();
+          var anchor = rtl ? start - n.right : n.left - start;
+
+          if (anchor > 260 && anchor < content * .8) {
+            root.style.setProperty('--nav-anchor', anchor.toFixed(2) + 'px');
+          } else {
+            root.style.removeProperty('--nav-anchor');
+          }
+
+          var gap = parseFloat(getComputedStyle(root).getPropertyValue('--vb-gap')) || 28;
+          var lift = Math.max(0, hero.getBoundingClientRect().bottom - cta.getBoundingClientRect().bottom - gap);
+          root.style.setProperty('--vb-lift', lift.toFixed(2) + 'px');
+          /* a card shorter than its own lift would pull the next section up
+             over the hero's bottom edge — give that difference back below */
+          var h = bridge.getBoundingClientRect().height;
+          root.style.setProperty('--vb-drop', Math.max(0, lift - h).toFixed(2) + 'px');
+        }
+
+        measure();
+        addEventListener('resize', measure);
+        document.addEventListener('medivia:languagechange', function () { setTimeout(measure, 0); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+      })();
 
       /* ---- video facades: click-to-play, one handler per [data-yt] box ----
          Covers the hero card and the standalone bridge card. No iframe is
