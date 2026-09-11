@@ -1894,12 +1894,14 @@
     }
 
     .vb-media {
-      /* how far the rear layer is allowed to show past the white card */
-      --vb-front-start: 10px;
-      --vb-front-end: 30px;
+      /* how far the rear layer is allowed to show past the white card:
+         more on the block/inline-start (top/left) side, less on the
+         block/inline-end (bottom/right) side */
+      --vb-front-start: 13px;
+      --vb-front-end: 8px;
       position: relative;
       width: 100%;
-      max-width: 898px;
+      max-width: 1180px;
       padding-block: var(--vb-front-start) var(--vb-front-end);
       padding-inline: var(--vb-front-start) var(--vb-front-end);
     }
@@ -1908,8 +1910,13 @@
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: 24px;
+      border-radius: 2px;
       background: #7A8B7B;
+      /* same 1px / 42%-opacity hairline as the "How it works" button
+         (.btn-ghost), which is drawn in white for use on a dark surface —
+         this rear layer is a comparable colored surface, so the value is
+         reused as-is */
+      border: 1px solid rgba(255, 255, 255, .42);
       box-shadow: 0 34px 76px -42px rgba(13, 32, 41, .85);
     }
 
@@ -1920,14 +1927,16 @@
       /* two columns wherever there is room: copy in the first, video in the
          second, both centred against each other */
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-      gap: clamp(20px, 3vw, 34px);
+      gap: clamp(22px, 3.2vw, 38px);
       align-items: center;
       background: #fff;
-      /* the same 1px copper hairline the CTA buttons are drawn with, so the
-         card reads as part of the button family and not as a boxed-in panel */
-      border: 1px solid rgba(200, 138, 102, .42);
-      border-radius: 16px;
-      padding: clamp(18px, 2.2vw, 24px);
+      /* the same 1px / 42%-opacity hairline as the "How it works" button
+         (.btn-ghost), reusing its ink color instead of white so the border
+         reads on this layer's white surface — same thickness, opacity and
+         style as the button, just the dark/light counterpart of it */
+      border: 1px solid rgba(22, 50, 61, .42);
+      border-radius: 2px;
+      padding: clamp(20px, 2.4vw, 28px);
       box-shadow: 0 18px 40px -26px rgba(13, 32, 41, .5);
     }
 
@@ -1937,14 +1946,14 @@
     }
 
     .vb-copy h3 {
-      font-size: clamp(1.18rem, 1.9vw, 1.45rem);
+      font-size: clamp(1.22rem, 2vw, 1.52rem);
       font-weight: 300;
       color: var(--ink);
     }
 
     .vb-copy p {
-      margin-top: 9px;
-      font-size: .88rem;
+      margin-top: 10px;
+      font-size: .92rem;
       line-height: 1.62;
       color: var(--muted);
     }
@@ -2039,7 +2048,7 @@
            landscape rectangle. It never claims more than the gutter plus the
            wrap's own centring margin, less a 24px safety strip, so the card
            still cannot reach the viewport edge at any width. */
-        --vb-bleed: clamp(0px, calc(var(--pad) + max(0px, (100vw - 1200px) / 2) - 24px), 96px);
+        --vb-bleed: clamp(0px, calc(var(--pad) + max(0px, (100vw - 1200px) / 2)), 230px);
         /* the bleed takes the card past the flex line, so opt it out of
            shrinking rather than letting the wrapper claw the width back */
         flex: none;
@@ -2053,8 +2062,8 @@
          the wide 16:9 feature the card is built around */
       .vb-card {
         grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-        gap: clamp(14px, 1.4vw, 18px);
-        padding: clamp(16px, 1.4vw, 18px);
+        gap: clamp(16px, 1.6vw, 22px);
+        padding: clamp(18px, 1.6vw, 22px);
       }
     }
 
@@ -2073,15 +2082,15 @@
       }
 
       .vb-media {
-        --vb-front-start: 8px;
-        --vb-front-end: 24px;
-        max-width: 460px;
+        --vb-front-start: 10px;
+        --vb-front-end: 5px;
+        max-width: 560px;
       }
 
       .vb-card {
         grid-template-columns: minmax(0, 1fr);
         gap: 18px;
-        border-radius: 14px;
+        border-radius: 2px;
       }
     }
 
@@ -2091,12 +2100,12 @@
       }
 
       .vb-media {
-        --vb-front-start: 7px;
-        --vb-front-end: 20px;
+        --vb-front-start: 9px;
+        --vb-front-end: 4px;
       }
 
       .vb-media::before {
-        border-radius: 18px;
+        border-radius: 2px;
       }
 
       .hv-play {
