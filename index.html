@@ -1877,11 +1877,12 @@
        .vbridge  → wrapper on the page grid; the negative margin lifts the card
                    into the hero. It is a *sibling* of .hero, so the hero's
                    overflow:hidden never clips it.
-       .vb-media → the sage BACK layer (painted by ::before)
-       .vb-card  → the white FRONT layer, offset toward the block/inline start,
+       .vb-media → the Mist BACK layer (painted by ::before)
+       .vb-card  → the Fog FRONT layer, offset toward the block/inline start,
                    holding the copy and the video side by side.
-       The offset is pure padding, so nothing escapes the wrapper — no
-       horizontal overflow at any width.                                   */
+       The offset is a real absolutely-positioned rectangle behind the front
+       card, not a box-shadow or outline, so it stays within the wrapper —
+       no horizontal overflow at any width.                                */
     .vbridge {
       position: relative;
       z-index: 3;
@@ -1893,51 +1894,42 @@
       margin-block: -132px -46px;
     }
 
+    /* Exact two-layer composition: the Fog front card sits above a Mist
+       rear plate, offset down + right. The rear plate is a real second
+       rectangle (not a box-shadow, not an outline), so the front card
+       covers it from the top and left and it only ever shows past the
+       front card's bottom and right edges. */
     .vb-media {
-      /* how far the rear layer is allowed to show past the white card:
-         more on the block/inline-start (top/left) side, less on the
-         block/inline-end (bottom/right) side */
-      --vb-front-start: 13px;
-      --vb-front-end: 8px;
+      --vb-offset: 13px;
       position: relative;
       width: 100%;
       max-width: 1180px;
-      padding-block: var(--vb-front-start) var(--vb-front-end);
-      padding-inline: var(--vb-front-start) var(--vb-front-end);
     }
 
     .vb-media::before {
       content: "";
       position: absolute;
-      inset: 0;
+      z-index: 0;
+      inset: var(--vb-offset) calc(0px - var(--vb-offset)) calc(0px - var(--vb-offset)) var(--vb-offset);
+      background: var(--mist);
+      border: 1px solid rgba(200, 138, 102, .5);
       border-radius: 2px;
-      background: #7A8B7B;
-      /* same 1px / 42%-opacity hairline as the "How it works" button
-         (.btn-ghost), which is drawn in white for use on a dark surface —
-         this rear layer is a comparable colored surface, so the value is
-         reused as-is */
-      border: 1px solid rgba(255, 255, 255, .42);
-      box-shadow: 0 34px 76px -42px rgba(13, 32, 41, .85);
+      box-shadow: none;
+      pointer-events: none;
     }
 
     .vb-card {
       position: relative;
       z-index: 1;
       display: grid;
-      /* two columns wherever there is room: copy in the first, video in the
-         second, both centred against each other */
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-      gap: clamp(22px, 3.2vw, 38px);
+      grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+      gap: clamp(22px, 3vw, 34px);
       align-items: center;
-      background: #fff;
-      /* the same 1px / 42%-opacity hairline as the "How it works" button
-         (.btn-ghost), reusing its ink color instead of white so the border
-         reads on this layer's white surface — same thickness, opacity and
-         style as the button, just the dark/light counterpart of it */
-      border: 1px solid rgba(22, 50, 61, .42);
+      background: var(--fog);
+      border: 1px solid rgba(200, 138, 102, .3);
       border-radius: 2px;
-      padding: clamp(20px, 2.4vw, 28px);
-      box-shadow: 0 18px 40px -26px rgba(13, 32, 41, .5);
+      padding: clamp(26px, 2.6vw, 34px);
+      box-shadow: none;
     }
 
     .vb-copy .eyebrow {
@@ -2025,17 +2017,13 @@
       width: 18px;
       height: 18px;
       margin-inline-start: 3px;
-      /* optically centre the triangle */
     }
 
-    /* ── the deliberate desktop grid (≥1200px) ──────────────────────
-       The card stops sharing the hero's centre line and takes the lower-inline-
-       end quarter of the hero instead: the white front card STARTS on the "Who
-       we are" line in the header nav and runs to the wrap's content edge, which
-       is where the header's own "Start a case" button ends. The lift is
-       computed so the card's top edge sits exactly --vb-gap below the bottom of
-       the CTA row, so the card reads as below-and-beside the hero copy rather
-       than under it. All logical properties, so RTL mirrors the whole thing. */
+    /* Desktop: the card is anchored to the header's "Who we are" line, then
+       nudged toward the inline-start (--vb-shift) so the composition sits
+       slightly left of that anchor — the right edge (--vb-bleed into the
+       gutter) is unchanged, so the extra width all lands on the left, which
+       is also what flattens the card into a wider, shorter landscape shape. */
     @media (min-width: 1200px) {
       .vbridge {
         justify-content: flex-start;
@@ -2043,27 +2031,20 @@
       }
 
       .vb-media {
-        /* the inline end runs past the wrap's content edge into the page
-           gutter, which is what turns the card from a compact block into a
-           landscape rectangle. It never claims more than the gutter plus the
-           wrap's own centring margin, less a 24px safety strip, so the card
-           still cannot reach the viewport edge at any width. */
-        --vb-bleed: clamp(0px, calc(var(--pad) + max(0px, (100vw - 1200px) / 2)), 230px);
-        /* the bleed takes the card past the flex line, so opt it out of
-           shrinking rather than letting the wrapper claw the width back */
+        /* -20px safety margin: 100vw doesn't subtract the scrollbar's width,
+           but the wrap's own auto-margin centring does, so without this the
+           bleed overshoots the true gutter by ~half a scrollbar width */
+        --vb-bleed: clamp(0px, calc(var(--pad) + max(0px, (100vw - 1200px) / 2) - 20px), 230px);
+        --vb-shift: 56px;
         flex: none;
-        margin-inline-start: calc(var(--nav-anchor) - var(--vb-front-start));
-        width: calc(100% - var(--nav-anchor) + var(--vb-front-start) + var(--vb-bleed));
+        margin-inline-start: calc(var(--nav-anchor) - var(--vb-shift));
+        width: calc(100% - var(--nav-anchor) + var(--vb-bleed) + var(--vb-shift));
         max-width: none;
       }
 
-      /* the anchored card is narrower than the centred one, so the internal
-         rhythm tightens and the video column takes the larger share — it stays
-         the wide 16:9 feature the card is built around */
       .vb-card {
-        grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-        gap: clamp(16px, 1.6vw, 22px);
-        padding: clamp(18px, 1.6vw, 22px);
+        gap: clamp(22px, 1.8vw, 30px);
+        padding: clamp(22px, 2vw, 30px) clamp(26px, 2.4vw, 36px);
       }
     }
 
@@ -2082,15 +2063,14 @@
       }
 
       .vb-media {
-        --vb-front-start: 10px;
-        --vb-front-end: 5px;
+        --vb-offset: 10px;
         max-width: 560px;
       }
 
       .vb-card {
         grid-template-columns: minmax(0, 1fr);
         gap: 18px;
-        border-radius: 2px;
+        padding: clamp(22px, 4vw, 28px);
       }
     }
 
@@ -2100,12 +2080,11 @@
       }
 
       .vb-media {
-        --vb-front-start: 9px;
-        --vb-front-end: 4px;
+        --vb-offset: 8px;
       }
 
-      .vb-media::before {
-        border-radius: 2px;
+      .vb-card {
+        padding: 20px;
       }
 
       .hv-play {
@@ -2323,9 +2302,7 @@
         padding-inline: 6px;
       }
     }
-
-    
-  </style>
+</style>
   <meta content="MediVia — Medical Concierge · Russia" data-i18n-content="seo.title" property="og:title" />
   <meta
     content="MediVia connects international patients with licensed hospitals and specialists in Russia. One coordinator, one agreed price, your documents protected — from first message to your flight home."
@@ -2336,6 +2313,7 @@
   <meta
     content="MediVia connects international patients with licensed hospitals and specialists in Russia. One coordinator, one agreed price, your documents protected — from first message to your flight home."
     data-i18n-content="seo.description" name="twitter:description" />
+
 </head>
 
 <body>

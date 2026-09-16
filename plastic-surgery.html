@@ -1832,7 +1832,7 @@
     }
 
     /* ══ VIDEO CARD ══ the same two-layer component as the home page, value
-       for value: a sage BACK layer with the white FRONT layer offset on top of
+       for value: a Mist BACK layer with the Fog FRONT layer offset on top of
        it, the copy and the video side by side in one wide landscape card, and
        the same copper hairline the CTA buttons are drawn with. Copy first,
        video second, in logical grid order, so [dir="rtl"] mirrors it without
@@ -1841,9 +1841,12 @@
        It sits between the hero and the stats band and lifts into the hero by
        exactly --vb-gap under the hero's CTA row — .hero.clinic has no
        min-height, so its 96px bottom padding makes that lift a constant.
-       Being a *sibling* of .hero, the hero's overflow:hidden never clips it,
-       and the offset is pure padding, so nothing escapes the wrapper — no
-       horizontal overflow at any width.                                    */
+       Being a *sibling* of .hero, the hero's overflow:hidden never clips it.
+       The rear plate is a real second rectangle (not a box-shadow, not an
+       outline), so the front card covers it from the top and left and it
+       only ever shows past the front card's bottom and right edges — pure
+       absolute positioning, so nothing escapes the wrapper: no horizontal
+       overflow at any width.                                              */
     .psv {
       position: relative;
       z-index: 3;
@@ -1856,60 +1859,63 @@
     }
 
     .psv-media {
-      /* Same proportions as the home page video card: the sage BACK layer
-         remains visibly larger than the white FRONT layer. */
-      --vb-front-start: 13px;
-      --vb-front-end: 8px;
+      --vb-offset: 13px;
       position: relative;
       width: 100%;
       max-width: 1180px;
-      padding-block: var(--vb-front-start) var(--vb-front-end);
-      padding-inline: var(--vb-front-start) var(--vb-front-end);
     }
 
     .psv-media::before {
       content: "";
       position: absolute;
-      inset: 0;
+      z-index: 0;
+      inset: var(--vb-offset) calc(0px - var(--vb-offset)) calc(0px - var(--vb-offset)) var(--vb-offset);
+      background: var(--mist);
+      border: 1px solid rgba(200, 138, 102, .5);
       border-radius: 2px;
-      background: #7A8B7B;
-      border: 1px solid rgba(255, 255, 255, .42);
-      box-shadow: 0 34px 76px -42px rgba(13, 32, 41, .85);
+      box-shadow: none;
+      pointer-events: none;
     }
 
     .psv-card {
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-      gap: clamp(22px, 3.2vw, 38px);
+      grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+      gap: clamp(22px, 3vw, 34px);
       align-items: center;
-      background: #fff;
-      border: 1px solid rgba(22, 50, 61, .42);
+      background: var(--fog);
+      border: 1px solid rgba(200, 138, 102, .3);
       border-radius: 2px;
-      padding: clamp(20px, 2.4vw, 28px);
-      box-shadow: 0 18px 40px -26px rgba(13, 32, 41, .5);
+      padding: clamp(26px, 2.6vw, 34px);
+      box-shadow: none;
     }
 
-    /* Desktop: enlarge the whole card and let it extend toward the page gutter,
-       while keeping the white front slightly smaller inside the sage layer. */
+    /* Desktop: the card is anchored to the header's "Who we are" line, then
+       nudged toward the inline-start (--vb-shift) so the composition sits
+       slightly left of that anchor — the right edge (--vb-bleed into the
+       gutter) is unchanged, so the extra width all lands on the left, which
+       is also what flattens the card into a wider, shorter landscape shape. */
     @media (min-width: 1200px) {
       .psv {
         justify-content: flex-start;
       }
 
       .psv-media {
-        --vb-bleed: clamp(0px, calc(var(--pad) + max(0px, (100vw - 1200px) / 2)), 230px);
+        /* -20px safety margin: 100vw doesn't subtract the scrollbar's width,
+           but the wrap's own auto-margin centring does, so without this the
+           bleed overshoots the true gutter by ~half a scrollbar width */
+        --vb-bleed: clamp(0px, calc(var(--pad) + max(0px, (100vw - 1200px) / 2) - 20px), 230px);
+        --vb-shift: 56px;
         flex: none;
-        margin-inline-start: calc(var(--nav-anchor) - var(--vb-front-start));
-        width: calc(100% - var(--nav-anchor) + var(--vb-front-start) + var(--vb-bleed));
+        margin-inline-start: calc(var(--nav-anchor) - var(--vb-shift));
+        width: calc(100% - var(--nav-anchor) + var(--vb-bleed) + var(--vb-shift));
         max-width: none;
       }
 
       .psv-card {
-        grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-        gap: clamp(16px, 1.6vw, 22px);
-        padding: clamp(18px, 1.6vw, 22px);
+        gap: clamp(22px, 1.8vw, 30px);
+        padding: clamp(22px, 2vw, 30px) clamp(26px, 2.4vw, 36px);
       }
     }
 
@@ -2002,26 +2008,24 @@
 
     @media (max-width: 760px) {
       .psv-media {
-        --vb-front-start: 10px;
-        --vb-front-end: 5px;
+        --vb-offset: 10px;
         max-width: 560px;
       }
 
       .psv-card {
         grid-template-columns: minmax(0, 1fr);
         gap: 18px;
-        border-radius: 2px;
+        padding: clamp(22px, 4vw, 28px);
       }
     }
 
     @media (max-width: 480px) {
       .psv-media {
-        --vb-front-start: 9px;
-        --vb-front-end: 4px;
+        --vb-offset: 8px;
       }
 
-      .psv-media::before {
-        border-radius: 2px;
+      .psv-card {
+        padding: 20px;
       }
 
       .psv-play {
