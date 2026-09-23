@@ -2479,6 +2479,205 @@
       text-align: center;
     }
 
+    .doc-modal-certs {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: 10px;
+    }
+
+    .doc-cert {
+      display: block;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--fog);
+      overflow: hidden;
+      box-shadow: 0 8px 20px -14px rgba(13, 32, 41, .35);
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+
+    .doc-cert:hover,
+    .doc-cert:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px -16px rgba(13, 32, 41, .45);
+      border-color: var(--sage);
+      outline: none;
+    }
+
+    .doc-cert img {
+      width: 100%;
+      height: 118px;
+      object-fit: contain;
+      display: block;
+      background: var(--fog);
+    }
+
+    button.doc-cert {
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    /* ── certificate viewer ── a lightweight in-page overlay layered above the
+       doctor modal (z-index 400 > .doc-modal's 300), so a certificate opens
+       without leaving the page or closing the doctor modal behind it. ── */
+    .cert-viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(16px, 4vw, 48px);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .3s ease, visibility 0s linear .3s;
+    }
+
+    .cert-viewer.is-open {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity .3s ease;
+    }
+
+    .cert-viewer-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 32, 41, .82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .cert-viewer-panel {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(18px) scale(.97);
+      transition: transform .32s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .cert-viewer.is-open .cert-viewer-panel {
+      transform: translateY(0) scale(1);
+    }
+
+    .cert-viewer-stage {
+      width: 100%;
+      max-height: 82vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 60px 120px -40px rgba(13, 32, 41, .55);
+    }
+
+    .cert-viewer-img {
+      display: block;
+      max-width: 100%;
+      max-height: 82vh;
+      object-fit: contain;
+    }
+
+    .cert-viewer-close {
+      position: absolute;
+      inset-block-start: 16px;
+      inset-inline-end: 16px;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(238, 240, 236, .5);
+      background: rgba(13, 32, 41, .55);
+      color: #EEF0EC;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .25s, border-color .25s, transform .25s;
+    }
+
+    .cert-viewer-close:hover,
+    .cert-viewer-close:focus-visible {
+      background: var(--copper);
+      border-color: var(--copper);
+      transform: rotate(90deg);
+      outline: none;
+    }
+
+    .cert-viewer-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .cert-viewer-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(238, 240, 236, .5);
+      background: rgba(13, 32, 41, .55);
+      color: #EEF0EC;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .25s, border-color .25s;
+    }
+
+    .cert-viewer-nav:hover,
+    .cert-viewer-nav:focus-visible {
+      background: var(--copper);
+      border-color: var(--copper);
+      outline: none;
+    }
+
+    .cert-viewer-nav svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .cert-viewer-prev {
+      inset-inline-start: 8px;
+    }
+
+    .cert-viewer-next {
+      inset-inline-end: 8px;
+    }
+
+    .cert-viewer-nav[hidden] {
+      display: none;
+    }
+
+    .cert-viewer-counter {
+      margin-top: 14px;
+      font-size: .82rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: #EEF0EC;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .cert-viewer-stage {
+        max-height: 70vh;
+      }
+
+      .cert-viewer-img {
+        max-height: 70vh;
+      }
+
+      .cert-viewer-close {
+        inset-block-start: 0;
+        inset-inline-end: 0;
+      }
+    }
+
     body.doc-modal-open {
       overflow-y: hidden;
     }
@@ -3404,7 +3603,7 @@
         <article class="doc-card" data-modal-target="doc-modal-anna" role="button" tabindex="0"
           aria-haspopup="dialog" aria-labelledby="docName-anna">
           <div class="doc-shot">
-            <img src="photo/plastic-surgery/doctor-3.webp" alt="" loading="lazy" decoding="async" width="640"
+            <img src="photo/plastic-surgery/doctor-6.webp" alt="" loading="lazy" decoding="async" width="640"
               height="800" />
           </div>
           <div class="doc-body">
@@ -3461,6 +3660,22 @@
                 <li data-i18n="doc3.modal.expertise2">Otorhinolaryngology (ENT)</li>
               </ul>
             </div>
+            <div class="doc-modal-section">
+              <h4 data-i18n="doc.modal.certsTitle">Professional Certificates</h4>
+              <p data-i18n="doc.modal.certsSubtitle">Selected credentials and professional certifications.</p>
+              <div class="doc-modal-certs">
+                <a class="doc-cert" href="photo/debloms/lina/isbir-sertif-7835-1.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/isbir-sertif-7835-1.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/isbir-sertif-7835-2.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/isbir-sertif-7835-2.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/isbir-sertif-7835-3.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/isbir-sertif-7835-3.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/sertifi-isbir-8022-1.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/sertifi-isbir-8022-1.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/sertifi-isbir-8022-2.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/sertifi-isbir-8022-2.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/sert_001.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/sert_001.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/sert_002_0.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/sert_002_0.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/sert_002_2.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/sert_002_2.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/sert_003.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/sert_003.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/lina/sert_005_1.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/lina/sert_005_1.jpg" alt="" loading="lazy" decoding="async" /></a>
+              </div>
+            </div>
             <div class="doc-modal-cta">
               <a class="btn btn-p" data-i18n="doc.modal.cta" data-modal-close href="#request">Request a
                 Consultation</a>
@@ -3516,6 +3731,45 @@
                 <li data-i18n="doc1.modal.expertise3">Oncology</li>
               </ul>
             </div>
+            <div class="doc-modal-section">
+              <h4 data-i18n="doc.modal.certsTitle">Professional Certificates</h4>
+              <p data-i18n="doc.modal.certsSubtitle">Selected credentials and professional certifications.</p>
+              <div class="doc-modal-certs">
+                <a class="doc-cert" href="photo/debloms/amjad/1.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/1.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/2.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/2.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/3.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/3.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/4.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/4.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/5.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/5.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/6.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/6.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/7.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/7.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/8.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/8.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/9.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/9.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/10.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/10.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/11.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/11.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/12.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/12.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/13.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/13.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/14.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/14.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/15.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/15.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/16.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/16.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/17.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/17.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/18.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/18.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/19.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/19.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/amjad-sertif-9244-1.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/amjad-sertif-9244-1.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/amjad-sertif-9244-4.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/amjad-sertif-9244-4.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/amjad-sertif-9244-5.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/amjad-sertif-9244-5.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/amjad-sertif-9244-9.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/amjad-sertif-9244-9.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/amjad-sertif-9244-10.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/amjad-sertif-9244-10.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/amjad-sertif-9244-11.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/amjad-sertif-9244-11.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/amjad-sertif-9244-13.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/amjad-sertif-9244-13.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/docs-amjad-6631-1.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/docs-amjad-6631-1.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/docs-amjad-6631-2.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/docs-amjad-6631-2.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/docs-amjad-6631-3.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/docs-amjad-6631-3.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/docs-amjad-6631-4.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/docs-amjad-6631-4.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/docs-amjad-6631-5.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/docs-amjad-6631-5.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/docs-amjad-6631-6.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/docs-amjad-6631-6.jpg" alt="" loading="lazy" decoding="async" /></a>
+                <a class="doc-cert" href="photo/debloms/amjad/_5.jpg" target="_blank" rel="noopener" data-i18n-aria-label="doc.modal.certAria" aria-label="View certificate — opens in a new tab"><img src="photo/debloms/amjad/_5.jpg" alt="" loading="lazy" decoding="async" /></a>
+              </div>
+            </div>
             <div class="doc-modal-cta">
               <a class="btn btn-p" data-i18n="doc.modal.cta" data-modal-close href="#request">Request a
                 Consultation</a>
@@ -3537,7 +3791,7 @@
           </svg>
         </button>
         <div class="doc-modal-media">
-          <img alt="" decoding="async" height="800" loading="lazy" src="photo/plastic-surgery/doctor-3.webp"
+          <img alt="" decoding="async" height="800" loading="lazy" src="photo/plastic-surgery/doctor-6.webp"
             width="640" />
         </div>
         <div class="doc-modal-content">
@@ -3562,8 +3816,33 @@
             <div class="doc-modal-section">
               <h4 data-i18n="doc.modal.expertiseTitle">Areas of Expertise</h4>
               <ul class="doc-modal-tags">
-                <li data-i18n="doc5.modal.expertise1">Plastic Surgery</li>
+                <li data-i18n="doc5.modal.expertise1">Facial Plastic Surgery</li>
+                <li data-i18n="doc5.modal.expertise2">Blepharoplasty</li>
+                <li data-i18n="doc5.modal.expertise3">Breast Surgery</li>
+                <li data-i18n="doc5.modal.expertise4">Body Contouring</li>
+                <li data-i18n="doc5.modal.expertise5">Liposuction &amp; Lipofilling</li>
+                <li data-i18n="doc5.modal.expertise6">Cheiloplasty</li>
+                <li data-i18n="doc5.modal.expertise7">Intimate Plastic Surgery</li>
+                <li data-i18n="doc5.modal.expertise8">Otoplasty</li>
+                <li data-i18n="doc5.modal.expertise9">Scar Correction</li>
               </ul>
+            </div>
+            <div class="doc-modal-section">
+              <h4 data-i18n="doc.modal.certsTitle">Professional Certificates</h4>
+              <p data-i18n="doc.modal.certsSubtitle">Selected professional certificates and credentials.</p>
+              <div class="doc-modal-certs">
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/certif-1.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/certif-1.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/certif-2.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/certif-2.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/certif-3.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/certif-3.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/certif-4.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/certif-4.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/certif-5.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/certif-5.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/korotkih-2713-1.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/korotkih-2713-1.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/korotkih-2713-2.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/korotkih-2713-2.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/korotkih-docs-9.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/korotkih-docs-9.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/korotkih-sertif-4533-1.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/korotkih-sertif-4533-1.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/korotkih-sertifi-2975-1.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/korotkih-sertifi-2975-1.jpg" alt="" loading="lazy" decoding="async" /></button>
+                <button type="button" class="doc-cert" data-cert-group="anna" data-cert-src="photo/debloms/anna/sertifi-korotkih-6678-1.jpg" data-i18n-aria-label="doc.modal.certOpenAria" aria-label="View certificate"><img src="photo/debloms/anna/sertifi-korotkih-6678-1.jpg" alt="" loading="lazy" decoding="async" /></button>
+              </div>
             </div>
             <div class="doc-modal-cta">
               <a class="btn btn-p" data-i18n="doc.modal.cta" data-modal-close href="#request">Request a
@@ -3572,6 +3851,40 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="cert-viewer" id="certViewer" role="dialog" aria-modal="true" aria-hidden="true"
+      data-i18n-aria-label="doc.certViewer.label" aria-label="Certificate">
+      <div class="cert-viewer-backdrop" data-cert-close></div>
+      <div class="cert-viewer-panel" role="document">
+        <button type="button" class="cert-viewer-close" data-cert-close aria-label="Close"
+          data-i18n-aria-label="doc.certViewer.close">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"></path>
+          </svg>
+        </button>
+        <button type="button" class="cert-viewer-nav cert-viewer-prev" id="certPrev" aria-label="Previous"
+          data-i18n-aria-label="doc.certViewer.prev">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.8"></path>
+          </svg>
+        </button>
+        <div class="cert-viewer-stage">
+          <img class="cert-viewer-img" id="certViewerImg" src="" alt="" />
+        </div>
+        <button type="button" class="cert-viewer-nav cert-viewer-next" id="certNext" aria-label="Next"
+          data-i18n-aria-label="doc.certViewer.next">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.8"></path>
+          </svg>
+        </button>
+        <p class="cert-viewer-counter">
+          <span data-i18n="doc.certViewer.label">Certificate</span>
+          <span id="certCounter"></span>
+        </p>
       </div>
     </div>
   </section>
@@ -4054,7 +4367,7 @@
 
   <script src="js/supabase-config.js"></script>
   <script>
-    const TR = { "en": { "seo.title": "Plastic Surgery · Damas Medical Center — MediVia", "nav.about": "Who we are", "nav.how": "How it works", "nav.treatments": "Treatments", "nav.start": "Start a case", "lang.ar": "العربية", "crumb.home": "Home", "crumb.treat": "Treatments", "crumb.cur": "Plastic Surgery", "hero.eyebrow": "Treatments · Plastic Surgery", "hero.title": "Plastic &amp; <em>Reconstructive</em> Surgery", "hero.lead": "World-class aesthetic and reconstructive care in Moscow — coordinated end to end by MediVia, from your first message to your flight home.", "hero.cta1": "Start a case — free review", "hero.cta2": "WhatsApp us", "hero.back": "Back to all treatments", "psv.eyebrow": "WATCH", "psv.heading": "See how MediVia works", "psv.text": "See how we support you from your first contact through your complete treatment journey.", "psv.title": "MediVia — a short introduction", "psv.play": "Play video", "doc.eyebrow": "Our medical team", "doc.title": "Our doctors", "doc.intro": "The specialists who look after your treatment at Damas Medical Center.", "doc1.n": "Amjad Al-Yusef", "doc1.s": "Plastic Surgeon, Maxillofacial Surgeon, Oncologist", "doc1.y": "16 years experience", "doc1.b": "Leading Plastic Surgeon and Founder of Damas Medical Center for Innovative Medicine, Chief Physician. Highest Category · Candidate of Medical Sciences.", "doc2.n": "Doctor 02", "doc2.s": "Specialist", "doc2.y": "12+ years experience", "doc2.b": "Short professional description.", "doc3.n": "Lina Aliyevna Isbir", "doc3.s": "Plastic Surgeon", "doc3.y": "16 years experience", "doc3.b": "Plastic Surgeon, Otorhinolaryngologist.", "doc4.n": "Doctor 04", "doc4.s": "Specialist", "doc4.y": "18+ years experience", "doc4.b": "Short professional description.", "doc5.n": "Anna Petrovna Pershukova", "doc5.s": "Plastic Surgeon", "doc5.y": "12 years experience", "doc5.b": "Plastic Surgeon.", "newsletter.eyebrow": "Stay informed", "newsletter.title": "Stay updated with MediVia", "newsletter.description": "Leave your email and we'll keep you informed about what's new.", "newsletter.emailPlaceholder": "Email address", "newsletter.button": "Subscribe", "newsletter.sending": "Subscribing…", "newsletter.success": "You're subscribed. We'll keep you updated.", "newsletter.alreadySubscribed": "You're already subscribed.", "newsletter.invalid": "Please enter a valid email address.", "newsletter.error": "We couldn't complete your subscription. Please try again.", "newsletter.notConfigured": "Subscriptions are not configured yet. Please contact us on WhatsApp.", "stat1.l": "Patients treated", "stat2.l": "Annual visits", "stat3.l": "Years of experience", "clinic.tag": "Partner clinic", "clinic.loc": "Moscow · Russia", "clinic.desc": "A premium multidisciplinary centre in Moscow, specialising in aesthetic and reconstructive medicine — where experienced surgeons, modern operating suites and a calm, private setting come together under one roof.", "clinic.desc2": "Through MediVia, international patients reach Damas Medical Center with everything handled around them: one coordinator, one agreed price, and their documents protected at every step.", "clinic.specTitle": "Key specialties", "spec.0": "Plastic & Reconstructive Surgery", "spec.1": "Hair Transplantation", "spec.2": "Aesthetic Medicine & Cosmetology", "spec.3": "Dermatology & Trichology", "spec.4": "Vascular Surgery & Phlebology", "spec.5": "Gynecology — Outpatient & Surgical Care", "gallery.eyebrow": "Inside the clinic", "gallery.title": "A closer look at Damas Medical Center", "gallery.intro": "A quiet, private environment built around the patient — from the first consultation to the operating suite.", "shot1.b": "Clinic entrance", "shot1.t": "The Damas Medical Center in Moscow — discreet and easy to reach.", "shot2.b": "Specialist consultation", "shot2.t": "Every plan starts with an unhurried conversation with your surgeon.", "shot3.b": "Operating suite", "shot3.t": "Modern, fully-equipped theatres held to international standards.", "proc.eyebrow": "What we coordinate", "proc.title": "Procedures within plastic surgery", "proc.intro": "Damas Medical Center covers the full spectrum of aesthetic and reconstructive work. These are the areas patients most often ask us to coordinate — your final plan is always set with your surgeon.", "p1.t": "Rhinoplasty", "p1.x": "Reshaping and functional correction of the nose, balancing profile and breathing.", "p2.t": "Face & Eyelids", "p2.x": "Facelift, blepharoplasty and rejuvenation for a natural, well-rested look.", "p3.t": "Breast Surgery", "p3.x": "Augmentation, reduction, lift and reconstruction, tailored to each patient.", "p4.t": "Body Contouring", "p4.x": "Liposuction, abdominoplasty and post–weight-loss contouring of the figure.", "p5.t": "Reconstructive Surgery", "p5.x": "Restoring form and function after trauma, surgery or congenital differences.", "p6.t": "Hair Transplantation", "p6.x": "Modern follicular techniques for natural, lasting hair restoration.", "cost.eyebrow": "Indicative treatment costs", "cost.title": "Transparent starting prices", "cost.intro": "Clear starting points, agreed with you before anything begins — no surprises later.", "price.from": "From", "pr1.t": "Plastic Surgery", "pr2.t": "Hair Transplantation", "pr3.t": "Aesthetic Medicine & Cosmetology", "cost.disc": "Final treatment costs depend on the individual case, the selected physician and the treatment plan. MediVia confirms one agreed price with you before anything begins.", "proc2.eyebrow": "With MediVia beside you", "proc2.title": "How your journey works", "s1.t": "You reach out", "s1.x": "Send your case and any documents. A coordinator replies within the hour.", "s2.t": "Medical review", "s2.x": "Your file is reviewed with Damas surgeons, and a clear plan and price are prepared.", "s3.t": "Your visit", "s3.x": "We arrange the invitation, travel, translation and everything around your surgery.", "s4.t": "Recovery & home", "s4.x": "Aftercare, follow-up and a smooth return — we stay with you to full recovery.", "form.eyebrow": "Start a case", "form.title": "Open your case file", "intake.label": "Patient intake", "intake.conf": "Confidential · Reviewed by a coordinator", "ref.b": "Reference", "form.paneH": "Tell us about you and your case", "form.paneS": "Plain words are enough — we handle the medical language.", "form.first": "First name", "form.last": "Last name", "form.nat": "Nationality", "form.age": "Age", "form.sex": "Sex", "form.male": "Male", "form.female": "Female", "form.sexHint": "Hospitals require this on every referral — a clinical field, not a preference.", "form.wa": "WhatsApp number", "form.waHint": "Optional — but it's how we reply fastest.", "form.email": "Email", "form.interest": "Area of interest", "form.problem": "The procedure or concern, in one line", "form.problemPh": "e.g. Rhinoplasty · or facelift consultation", "form.problemHint": "Up to 140 characters.", "form.details": "The full story", "form.detailsPh": "What you're hoping for, anything you've already been told, past procedures, medications and other conditions.", "form.detailsHint": "Take the space you need.", "form.consent": "I agree that MediVia may review my information to assess and coordinate my case. I understand MediVia is a coordination service and does not provide medical diagnosis or treatment.", "form.send": "Send my case", "v.first": "Please enter your first name.", "v.last": "Please enter your last name.", "v.nat": "Please enter your nationality.", "v.age": "Enter an age between 0 and 120.", "v.sex": "Please select one.", "v.problem": "Please describe it in one line.", "v.details": "Please tell us a little more — at least a few sentences.", "v.consent": "Please agree before sending.", "done.title": "Your file is open.", "done.text": "A coordinator has it now. You'll hear back within the hour — and the first message will come from a person, with your name on it.", "done.ref": "Reference", "contact.eyebrow": "Speak to MediVia today", "contact.title": "Not ready for a form? Write to a person.", "chan.wa": "WhatsApp", "chan.email": "Email", "chan.web": "Website", "foot.sub": "Medical Concierge · Russia", "foot.disc": "MediVia is a medical concierge and coordination service. It does not provide medical diagnosis or treatment. Damas Medical Center is a licensed partner clinic in Moscow.", "foot.rights": "© 2026 MediVia · Medical Concierge" }, "ar": { "seo.title": "الجراحة التجميلية · مركز داماس الطبي — مديفيا", "nav.about": "من نحن", "nav.how": "آلية العمل", "nav.treatments": "التخصصات الطبية", "nav.start": "املأ ملفك الطبي", "lang.ar": "English", "crumb.home": "الرئيسية", "crumb.treat": "التخصصات", "crumb.cur": "الجراحة التجميلية", "hero.eyebrow": "التخصصات · الجراحة التجميلية", "hero.title": "الجراحة التجميلية <em>والترميمية</em>", "hero.lead": "رعاية تجميلية وترميمية بمعايير عالمية في موسكو — تُنسّقها مديفيا من أول رسالة حتى عودتك إلى بلدك.", "hero.cta1": "ابدأ ملفك — مراجعة مجانية", "hero.cta2": "تواصل عبر واتساب", "hero.back": "العودة إلى كل التخصصات", "psv.eyebrow": "شاهد", "psv.heading": "تعرّف على MediVia", "psv.text": "شاهد كيف نرافقك من أول تواصل حتى اكتمال رحلتك العلاجية.", "psv.title": "MediVia — مقدّمة قصيرة", "psv.play": "تشغيل الفيديو", "doc.eyebrow": "فريقنا الطبي", "doc.title": "أطباؤنا", "doc.intro": "الأخصائيون الذين يشرفون على علاجك في مركز داماس الطبي.", "doc1.n": "أمجد اليوسف", "doc1.s": "جراح تجميل، جراح الوجه والفكين، طبيب أورام", "doc1.y": "خبرة 16 عامًا", "doc1.b": "جراح التجميل الرئيسي ومؤسس مركز Damas Medical Center للطب الابتكاري، والطبيب الرئيسي. أعلى فئة طبية · مرشح في العلوم الطبية.", "doc2.n": "الطبيب ٠٢", "doc2.s": "أخصائي", "doc2.y": "خبرة أكثر من ١٢ سنة", "doc2.b": "وصف مهني مختصر.", "doc3.n": "لينا علييفنا إسبر", "doc3.s": "جراح تجميل", "doc3.y": "خبرة 16 عامًا", "doc3.b": "جراح تجميل، وطبيب أنف وأذن وحنجرة.", "doc4.n": "الطبيب ٠٤", "doc4.s": "أخصائي", "doc4.y": "خبرة أكثر من ١٨ سنة", "doc4.b": "وصف مهني مختصر.", "doc5.n": "آنا بيتروفنا بيرشوكوفا", "doc5.s": "جراح تجميل", "doc5.y": "خبرة 12 عامًا", "doc5.b": "جراح تجميل.", "newsletter.eyebrow": "ابقَ على اطلاع", "newsletter.title": "ابقَ على اطلاع مع MediVia", "newsletter.description": "اترك بريدك الإلكتروني وسنطلعك على كل جديد.", "newsletter.emailPlaceholder": "البريد الإلكتروني", "newsletter.button": "اشتراك", "newsletter.sending": "جارٍ الاشتراك…", "newsletter.success": "تم الاشتراك بنجاح. سنبقيك على اطلاع بكل جديد.", "newsletter.alreadySubscribed": "هذا البريد مشترك بالفعل.", "newsletter.invalid": "يرجى إدخال بريد إلكتروني صحيح.", "newsletter.error": "تعذّر إكمال الاشتراك. يرجى المحاولة مرة أخرى.", "newsletter.notConfigured": "خدمة الاشتراك غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.", "stat1.l": "مريض تمّت رعايته", "stat2.l": "زيارة سنوية", "stat3.l": "سنوات من الخبرة", "clinic.tag": "المستشفى الشريك", "clinic.loc": "موسكو · روسيا", "clinic.desc": "مركز راقٍ متعدّد التخصصات في موسكو، متخصّص في الطب التجميلي والترميمي — يجمع بين جرّاحين ذوي خبرة، وغرف عمليات حديثة، وأجواء هادئة وخاصة تحت سقف واحد.", "clinic.desc2": "من خلال مديفيا، يصل المرضى من خارج روسيا إلى مركز داماس الطبي وكل شيء مُنظّم حولهم: منسّق واحد، وسعر واحد متّفق عليه، ومستنداتهم محمية في كل خطوة.", "clinic.specTitle": "أبرز التخصصات", "spec.0": "الجراحة التجميلية والترميمية", "spec.1": "زراعة الشعر", "spec.2": "الطب التجميلي والكوزمتولوجي", "spec.3": "الأمراض الجلدية وطب الشعر", "spec.4": "جراحة الأوعية والدوالي", "spec.5": "أمراض النساء — رعاية عيادية وجراحية", "gallery.eyebrow": "داخل المستشفى", "gallery.title": "نظرة أقرب على مركز داماس الطبي", "gallery.intro": "بيئة هادئة وخاصة مبنية حول المريض — من أول استشارة حتى غرفة العمليات.", "shot1.b": "مدخل المستشفى", "shot1.t": "مركز داماس الطبي في موسكو — بموقع هادئ يسهل الوصول إليه.", "shot2.b": "استشارة تخصصية", "shot2.t": "كل خطة تبدأ بحديث متأنٍّ مع جرّاحك.", "shot3.b": "غرفة العمليات", "shot3.t": "غرف عمليات حديثة ومجهّزة بالكامل وفق المعايير العالمية.", "proc.eyebrow": "ما ننسّقه لك", "proc.title": "الإجراءات ضمن الجراحة التجميلية", "proc.intro": "يغطّي مركز داماس الطبي مجال الجراحة التجميلية والترميمية بالكامل. هذه أكثر المجالات التي يطلب المرضى تنسيقها معنا — وتُحدَّد خطتك النهائية دائماً مع جرّاحك.", "p1.t": "تجميل الأنف", "p1.x": "إعادة تشكيل الأنف وتصحيح وظيفته بما يوازن بين الشكل والتنفّس.", "p2.t": "الوجه والجفون", "p2.x": "شدّ الوجه وتجميل الجفون وإجراءات التجديد للحصول على مظهر طبيعي ومرتاح.", "p3.t": "جراحة الثدي", "p3.x": "التكبير والتصغير والرفع وإعادة البناء بما يناسب كل مريضة.", "p4.t": "نحت الجسم", "p4.x": "شفط الدهون وشدّ البطن ونحت القوام بعد إنقاص الوزن.", "p5.t": "الجراحة الترميمية", "p5.x": "استعادة الشكل والوظيفة بعد الإصابات أو العمليات أو الحالات الخِلقية.", "p6.t": "زراعة الشعر", "p6.x": "تقنيات حديثة لزراعة البصيلات لاستعادة طبيعية ودائمة للشعر.", "cost.eyebrow": "التكاليف التقريبية", "cost.title": "أسعار بداية واضحة وشفافة", "cost.intro": "نقاط بداية واضحة يُتّفق عليها معك قبل أن يبدأ أي شيء — دون مفاجآت لاحقة.", "price.from": "تبدأ من", "pr1.t": "الجراحة التجميلية", "pr2.t": "زراعة الشعر", "pr3.t": "الطب التجميلي والكوزمتولوجي", "cost.disc": "تعتمد التكلفة النهائية على الحالة الفردية والطبيب المختار وخطة العلاج. تؤكّد مديفيا معك سعراً واحداً متّفقاً عليه قبل أن يبدأ أي شيء.", "proc2.eyebrow": "مديفيا إلى جانبك", "proc2.title": "كيف تسير رحلتك", "s1.t": "تتواصل معنا", "s1.x": "أرسل حالتك وأي مستندات لديك، ويردّ عليك منسّق خلال ساعة.", "s2.t": "المراجعة الطبية", "s2.x": "تُراجَع حالتك مع جرّاحي داماس، ويُجهَّز لك خطة واضحة وسعر متّفق عليه.", "s3.t": "زيارتك", "s3.x": "نرتّب الدعوة والسفر والترجمة وكل ما يحيط بعمليتك.", "s4.t": "التعافي والعودة", "s4.x": "رعاية بعد العملية ومتابعة وعودة سلسة — نبقى معك حتى التعافي الكامل.", "form.eyebrow": "ابدأ ملفك", "form.title": "افتح ملفك الطبي", "intake.label": "استقبال المريض", "intake.conf": "سرّي · يراجعه منسّق", "ref.b": "المرجع", "form.paneH": "أخبرنا عنك وعن حالتك", "form.paneS": "كلماتك البسيطة تكفي — نحن نتولّى الصياغة الطبية.", "form.first": "الاسم الأول", "form.last": "اسم العائلة", "form.nat": "الجنسية", "form.age": "العمر", "form.sex": "الجنس", "form.male": "ذكر", "form.female": "أنثى", "form.sexHint": "تطلب المستشفيات هذا في كل إحالة — حقل سريري وليس تفضيلاً.", "form.wa": "رقم واتساب", "form.waHint": "اختياري — لكنه أسرع وسيلة للردّ عليك.", "form.email": "البريد الإلكتروني", "form.interest": "مجال الاهتمام", "form.problem": "الإجراء أو ما يشغلك، في سطر واحد", "form.problemPh": "مثال: تجميل أنف · أو استشارة شدّ وجه", "form.problemHint": "حتى ١٤٠ حرفاً.", "form.details": "التفاصيل كاملة", "form.detailsPh": "ما الذي تأمله، وأي شيء قيل لك سابقاً، والإجراءات السابقة والأدوية والحالات الأخرى.", "form.detailsHint": "خذ المساحة التي تحتاجها.", "form.consent": "أوافق على أن تطّلع مديفيا على معلوماتي لتقييم حالتي وتنسيقها. وأفهم أن مديفيا خدمة تنسيق ولا تقدّم تشخيصاً أو علاجاً طبياً.", "form.send": "أرسل حالتي", "v.first": "يرجى إدخال اسمك الأول.", "v.last": "يرجى إدخال اسم العائلة.", "v.nat": "يرجى إدخال جنسيتك.", "v.age": "أدخل عمراً بين ٠ و ١٢٠.", "v.sex": "يرجى اختيار واحد.", "v.problem": "يرجى وصف الأمر في سطر واحد.", "v.details": "أخبرنا بالمزيد — بضع جمل على الأقل.", "v.consent": "يرجى الموافقة قبل الإرسال.", "done.title": "تم فتح ملفك.", "done.text": "وصل ملفك إلى أحد المنسّقين الآن. ستسمع منّا خلال ساعة — وأول رسالة ستصلك من شخص حقيقي يحمل اسمك.", "done.ref": "المرجع", "contact.eyebrow": "تحدّث إلى مديفيا اليوم", "contact.title": "لست مستعداً للنموذج؟ راسل شخصاً مباشرة.", "chan.wa": "واتساب", "chan.email": "البريد", "chan.web": "الموقع", "foot.sub": "خدمة تنسيق طبي · روسيا", "foot.disc": "مديفيا خدمة تنسيق ورعاية طبية، ولا تقدّم تشخيصاً أو علاجاً طبياً. مركز داماس الطبي هو مستشفى شريك مرخّص في موسكو.", "foot.rights": "© 2026 مديفيا · خدمة تنسيق طبي" } };
+    const TR = { "en": { "seo.title": "Plastic Surgery · Damas Medical Center — MediVia", "nav.about": "Who we are", "nav.how": "How it works", "nav.treatments": "Treatments", "nav.start": "Start a case", "lang.ar": "العربية", "crumb.home": "Home", "crumb.treat": "Treatments", "crumb.cur": "Plastic Surgery", "hero.eyebrow": "Treatments · Plastic Surgery", "hero.title": "Plastic &amp; <em>Reconstructive</em> Surgery", "hero.lead": "World-class aesthetic and reconstructive care in Moscow — coordinated end to end by MediVia, from your first message to your flight home.", "hero.cta1": "Start a case — free review", "hero.cta2": "WhatsApp us", "hero.back": "Back to all treatments", "psv.eyebrow": "WATCH", "psv.heading": "See how MediVia works", "psv.text": "See how we support you from your first contact through your complete treatment journey.", "psv.title": "MediVia — a short introduction", "psv.play": "Play video", "doc.eyebrow": "Our medical team", "doc.title": "Our doctors", "doc.intro": "The specialists who look after your treatment at Damas Medical Center.", "doc1.n": "Amjad Al-Yusef", "doc1.s": "Plastic Surgeon, Maxillofacial Surgeon, Oncologist", "doc1.y": "16 years experience", "doc1.b": "Leading Plastic Surgeon and Founder of Damas Medical Center for Innovative Medicine, Chief Physician. Highest Category · Candidate of Medical Sciences.", "doc2.n": "Doctor 02", "doc2.s": "Specialist", "doc2.y": "12+ years experience", "doc2.b": "Short professional description.", "doc3.n": "Lina Aliyevna Isbir", "doc3.s": "Plastic Surgeon", "doc3.y": "16 years experience", "doc3.b": "Plastic Surgeon, Otorhinolaryngologist.", "doc4.n": "Doctor 04", "doc4.s": "Specialist", "doc4.y": "18+ years experience", "doc4.b": "Short professional description.", "doc5.n": "Anna Petrovna Pershukova", "doc5.s": "Plastic Surgeon", "doc5.y": "12 years experience", "doc5.b": "Plastic surgeon with 12 years of professional experience, working across facial, breast and body procedures at Damas Medical Center for Innovative Medicine.", "newsletter.eyebrow": "Stay informed", "newsletter.title": "Stay updated with MediVia", "newsletter.description": "Leave your email and we'll keep you informed about what's new.", "newsletter.emailPlaceholder": "Email address", "newsletter.button": "Subscribe", "newsletter.sending": "Subscribing…", "newsletter.success": "You're subscribed. We'll keep you updated.", "newsletter.alreadySubscribed": "You're already subscribed.", "newsletter.invalid": "Please enter a valid email address.", "newsletter.error": "We couldn't complete your subscription. Please try again.", "newsletter.notConfigured": "Subscriptions are not configured yet. Please contact us on WhatsApp.", "stat1.l": "Patients treated", "stat2.l": "Annual visits", "stat3.l": "Years of experience", "clinic.tag": "Partner clinic", "clinic.loc": "Moscow · Russia", "clinic.desc": "A premium multidisciplinary centre in Moscow, specialising in aesthetic and reconstructive medicine — where experienced surgeons, modern operating suites and a calm, private setting come together under one roof.", "clinic.desc2": "Through MediVia, international patients reach Damas Medical Center with everything handled around them: one coordinator, one agreed price, and their documents protected at every step.", "clinic.specTitle": "Key specialties", "spec.0": "Plastic & Reconstructive Surgery", "spec.1": "Hair Transplantation", "spec.2": "Aesthetic Medicine & Cosmetology", "spec.3": "Dermatology & Trichology", "spec.4": "Vascular Surgery & Phlebology", "spec.5": "Gynecology — Outpatient & Surgical Care", "gallery.eyebrow": "Inside the clinic", "gallery.title": "A closer look at Damas Medical Center", "gallery.intro": "A quiet, private environment built around the patient — from the first consultation to the operating suite.", "shot1.b": "Clinic entrance", "shot1.t": "The Damas Medical Center in Moscow — discreet and easy to reach.", "shot2.b": "Specialist consultation", "shot2.t": "Every plan starts with an unhurried conversation with your surgeon.", "shot3.b": "Operating suite", "shot3.t": "Modern, fully-equipped theatres held to international standards.", "proc.eyebrow": "What we coordinate", "proc.title": "Procedures within plastic surgery", "proc.intro": "Damas Medical Center covers the full spectrum of aesthetic and reconstructive work. These are the areas patients most often ask us to coordinate — your final plan is always set with your surgeon.", "p1.t": "Rhinoplasty", "p1.x": "Reshaping and functional correction of the nose, balancing profile and breathing.", "p2.t": "Face & Eyelids", "p2.x": "Facelift, blepharoplasty and rejuvenation for a natural, well-rested look.", "p3.t": "Breast Surgery", "p3.x": "Augmentation, reduction, lift and reconstruction, tailored to each patient.", "p4.t": "Body Contouring", "p4.x": "Liposuction, abdominoplasty and post–weight-loss contouring of the figure.", "p5.t": "Reconstructive Surgery", "p5.x": "Restoring form and function after trauma, surgery or congenital differences.", "p6.t": "Hair Transplantation", "p6.x": "Modern follicular techniques for natural, lasting hair restoration.", "cost.eyebrow": "Indicative treatment costs", "cost.title": "Transparent starting prices", "cost.intro": "Clear starting points, agreed with you before anything begins — no surprises later.", "price.from": "From", "pr1.t": "Plastic Surgery", "pr2.t": "Hair Transplantation", "pr3.t": "Aesthetic Medicine & Cosmetology", "cost.disc": "Final treatment costs depend on the individual case, the selected physician and the treatment plan. MediVia confirms one agreed price with you before anything begins.", "proc2.eyebrow": "With MediVia beside you", "proc2.title": "How your journey works", "s1.t": "You reach out", "s1.x": "Send your case and any documents. A coordinator replies within the hour.", "s2.t": "Medical review", "s2.x": "Your file is reviewed with Damas surgeons, and a clear plan and price are prepared.", "s3.t": "Your visit", "s3.x": "We arrange the invitation, travel, translation and everything around your surgery.", "s4.t": "Recovery & home", "s4.x": "Aftercare, follow-up and a smooth return — we stay with you to full recovery.", "form.eyebrow": "Start a case", "form.title": "Open your case file", "intake.label": "Patient intake", "intake.conf": "Confidential · Reviewed by a coordinator", "ref.b": "Reference", "form.paneH": "Tell us about you and your case", "form.paneS": "Plain words are enough — we handle the medical language.", "form.first": "First name", "form.last": "Last name", "form.nat": "Nationality", "form.age": "Age", "form.sex": "Sex", "form.male": "Male", "form.female": "Female", "form.sexHint": "Hospitals require this on every referral — a clinical field, not a preference.", "form.wa": "WhatsApp number", "form.waHint": "Optional — but it's how we reply fastest.", "form.email": "Email", "form.interest": "Area of interest", "form.problem": "The procedure or concern, in one line", "form.problemPh": "e.g. Rhinoplasty · or facelift consultation", "form.problemHint": "Up to 140 characters.", "form.details": "The full story", "form.detailsPh": "What you're hoping for, anything you've already been told, past procedures, medications and other conditions.", "form.detailsHint": "Take the space you need.", "form.consent": "I agree that MediVia may review my information to assess and coordinate my case. I understand MediVia is a coordination service and does not provide medical diagnosis or treatment.", "form.send": "Send my case", "v.first": "Please enter your first name.", "v.last": "Please enter your last name.", "v.nat": "Please enter your nationality.", "v.age": "Enter an age between 0 and 120.", "v.sex": "Please select one.", "v.problem": "Please describe it in one line.", "v.details": "Please tell us a little more — at least a few sentences.", "v.consent": "Please agree before sending.", "done.title": "Your file is open.", "done.text": "A coordinator has it now. You'll hear back within the hour — and the first message will come from a person, with your name on it.", "done.ref": "Reference", "contact.eyebrow": "Speak to MediVia today", "contact.title": "Not ready for a form? Write to a person.", "chan.wa": "WhatsApp", "chan.email": "Email", "chan.web": "Website", "foot.sub": "Medical Concierge · Russia", "foot.disc": "MediVia is a medical concierge and coordination service. It does not provide medical diagnosis or treatment. Damas Medical Center is a licensed partner clinic in Moscow.", "foot.rights": "© 2026 MediVia · Medical Concierge" }, "ar": { "seo.title": "الجراحة التجميلية · مركز داماس الطبي — مديفيا", "nav.about": "من نحن", "nav.how": "آلية العمل", "nav.treatments": "التخصصات الطبية", "nav.start": "املأ ملفك الطبي", "lang.ar": "English", "crumb.home": "الرئيسية", "crumb.treat": "التخصصات", "crumb.cur": "الجراحة التجميلية", "hero.eyebrow": "التخصصات · الجراحة التجميلية", "hero.title": "الجراحة التجميلية <em>والترميمية</em>", "hero.lead": "رعاية تجميلية وترميمية بمعايير عالمية في موسكو — تُنسّقها مديفيا من أول رسالة حتى عودتك إلى بلدك.", "hero.cta1": "ابدأ ملفك — مراجعة مجانية", "hero.cta2": "تواصل عبر واتساب", "hero.back": "العودة إلى كل التخصصات", "psv.eyebrow": "شاهد", "psv.heading": "تعرّف على MediVia", "psv.text": "شاهد كيف نرافقك من أول تواصل حتى اكتمال رحلتك العلاجية.", "psv.title": "MediVia — مقدّمة قصيرة", "psv.play": "تشغيل الفيديو", "doc.eyebrow": "فريقنا الطبي", "doc.title": "أطباؤنا", "doc.intro": "الأخصائيون الذين يشرفون على علاجك في مركز داماس الطبي.", "doc1.n": "أمجد اليوسف", "doc1.s": "جراح تجميل، جراح الوجه والفكين، طبيب أورام", "doc1.y": "خبرة 16 عامًا", "doc1.b": "جراح التجميل الرئيسي ومؤسس مركز Damas Medical Center للطب الابتكاري، والطبيب الرئيسي. أعلى فئة طبية · مرشح في العلوم الطبية.", "doc2.n": "الطبيب ٠٢", "doc2.s": "أخصائي", "doc2.y": "خبرة أكثر من ١٢ سنة", "doc2.b": "وصف مهني مختصر.", "doc3.n": "لينا علييفنا إسبر", "doc3.s": "جراح تجميل", "doc3.y": "خبرة 16 عامًا", "doc3.b": "جراح تجميل، وطبيب أنف وأذن وحنجرة.", "doc4.n": "الطبيب ٠٤", "doc4.s": "أخصائي", "doc4.y": "خبرة أكثر من ١٨ سنة", "doc4.b": "وصف مهني مختصر.", "doc5.n": "آنا بيتروفنا بيرشوكوفا", "doc5.s": "جرّاحة تجميل", "doc5.y": "خبرة 12 عامًا", "doc5.b": "جرّاحة تجميل تتمتع بخبرة مهنية تمتد إلى 12 عاماً، تعمل في مجالات جراحة الوجه والثدي والجسم في مركز Damas Medical Center للطب الابتكاري.", "newsletter.eyebrow": "ابقَ على اطلاع", "newsletter.title": "ابقَ على اطلاع مع MediVia", "newsletter.description": "اترك بريدك الإلكتروني وسنطلعك على كل جديد.", "newsletter.emailPlaceholder": "البريد الإلكتروني", "newsletter.button": "اشتراك", "newsletter.sending": "جارٍ الاشتراك…", "newsletter.success": "تم الاشتراك بنجاح. سنبقيك على اطلاع بكل جديد.", "newsletter.alreadySubscribed": "هذا البريد مشترك بالفعل.", "newsletter.invalid": "يرجى إدخال بريد إلكتروني صحيح.", "newsletter.error": "تعذّر إكمال الاشتراك. يرجى المحاولة مرة أخرى.", "newsletter.notConfigured": "خدمة الاشتراك غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.", "stat1.l": "مريض تمّت رعايته", "stat2.l": "زيارة سنوية", "stat3.l": "سنوات من الخبرة", "clinic.tag": "المستشفى الشريك", "clinic.loc": "موسكو · روسيا", "clinic.desc": "مركز راقٍ متعدّد التخصصات في موسكو، متخصّص في الطب التجميلي والترميمي — يجمع بين جرّاحين ذوي خبرة، وغرف عمليات حديثة، وأجواء هادئة وخاصة تحت سقف واحد.", "clinic.desc2": "من خلال مديفيا، يصل المرضى من خارج روسيا إلى مركز داماس الطبي وكل شيء مُنظّم حولهم: منسّق واحد، وسعر واحد متّفق عليه، ومستنداتهم محمية في كل خطوة.", "clinic.specTitle": "أبرز التخصصات", "spec.0": "الجراحة التجميلية والترميمية", "spec.1": "زراعة الشعر", "spec.2": "الطب التجميلي والكوزمتولوجي", "spec.3": "الأمراض الجلدية وطب الشعر", "spec.4": "جراحة الأوعية والدوالي", "spec.5": "أمراض النساء — رعاية عيادية وجراحية", "gallery.eyebrow": "داخل المستشفى", "gallery.title": "نظرة أقرب على مركز داماس الطبي", "gallery.intro": "بيئة هادئة وخاصة مبنية حول المريض — من أول استشارة حتى غرفة العمليات.", "shot1.b": "مدخل المستشفى", "shot1.t": "مركز داماس الطبي في موسكو — بموقع هادئ يسهل الوصول إليه.", "shot2.b": "استشارة تخصصية", "shot2.t": "كل خطة تبدأ بحديث متأنٍّ مع جرّاحك.", "shot3.b": "غرفة العمليات", "shot3.t": "غرف عمليات حديثة ومجهّزة بالكامل وفق المعايير العالمية.", "proc.eyebrow": "ما ننسّقه لك", "proc.title": "الإجراءات ضمن الجراحة التجميلية", "proc.intro": "يغطّي مركز داماس الطبي مجال الجراحة التجميلية والترميمية بالكامل. هذه أكثر المجالات التي يطلب المرضى تنسيقها معنا — وتُحدَّد خطتك النهائية دائماً مع جرّاحك.", "p1.t": "تجميل الأنف", "p1.x": "إعادة تشكيل الأنف وتصحيح وظيفته بما يوازن بين الشكل والتنفّس.", "p2.t": "الوجه والجفون", "p2.x": "شدّ الوجه وتجميل الجفون وإجراءات التجديد للحصول على مظهر طبيعي ومرتاح.", "p3.t": "جراحة الثدي", "p3.x": "التكبير والتصغير والرفع وإعادة البناء بما يناسب كل مريضة.", "p4.t": "نحت الجسم", "p4.x": "شفط الدهون وشدّ البطن ونحت القوام بعد إنقاص الوزن.", "p5.t": "الجراحة الترميمية", "p5.x": "استعادة الشكل والوظيفة بعد الإصابات أو العمليات أو الحالات الخِلقية.", "p6.t": "زراعة الشعر", "p6.x": "تقنيات حديثة لزراعة البصيلات لاستعادة طبيعية ودائمة للشعر.", "cost.eyebrow": "التكاليف التقريبية", "cost.title": "أسعار بداية واضحة وشفافة", "cost.intro": "نقاط بداية واضحة يُتّفق عليها معك قبل أن يبدأ أي شيء — دون مفاجآت لاحقة.", "price.from": "تبدأ من", "pr1.t": "الجراحة التجميلية", "pr2.t": "زراعة الشعر", "pr3.t": "الطب التجميلي والكوزمتولوجي", "cost.disc": "تعتمد التكلفة النهائية على الحالة الفردية والطبيب المختار وخطة العلاج. تؤكّد مديفيا معك سعراً واحداً متّفقاً عليه قبل أن يبدأ أي شيء.", "proc2.eyebrow": "مديفيا إلى جانبك", "proc2.title": "كيف تسير رحلتك", "s1.t": "تتواصل معنا", "s1.x": "أرسل حالتك وأي مستندات لديك، ويردّ عليك منسّق خلال ساعة.", "s2.t": "المراجعة الطبية", "s2.x": "تُراجَع حالتك مع جرّاحي داماس، ويُجهَّز لك خطة واضحة وسعر متّفق عليه.", "s3.t": "زيارتك", "s3.x": "نرتّب الدعوة والسفر والترجمة وكل ما يحيط بعمليتك.", "s4.t": "التعافي والعودة", "s4.x": "رعاية بعد العملية ومتابعة وعودة سلسة — نبقى معك حتى التعافي الكامل.", "form.eyebrow": "ابدأ ملفك", "form.title": "افتح ملفك الطبي", "intake.label": "استقبال المريض", "intake.conf": "سرّي · يراجعه منسّق", "ref.b": "المرجع", "form.paneH": "أخبرنا عنك وعن حالتك", "form.paneS": "كلماتك البسيطة تكفي — نحن نتولّى الصياغة الطبية.", "form.first": "الاسم الأول", "form.last": "اسم العائلة", "form.nat": "الجنسية", "form.age": "العمر", "form.sex": "الجنس", "form.male": "ذكر", "form.female": "أنثى", "form.sexHint": "تطلب المستشفيات هذا في كل إحالة — حقل سريري وليس تفضيلاً.", "form.wa": "رقم واتساب", "form.waHint": "اختياري — لكنه أسرع وسيلة للردّ عليك.", "form.email": "البريد الإلكتروني", "form.interest": "مجال الاهتمام", "form.problem": "الإجراء أو ما يشغلك، في سطر واحد", "form.problemPh": "مثال: تجميل أنف · أو استشارة شدّ وجه", "form.problemHint": "حتى ١٤٠ حرفاً.", "form.details": "التفاصيل كاملة", "form.detailsPh": "ما الذي تأمله، وأي شيء قيل لك سابقاً، والإجراءات السابقة والأدوية والحالات الأخرى.", "form.detailsHint": "خذ المساحة التي تحتاجها.", "form.consent": "أوافق على أن تطّلع مديفيا على معلوماتي لتقييم حالتي وتنسيقها. وأفهم أن مديفيا خدمة تنسيق ولا تقدّم تشخيصاً أو علاجاً طبياً.", "form.send": "أرسل حالتي", "v.first": "يرجى إدخال اسمك الأول.", "v.last": "يرجى إدخال اسم العائلة.", "v.nat": "يرجى إدخال جنسيتك.", "v.age": "أدخل عمراً بين ٠ و ١٢٠.", "v.sex": "يرجى اختيار واحد.", "v.problem": "يرجى وصف الأمر في سطر واحد.", "v.details": "أخبرنا بالمزيد — بضع جمل على الأقل.", "v.consent": "يرجى الموافقة قبل الإرسال.", "done.title": "تم فتح ملفك.", "done.text": "وصل ملفك إلى أحد المنسّقين الآن. ستسمع منّا خلال ساعة — وأول رسالة ستصلك من شخص حقيقي يحمل اسمك.", "done.ref": "المرجع", "contact.eyebrow": "تحدّث إلى مديفيا اليوم", "contact.title": "لست مستعداً للنموذج؟ راسل شخصاً مباشرة.", "chan.wa": "واتساب", "chan.email": "البريد", "chan.web": "الموقع", "foot.sub": "خدمة تنسيق طبي · روسيا", "foot.disc": "مديفيا خدمة تنسيق ورعاية طبية، ولا تقدّم تشخيصاً أو علاجاً طبياً. مركز داماس الطبي هو مستشفى شريك مرخّص في موسكو.", "foot.rights": "© 2026 مديفيا · خدمة تنسيق طبي" } };
     (function () {
       const $ = s => document.querySelector(s);
       const $$ = s => [...document.querySelectorAll(s)];
@@ -4101,6 +4414,7 @@
           "doc.modal.eyebrow": "Medical Profile", "doc.modal.close": "Close",
           "doc.modal.experience": "Experience", "doc.modal.category": "Category", "doc.modal.degree": "Academic Degree",
           "doc.modal.positionTitle": "Position", "doc.modal.overviewTitle": "Professional Overview", "doc.modal.expertiseTitle": "Areas of Expertise",
+          "doc.modal.certsTitle": "Professional Certificates", "doc.modal.certsSubtitle": "Selected professional certificates and credentials.", "doc.modal.certAria": "View certificate — opens in a new tab",
           "doc.modal.cta": "Request a Consultation", "doc.modal.ctaHint": "Start your case with MediVia and we'll coordinate your consultation with Damas Medical Center.",
           "doc1.modal.position": "Leading Plastic Surgeon and Founder of Damas Medical Center for Innovative Medicine, Chief Physician.",
           "doc1.modal.experienceValue": "16 years", "doc1.modal.category": "Highest Category", "doc1.modal.degree": "Candidate of Medical Sciences",
@@ -4110,10 +4424,14 @@
           "doc3.modal.experienceValue": "16 years",
           "doc3.modal.overview": "Dr. Lina Aliyevna Isbir combines 16 years of experience across plastic surgery and otorhinolaryngology (ENT), bringing a dual surgical perspective to facial and nasal procedures at Damas Medical Center. Her cross-disciplinary background allows her to weigh aesthetic outcomes alongside functional ear, nose and throat health when planning a patient's care.",
           "doc3.modal.expertise1": "Plastic Surgery", "doc3.modal.expertise2": "Otorhinolaryngology (ENT)",
-          "doc5.modal.position": "Plastic Surgeon.",
+          "doc5.modal.position": "Plastic Surgeon at Damas Medical Center for Innovative Medicine.",
           "doc5.modal.experienceValue": "12 years",
-          "doc5.modal.overview": "Dr. Anna Petrovna Pershukova is a plastic surgeon at Damas Medical Center with 12 years of experience in the field. She is known for attentive, patient-focused consultations, taking the time to understand each patient's goals before recommending a course of care.",
-          "doc5.modal.expertise1": "Plastic Surgery"
+          "doc5.modal.overview": "Anna Petrovna Pershukova is a plastic surgeon with 12 years of professional experience. At Damas Medical Center for Innovative Medicine, she works across a broad range of aesthetic and reconstructive procedures involving the face, eyelids, breast and body. Her professional scope also includes liposuction and lipofilling, cheiloplasty, intimate plastic surgery, otoplasty and surgical correction of scars.",
+          "doc5.modal.expertise1": "Facial Plastic Surgery", "doc5.modal.expertise2": "Blepharoplasty", "doc5.modal.expertise3": "Breast Surgery",
+          "doc5.modal.expertise4": "Body Contouring", "doc5.modal.expertise5": "Liposuction &amp; Lipofilling", "doc5.modal.expertise6": "Cheiloplasty",
+          "doc5.modal.expertise7": "Intimate Plastic Surgery", "doc5.modal.expertise8": "Otoplasty", "doc5.modal.expertise9": "Scar Correction",
+          "doc.modal.certOpenAria": "View certificate",
+          "doc.certViewer.close": "Close", "doc.certViewer.prev": "Previous", "doc.certViewer.next": "Next", "doc.certViewer.label": "Certificate"
         },
         ar: {
           "intake.confidential": "سرّي · يراجعه منسّق",
@@ -4153,6 +4471,7 @@
           "doc.modal.eyebrow": "الملف الطبي", "doc.modal.close": "إغلاق",
           "doc.modal.experience": "الخبرة", "doc.modal.category": "الفئة", "doc.modal.degree": "الدرجة العلمية",
           "doc.modal.positionTitle": "المنصب", "doc.modal.overviewTitle": "نبذة مهنية", "doc.modal.expertiseTitle": "مجالات الخبرة",
+          "doc.modal.certsTitle": "الشهادات المهنية", "doc.modal.certsSubtitle": "مجموعة مختارة من الشهادات والاعتمادات المهنية.", "doc.modal.certAria": "عرض الشهادة — تُفتح في علامة تبويب جديدة",
           "doc.modal.cta": "طلب استشارة", "doc.modal.ctaHint": "ابدأ ملفك مع مديفيا وسننسّق استشارتك مع مركز داماس الطبي.",
           "doc1.modal.position": "جراح التجميل الرئيسي ومؤسس مركز Damas Medical Center للطب الابتكاري، والطبيب الرئيسي.",
           "doc1.modal.experienceValue": "16 عامًا", "doc1.modal.category": "أعلى فئة طبية", "doc1.modal.degree": "مرشح في العلوم الطبية",
@@ -4162,10 +4481,14 @@
           "doc3.modal.experienceValue": "16 عامًا",
           "doc3.modal.overview": "تجمع الدكتورة لينا علييفنا إسبر بين خبرة 16 عامًا في الجراحة التجميلية وطب الأنف والأذن والحنجرة، لتقدّم منظورًا جراحيًا مزدوجًا لإجراءات الوجه والأنف في مركز داماس الطبي. وتتيح لها خلفيتها متعددة التخصصات مراعاة النتائج الجمالية إلى جانب صحة الأنف والأذن والحنجرة الوظيفية عند التخطيط لرعاية كل مريضة.",
           "doc3.modal.expertise1": "جراحة تجميلية", "doc3.modal.expertise2": "طب الأنف والأذن والحنجرة",
-          "doc5.modal.position": "جراح تجميل.",
+          "doc5.modal.position": "جرّاحة تجميل في مركز Damas Medical Center للطب الابتكاري.",
           "doc5.modal.experienceValue": "12 عامًا",
-          "doc5.modal.overview": "الدكتورة آنا بيتروفنا بيرشوكوفا جراحة تجميل في مركز داماس الطبي، تمتلك خبرة 12 عامًا في هذا المجال. تُعرف باستشاراتها المتأنية التي تركّز على المريضة، إذ تحرص على فهم أهداف كل مريضة قبل التوصية بخطة الرعاية المناسبة.",
-          "doc5.modal.expertise1": "جراحة تجميلية"
+          "doc5.modal.overview": "آنا بيتروفنا بيرشوكوفا هي جرّاحة تجميل تتمتع بخبرة مهنية تمتد إلى 12 عاماً. تعمل في مركز Damas Medical Center للطب الابتكاري ضمن مجموعة واسعة من مجالات الجراحة التجميلية والترميمية التي تشمل الوجه والجفون والثدي والجسم. كما تشمل مجالات تخصصها شفط الدهون وحقن الدهون، وتجميل الشفاه، والجراحة التجميلية الحميمة، وتجميل الأذن، والتصحيح الجراحي للندبات.",
+          "doc5.modal.expertise1": "جراحة تجميل الوجه", "doc5.modal.expertise2": "تجميل الجفون", "doc5.modal.expertise3": "جراحة الثدي",
+          "doc5.modal.expertise4": "نحت وتجميل الجسم", "doc5.modal.expertise5": "شفط الدهون وحقن الدهون", "doc5.modal.expertise6": "تجميل الشفاه",
+          "doc5.modal.expertise7": "الجراحة التجميلية الحميمة", "doc5.modal.expertise8": "تجميل الأذن", "doc5.modal.expertise9": "تصحيح الندبات",
+          "doc.modal.certOpenAria": "عرض الشهادة",
+          "doc.certViewer.close": "إغلاق", "doc.certViewer.prev": "السابق", "doc.certViewer.next": "التالي", "doc.certViewer.label": "الشهادة"
         }
       };
 
@@ -4584,6 +4907,108 @@
           else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
         }
       });
+    })();
+  </script>
+
+  <!-- ══ CERTIFICATE VIEWER ══ an in-page lightbox layered above the doctor
+       modal (see .cert-viewer's z-index) so a certificate opens without a new
+       tab and without disturbing the doctor modal open behind it. Its own
+       Escape/Tab handling runs in the capture phase and calls
+       stopPropagation so the doctor-modal listener above never double-fires
+       while the viewer is open. -->
+  <script>
+    (function () {
+      var q = function (s, ctx) { return (ctx || document).querySelector(s); };
+      var qa = function (s, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(s)); };
+      var triggers = qa('.doc-cert[data-cert-src]');
+      var viewer = document.getElementById('certViewer');
+      var img = document.getElementById('certViewerImg');
+      if (!triggers.length || !viewer || !img) return;
+
+      var counter = document.getElementById('certCounter');
+      var prevBtn = document.getElementById('certPrev');
+      var nextBtn = document.getElementById('certNext');
+
+      /* group certificates by doctor so prev/next never crosses profiles */
+      var groups = {};
+      triggers.forEach(function (btn) {
+        var g = btn.getAttribute('data-cert-group') || 'default';
+        if (!groups[g]) groups[g] = [];
+        btn.setAttribute('data-cert-index', String(groups[g].length));
+        groups[g].push(btn.getAttribute('data-cert-src'));
+      });
+
+      var currentGroup = null;
+      var currentIndex = 0;
+      var lastFocused = null;
+
+      function render() {
+        var list = groups[currentGroup] || [];
+        img.src = list[currentIndex] || '';
+        if (counter) counter.textContent = list.length ? (currentIndex + 1) + ' / ' + list.length : '';
+        var multi = list.length > 1;
+        if (prevBtn) prevBtn.hidden = !multi;
+        if (nextBtn) nextBtn.hidden = !multi;
+      }
+
+      function openViewer(group, index, trigger) {
+        currentGroup = group;
+        currentIndex = index;
+        lastFocused = trigger || document.activeElement;
+        render();
+        viewer.classList.add('is-open');
+        viewer.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('doc-modal-open');
+        var closeBtn = q('.cert-viewer-close', viewer);
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function closeViewer() {
+        viewer.classList.remove('is-open');
+        viewer.setAttribute('aria-hidden', 'true');
+        img.src = '';
+        if (!q('.doc-modal.is-open')) document.body.classList.remove('doc-modal-open');
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      }
+
+      function step(delta) {
+        var list = groups[currentGroup] || [];
+        if (list.length < 2) return;
+        currentIndex = (currentIndex + delta + list.length) % list.length;
+        render();
+      }
+
+      triggers.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          openViewer(btn.getAttribute('data-cert-group') || 'default', parseInt(btn.getAttribute('data-cert-index'), 10) || 0, btn);
+        });
+      });
+
+      qa('[data-cert-close]', viewer).forEach(function (el) {
+        el.addEventListener('click', closeViewer);
+      });
+      if (prevBtn) prevBtn.addEventListener('click', function () { step(-1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { step(1); });
+
+      function focusablesIn(container) {
+        return qa('button:not([hidden])', container);
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (!viewer.classList.contains('is-open')) return;
+        var rtl = document.documentElement.dir === 'rtl';
+        if (e.key === 'Escape' || e.key === 'Esc') { e.stopPropagation(); closeViewer(); return; }
+        if (e.key === 'ArrowLeft') { e.stopPropagation(); step(rtl ? 1 : -1); return; }
+        if (e.key === 'ArrowRight') { e.stopPropagation(); step(rtl ? -1 : 1); return; }
+        if (e.key === 'Tab') {
+          e.stopPropagation();
+          var items = focusablesIn(q('.cert-viewer-panel', viewer));
+          if (!items.length) return;
+          var first = items[0], last = items[items.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }, true);
     })();
   </script>
 
