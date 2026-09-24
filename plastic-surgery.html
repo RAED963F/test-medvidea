@@ -2738,6 +2738,571 @@
       }
     }
 
+    /* ══ DOCTOR RESULTS GALLERY ══ opened from a doctor card's "View Results"
+       button. One dialog, one filterable gallery per doctor; the photos are the
+       optimised WebP copies in work-photo-web/ (see tools/build-results-gallery.py).
+       Logical properties throughout, so [dir="rtl"] mirrors it with no overrides.
+       z-index: gallery 310 < photo viewer 500. ══ */
+    .doc-results {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      width: 100%;
+      margin-top: 16px;
+      padding: 11px 18px;
+      border-radius: 2px;
+      border: 1px solid var(--aqua);
+      background: var(--aqua);
+      color: var(--fog);
+      font: 500 .8rem/1.2 var(--body);
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: background .25s, border-color .25s, color .25s;
+    }
+
+    .doc-results:hover,
+    .doc-results:focus-visible {
+      background: var(--copper);
+      border-color: var(--copper);
+      color: var(--aqua-ink);
+      outline: none;
+    }
+
+    .doc-results:focus-visible {
+      outline: 2px solid var(--copper-ink);
+      outline-offset: 3px;
+    }
+
+    .doc-results svg {
+      width: 16px;
+      height: 16px;
+      flex: none;
+    }
+
+    body.res-open {
+      overflow-y: hidden;
+    }
+
+    .res-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 310;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(12px, 3vw, 36px);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .3s ease, visibility 0s linear .3s;
+    }
+
+    .res-modal.is-open {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity .3s ease;
+    }
+
+    .res-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 32, 41, .62);
+      backdrop-filter: blur(9px);
+      -webkit-backdrop-filter: blur(9px);
+    }
+
+    .res-panel {
+      position: relative;
+      width: 100%;
+      max-width: 1120px;
+      height: min(880px, 100%);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 60px 120px -40px rgba(13, 32, 41, .55);
+      transform: translateY(18px) scale(.98);
+      transition: transform .32s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .res-modal.is-open .res-panel {
+      transform: none;
+    }
+
+    .res-head {
+      flex: none;
+      padding: clamp(22px, 3vw, 34px) clamp(20px, 3.2vw, 40px) 0;
+      padding-inline-end: clamp(64px, 7vw, 84px);
+    }
+
+    .res-head .eyebrow {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .res-title {
+      font-family: var(--display);
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    .res-sub {
+      margin-top: 6px;
+      font-size: .74rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--copper-ink);
+    }
+
+    .res-close {
+      position: absolute;
+      inset-block-start: 16px;
+      inset-inline-end: 16px;
+      z-index: 3;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--fog);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .25s, border-color .25s, color .25s, transform .25s;
+    }
+
+    .res-close:hover,
+    .res-close:focus-visible {
+      background: var(--copper);
+      border-color: var(--copper);
+      color: var(--aqua-ink);
+      transform: rotate(90deg);
+      outline: none;
+    }
+
+    .res-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .res-filters {
+      flex: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 18px clamp(20px, 3.2vw, 40px) 16px;
+      border-block-end: 1px solid var(--line);
+    }
+
+    .res-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font: 500 .8rem/1.25 var(--body);
+      text-align: start;
+      cursor: pointer;
+      transition: background .25s, border-color .25s, color .25s;
+    }
+
+    .res-chip:hover {
+      border-color: var(--sage);
+    }
+
+    .res-chip:focus-visible {
+      outline: 2px solid var(--copper-ink);
+      outline-offset: 2px;
+    }
+
+    .res-chip[aria-pressed="true"] {
+      background: var(--aqua);
+      border-color: var(--aqua);
+      color: var(--fog);
+    }
+
+    .res-chip b {
+      font-weight: 600;
+      font-size: .72rem;
+      opacity: .65;
+    }
+
+    .res-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 22px clamp(20px, 3.2vw, 40px) clamp(24px, 3vw, 38px);
+      scrollbar-width: thin;
+      scrollbar-color: var(--sage) transparent;
+    }
+
+    .res-note {
+      font-size: .82rem;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+
+    .res-status {
+      padding: 56px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .res-group {
+      margin-top: 30px;
+    }
+
+    .res-group[hidden] {
+      display: none;
+    }
+
+    .res-group-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 12px;
+      margin-bottom: 14px;
+    }
+
+    .res-group-spec {
+      flex: 0 0 100%;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--copper-ink);
+    }
+
+    .res-group-title {
+      font-family: var(--display);
+      font-size: clamp(1.15rem, 2vw, 1.4rem);
+      font-weight: 400;
+      line-height: 1.25;
+      color: var(--ink);
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .res-group-timing {
+      display: inline-flex;
+      align-items: center;
+      font-size: .74rem;
+      color: var(--muted);
+      background: var(--fog);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 11px;
+    }
+
+    .res-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+      gap: 14px;
+    }
+
+    .res-item {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      padding: 0;
+      margin: 0;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--fog);
+      overflow: hidden;
+      cursor: zoom-in;
+      box-shadow: 0 10px 24px -18px rgba(13, 32, 41, .45);
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+
+    .res-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--sage);
+      box-shadow: 0 18px 32px -20px rgba(13, 32, 41, .5);
+    }
+
+    .res-item:focus-visible {
+      outline: 2px solid var(--copper-ink);
+      outline-offset: 2px;
+    }
+
+    .res-item img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .res-item-zoom {
+      position: absolute;
+      inset-block-end: 8px;
+      inset-inline-end: 8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(13, 32, 41, .6);
+      color: #EEF0EC;
+      pointer-events: none;
+      transition: background .25s;
+    }
+
+    .res-item:hover .res-item-zoom,
+    .res-item:focus-visible .res-item-zoom {
+      background: var(--copper);
+      color: var(--aqua-ink);
+    }
+
+    .res-item-zoom svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* photo viewer — full-bleed lightbox layered above the gallery, which
+       stays exactly where it was underneath */
+    .res-viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .25s ease, visibility 0s linear .25s;
+    }
+
+    .res-viewer.is-open {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity .25s ease;
+    }
+
+    .res-viewer-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 32, 41, .92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .res-viewer-panel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px clamp(56px, 8vw, 110px) 16px;
+      pointer-events: none;
+    }
+
+    .res-viewer-panel>* {
+      pointer-events: auto;
+    }
+
+    .res-viewer-stage {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: pan-y pinch-zoom;
+      pointer-events: none;
+    }
+
+    .res-viewer-img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 6px;
+      background: rgba(238, 240, 236, .06);
+      box-shadow: 0 40px 90px -40px rgba(0, 0, 0, .7);
+      pointer-events: auto;
+      transition: opacity .2s;
+    }
+
+    .res-viewer.is-loading .res-viewer-img {
+      opacity: .82;
+    }
+
+    .res-viewer-cap {
+      flex: none;
+      padding-top: 14px;
+      max-width: min(100%, 780px);
+      text-align: center;
+      color: #EEF0EC;
+    }
+
+    .res-viewer-cap-title {
+      color: #EEF0EC;
+      font-size: .92rem;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .res-viewer-cap-meta {
+      margin-top: 4px;
+      font-size: .78rem;
+      letter-spacing: .04em;
+      color: var(--on-dark-mute);
+    }
+
+    .res-viewer-close,
+    .res-viewer-nav {
+      position: absolute;
+      z-index: 2;
+      border-radius: 50%;
+      border: 1px solid rgba(238, 240, 236, .5);
+      background: rgba(13, 32, 41, .55);
+      color: #EEF0EC;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .25s, border-color .25s, transform .25s;
+    }
+
+    .res-viewer-close {
+      inset-block-start: 14px;
+      inset-inline-end: 14px;
+      width: 42px;
+      height: 42px;
+    }
+
+    .res-viewer-nav {
+      inset-block-start: 50%;
+      margin-top: -24px;
+      width: 48px;
+      height: 48px;
+    }
+
+    .res-viewer-prev {
+      inset-inline-start: clamp(6px, 1.6vw, 24px);
+    }
+
+    .res-viewer-next {
+      inset-inline-end: clamp(6px, 1.6vw, 24px);
+    }
+
+    .res-viewer-close:hover,
+    .res-viewer-close:focus-visible,
+    .res-viewer-nav:hover,
+    .res-viewer-nav:focus-visible {
+      background: var(--copper);
+      border-color: var(--copper);
+      outline: none;
+    }
+
+    .res-viewer-close:hover,
+    .res-viewer-close:focus-visible {
+      transform: rotate(90deg);
+    }
+
+    .res-viewer-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .res-viewer-nav svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* the chevrons point along the reading direction */
+    [dir="rtl"] .res-viewer-nav svg {
+      transform: scaleX(-1);
+    }
+
+    .res-viewer-nav[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .res-modal {
+        padding: 0;
+      }
+
+      .res-panel {
+        height: 100%;
+        max-width: none;
+        border-radius: 0;
+      }
+
+      .res-filters {
+        gap: 6px;
+        padding-block: 14px 12px;
+      }
+
+      .res-chip {
+        padding: 7px 13px;
+        font-size: .76rem;
+      }
+
+      .res-grid {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr));
+        gap: 10px;
+      }
+
+      .res-viewer-panel {
+        padding: 56px 8px 12px;
+      }
+
+      .res-viewer-nav {
+        width: 40px;
+        height: 40px;
+        margin-top: -20px;
+        background: rgba(13, 32, 41, .7);
+      }
+
+      .res-viewer-prev {
+        inset-inline-start: 6px;
+      }
+
+      .res-viewer-next {
+        inset-inline-end: 6px;
+      }
+    }
+
+    @media (max-height: 520px) {
+      .res-viewer-panel {
+        padding-block: 8px 6px;
+      }
+
+      .res-viewer-cap {
+        padding-top: 6px;
+      }
+
+      .res-viewer-cap-meta {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .res-modal,
+      .res-panel,
+      .res-item,
+      .res-viewer {
+        transition: none;
+      }
+    }
+
     /* ══ NEWSLETTER ══ same compact strip as the home page ═══════════ */
     .nl {
       border-block: 1px solid var(--line);
@@ -3584,6 +4149,10 @@
             <p class="doc-years" data-i18n="doc3.y">15+ years experience</p>
             <p class="doc-bio" data-i18n="doc3.b">Short professional description.</p>
             <span class="doc-view" data-i18n="doc.card.view">View profile</span>
+            <button type="button" class="doc-results" data-results-doctor="isbir" aria-haspopup="dialog">
+              <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M12 4.5v15M6.5 15l2.5-3 2 2.4M14.5 15l2-2.6 2 2.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg>
+              <span data-i18n="results.btn">View Results</span>
+            </button>
           </div>
         </article>
         <article class="doc-card" data-modal-target="doc-modal-amjad" role="button" tabindex="0"
@@ -3598,6 +4167,10 @@
             <p class="doc-years" data-i18n="doc1.y">10+ years experience</p>
             <p class="doc-bio" data-i18n="doc1.b">Short professional description.</p>
             <span class="doc-view" data-i18n="doc.card.view">View profile</span>
+            <button type="button" class="doc-results" data-results-doctor="amjad" aria-haspopup="dialog">
+              <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M12 4.5v15M6.5 15l2.5-3 2 2.4M14.5 15l2-2.6 2 2.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg>
+              <span data-i18n="results.btn">View Results</span>
+            </button>
           </div>
         </article>
         <article class="doc-card" data-modal-target="doc-modal-anna" role="button" tabindex="0"
@@ -3885,6 +4458,63 @@
           <span data-i18n="doc.certViewer.label">Certificate</span>
           <span id="certCounter"></span>
         </p>
+      </div>
+    </div>
+
+    <!-- ── doctor results gallery ── filled from work-photo-web/manifest.js the
+         first time a "View Results" button is used. All copy is data-i18n or
+         set by the results script from the same TR/EXTRA dictionary. ── -->
+    <div class="res-modal" id="resModal" role="dialog" aria-modal="true" aria-labelledby="resTitle" aria-hidden="true"
+      data-results-category="plastic-surgery">
+      <div class="res-backdrop" data-res-close></div>
+      <div class="res-panel" role="document">
+        <button type="button" class="res-close" data-res-close aria-label="Close" data-i18n-aria-label="results.close">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"></path>
+          </svg>
+        </button>
+        <div class="res-head">
+          <span class="eyebrow" data-i18n="results.eyebrow">Before &amp; After Results</span>
+          <h3 class="res-title" id="resTitle"></h3>
+          <p class="res-sub" id="resSub"></p>
+        </div>
+        <div class="res-filters" id="resFilters" role="group" aria-label="Filter by procedure type"
+          data-i18n-aria-label="results.filters"></div>
+        <div class="res-body" id="resBody" tabindex="-1"></div>
+      </div>
+    </div>
+
+    <div class="res-viewer" id="resViewer" role="dialog" aria-modal="true" aria-hidden="true"
+      aria-label="Result photo viewer" data-i18n-aria-label="results.viewer">
+      <div class="res-viewer-backdrop" data-viewer-close></div>
+      <div class="res-viewer-panel" role="document">
+        <button type="button" class="res-viewer-close" id="resViewerClose" data-viewer-close aria-label="Close"
+          data-i18n-aria-label="results.close">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"></path>
+          </svg>
+        </button>
+        <button type="button" class="res-viewer-nav res-viewer-prev" id="resPrev" aria-label="Previous photo"
+          data-i18n-aria-label="results.prev">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.8"></path>
+          </svg>
+        </button>
+        <div class="res-viewer-stage">
+          <img class="res-viewer-img" id="resViewerImg" src="" alt="" decoding="async" />
+        </div>
+        <button type="button" class="res-viewer-nav res-viewer-next" id="resNext" aria-label="Next photo"
+          data-i18n-aria-label="results.next">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+              stroke-width="1.8"></path>
+          </svg>
+        </button>
+        <div class="res-viewer-cap" aria-live="polite">
+          <p class="res-viewer-cap-title" id="resCapTitle"></p>
+          <p class="res-viewer-cap-meta" id="resCapMeta"></p>
+        </div>
       </div>
     </div>
   </section>
@@ -4431,7 +5061,14 @@
           "doc5.modal.expertise4": "Body Contouring", "doc5.modal.expertise5": "Liposuction &amp; Lipofilling", "doc5.modal.expertise6": "Cheiloplasty",
           "doc5.modal.expertise7": "Intimate Plastic Surgery", "doc5.modal.expertise8": "Otoplasty", "doc5.modal.expertise9": "Scar Correction",
           "doc.modal.certOpenAria": "View certificate",
-          "doc.certViewer.close": "Close", "doc.certViewer.prev": "Previous", "doc.certViewer.next": "Next", "doc.certViewer.label": "Certificate"
+          "doc.certViewer.close": "Close", "doc.certViewer.prev": "Previous", "doc.certViewer.next": "Next", "doc.certViewer.label": "Certificate",
+          "results.btn": "View Results", "results.eyebrow": "Before & After Results",
+          "results.close": "Close", "results.filters": "Filter by procedure type", "results.all": "All",
+          "results.note": "Each photo shows the patient before and after treatment. Individual results vary.",
+          "results.viewLarger": "View larger — {{title}} (photo {{n}} of {{total}})",
+          "results.viewer": "Result photo viewer", "results.prev": "Previous photo", "results.next": "Next photo",
+          "results.loading": "Loading results…", "results.empty": "No results are available yet.",
+          "results.error": "The results gallery couldn't be loaded. Please try again in a moment."
         },
         ar: {
           "intake.confidential": "سرّي · يراجعه منسّق",
@@ -4488,7 +5125,14 @@
           "doc5.modal.expertise4": "نحت وتجميل الجسم", "doc5.modal.expertise5": "شفط الدهون وحقن الدهون", "doc5.modal.expertise6": "تجميل الشفاه",
           "doc5.modal.expertise7": "الجراحة التجميلية الحميمة", "doc5.modal.expertise8": "تجميل الأذن", "doc5.modal.expertise9": "تصحيح الندبات",
           "doc.modal.certOpenAria": "عرض الشهادة",
-          "doc.certViewer.close": "إغلاق", "doc.certViewer.prev": "السابق", "doc.certViewer.next": "التالي", "doc.certViewer.label": "الشهادة"
+          "doc.certViewer.close": "إغلاق", "doc.certViewer.prev": "السابق", "doc.certViewer.next": "التالي", "doc.certViewer.label": "الشهادة",
+          "results.btn": "عرض النتائج", "results.eyebrow": "نتائج قبل وبعد",
+          "results.close": "إغلاق", "results.filters": "تصفية حسب نوع الإجراء", "results.all": "الكل",
+          "results.note": "تعرض كل صورة المريض قبل العلاج وبعده. تختلف النتائج من مريض إلى آخر.",
+          "results.viewLarger": "عرض أكبر — {{title}} (الصورة {{n}} من {{total}})",
+          "results.viewer": "عارض صور النتائج", "results.prev": "الصورة السابقة", "results.next": "الصورة التالية",
+          "results.loading": "جارٍ تحميل النتائج…", "results.empty": "لا توجد نتائج متاحة بعد.",
+          "results.error": "تعذّر تحميل معرض النتائج. يرجى المحاولة بعد قليل."
         }
       };
 
@@ -4514,7 +5158,10 @@
         markWordmark();
         measureNavAnchor();
         try { localStorage.setItem('medivia_lang', lang); } catch (e) {}
+        /* let self-contained components (the results gallery) re-render their own copy */
+        document.dispatchEvent(new CustomEvent('medivia:languagechange', { detail: { lang } }));
       }
+      window.t = t;
 
       /* ---- desktop alignment probe ------------------------------------
          The video card is keyed to the inline start of "Who we are" in the
@@ -5009,6 +5656,376 @@
           else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
         }
       }, true);
+    })();
+  </script>
+
+  <!-- ══ DOCTOR RESULTS GALLERY ══ "View Results" on a doctor card opens one
+       filterable gallery inside the page. Photos are the optimised WebP copies
+       listed in work-photo-web/manifest.js (built from work-photo/ by
+       tools/build-results-gallery.py); the manifest is fetched on first use, the
+       grid uses ~20-50 KB thumbnails, and the ~200 KB full-size version is only
+       requested when a photo is opened in the viewer. Nothing here opens a new
+       tab or window. Its own Escape/Tab handling runs in the capture phase and
+       stops propagation so it never double-fires with the other dialogs. -->
+  <script>
+    (function () {
+      var q = function (s, ctx) { return (ctx || document).querySelector(s); };
+      var qa = function (s, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(s)); };
+      var modal = document.getElementById('resModal');
+      var viewer = document.getElementById('resViewer');
+      var triggers = qa('.doc-results[data-results-doctor]');
+      if (!modal || !viewer || !triggers.length) return;
+
+      var MANIFEST_SRC = 'work-photo-web/manifest.js';
+      var category = modal.getAttribute('data-results-category');
+      var body = document.getElementById('resBody');
+      var filtersEl = document.getElementById('resFilters');
+      var titleEl = document.getElementById('resTitle');
+      var subEl = document.getElementById('resSub');
+      var vImg = document.getElementById('resViewerImg');
+      var vTitle = document.getElementById('resCapTitle');
+      var vMeta = document.getElementById('resCapMeta');
+      var vPrev = document.getElementById('resPrev');
+      var vNext = document.getElementById('resNext');
+      var ZOOM_ICON = '<svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.7"></circle><path d="M16 16l4.5 4.5M11 8.5v5M8.5 11h5" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"></path></svg>';
+
+      var state = { open: false, btn: null, doctor: null, filter: 'all', groups: [], chips: [], statusKey: null, note: null, base: '' };
+      var vs = { open: false, list: [], index: 0, token: 0, lastFocus: null };
+
+      /* ---- language: the page's own dictionary (window.t) + the lang attribute ---- */
+      function T(key, vars) { return typeof window.t === 'function' ? window.t(key, vars) : key; }
+      function lang() { return document.documentElement.lang === 'ar' ? 'ar' : 'en'; }
+      function L(obj) { return obj ? (obj[lang()] || obj.en || '') : ''; }
+
+      function cardText(btn, sel) {
+        var card = btn && btn.closest('.doc-card');
+        var node = card && card.querySelector(sel);
+        return node ? node.textContent.trim() : '';
+      }
+
+      /* ---- manifest (loaded once, on first use) ---- */
+      var manifestPromise = null;
+      function loadManifest() {
+        if (window.MEDIVIA_RESULTS) return Promise.resolve(window.MEDIVIA_RESULTS);
+        if (!manifestPromise) {
+          manifestPromise = new Promise(function (resolve, reject) {
+            var s = document.createElement('script');
+            s.src = MANIFEST_SRC;
+            s.async = true;
+            s.onload = function () { window.MEDIVIA_RESULTS ? resolve(window.MEDIVIA_RESULTS) : reject(new Error('empty manifest')); };
+            s.onerror = function () { manifestPromise = null; reject(new Error('manifest failed to load')); };
+            document.head.appendChild(s);
+          });
+        }
+        return manifestPromise;
+      }
+
+      function url(item, w) { return state.base + item.src + '-' + w + '.webp'; }
+      function largest(item) { return item.v[item.v.length - 1]; }
+      function thumbWidths(item) {
+        var t = item.v.filter(function (w) { return w <= 800; });
+        return t.length ? t : [item.v[0]];
+      }
+
+      function make(tag, cls, text) {
+        var n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text != null) n.textContent = text;
+        return n;
+      }
+
+      /* ---- rendering ---- */
+      function showStatus(key) {
+        state.statusKey = key;
+        state.groups = []; state.chips = []; state.note = null;
+        filtersEl.innerHTML = '';
+        body.innerHTML = '';
+        var p = make('p', 'res-status', T(key));
+        p.setAttribute('role', 'status');
+        body.appendChild(p);
+      }
+
+      function build(manifest) {
+        var cat = manifest.categories && manifest.categories[category];
+        var entries = (cat && cat.doctors && cat.doctors[state.doctor]) || [];
+        state.base = manifest.base || '';
+        if (!entries.length) { showStatus('results.empty'); return; }
+        state.statusKey = null;
+
+        var specs = cat.specialties.filter(function (s) {
+          return entries.some(function (e) { return e.specialty === s.id; });
+        });
+        var order = {};
+        specs.forEach(function (s, i) { order[s.id] = i; });
+        entries = entries.map(function (e, i) { return { e: e, i: i }; })
+          .sort(function (a, b) { return (order[a.e.specialty] - order[b.e.specialty]) || (a.i - b.i); })
+          .map(function (x) { return x.e; });
+
+        /* filters: "All" + one chip per specialty this doctor has results in */
+        filtersEl.innerHTML = '';
+        state.chips = [];
+        [{ id: 'all' }].concat(specs).forEach(function (s) {
+          var count = entries.filter(function (e) { return s.id === 'all' || e.specialty === s.id; })
+            .reduce(function (n, e) { return n + e.images.length; }, 0);
+          var chip = make('button', 'res-chip');
+          chip.type = 'button';
+          var label = make('span');
+          chip.appendChild(label);
+          chip.appendChild(make('b', null, String(count)));
+          chip.addEventListener('click', function () { setFilter(s.id); });
+          filtersEl.appendChild(chip);
+          state.chips.push({ el: chip, label: label, spec: s });
+        });
+
+        /* one group per procedure, its photos inside */
+        body.innerHTML = '';
+        state.note = make('p', 'res-note');
+        body.appendChild(state.note);
+        state.groups = entries.map(function (entry) {
+          var spec = specs.filter(function (s) { return s.id === entry.specialty; })[0];
+          var g = { entry: entry, spec: spec, items: [] };
+          g.el = make('section', 'res-group');
+          var head = make('div', 'res-group-head');
+          g.specEl = make('span', 'res-group-spec');
+          g.titleEl = make('h4', 'res-group-title');
+          g.timingEl = make('span', 'res-group-timing');
+          head.appendChild(g.specEl);
+          head.appendChild(g.titleEl);
+          head.appendChild(g.timingEl);
+          var grid = make('div', 'res-grid');
+          entry.images.forEach(function (item, i) {
+            var b = make('button', 'res-item');
+            b.type = 'button';
+            var img = document.createElement('img');
+            var tw = thumbWidths(item);
+            img.src = url(item, tw[0]);
+            img.srcset = tw.map(function (w) { return url(item, w) + ' ' + w + 'w'; }).join(', ');
+            img.sizes = '(max-width: 640px) 46vw, (max-width: 1160px) 30vw, 260px';
+            img.width = item.w; img.height = item.h;
+            img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
+            b.appendChild(img);
+            var zoom = make('span', 'res-item-zoom');
+            zoom.innerHTML = ZOOM_ICON;
+            b.appendChild(zoom);
+            b.addEventListener('click', function () { openViewer(b); });
+            grid.appendChild(b);
+            g.items.push({ btn: b, item: item, index: i });
+          });
+          g.el.appendChild(head);
+          g.el.appendChild(grid);
+          body.appendChild(g.el);
+          return g;
+        });
+        setFilter('all');
+        localize();
+      }
+
+      function setFilter(id) {
+        state.filter = id;
+        state.chips.forEach(function (c) { c.el.setAttribute('aria-pressed', String(c.spec.id === id)); });
+        state.groups.forEach(function (g) { g.el.hidden = id !== 'all' && g.entry.specialty !== id; });
+        body.scrollTop = 0;
+      }
+
+      /* every piece of copy this script owns — safe to call at any time, never re-renders images */
+      function localize() {
+        triggers.forEach(function (b) {
+          b.setAttribute('aria-label', T('results.btn') + ' — ' + cardText(b, '.doc-name'));
+        });
+        if (!state.btn) return;
+        titleEl.textContent = cardText(state.btn, '.doc-name');
+        subEl.textContent = cardText(state.btn, '.doc-spec');
+        if (state.statusKey) {
+          var s = q('.res-status', body);
+          if (s) s.textContent = T(state.statusKey);
+        }
+        if (state.note) state.note.textContent = T('results.note');
+        state.chips.forEach(function (c) {
+          c.label.textContent = c.spec.id === 'all' ? T('results.all') : L(c.spec.label);
+        });
+        state.groups.forEach(function (g) {
+          var title = L(g.entry.title);
+          var timing = L(g.entry.timing);
+          g.specEl.textContent = g.spec ? L(g.spec.label) : '';
+          g.titleEl.textContent = title;
+          g.timingEl.textContent = timing;
+          g.timingEl.hidden = !timing;
+          g.items.forEach(function (it, i) {
+            it.btn.setAttribute('aria-label', T('results.viewLarger', { title: title, n: i + 1, total: g.items.length }));
+          });
+        });
+        if (vs.open) renderViewerText();
+      }
+
+      /* ---- gallery open / close ---- */
+      function openGallery(btn) {
+        state.btn = btn;
+        state.doctor = btn.getAttribute('data-results-doctor');
+        state.filter = 'all';
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('res-open');
+        state.open = true;
+        showStatus('results.loading');
+        localize();
+        var close = q('.res-close', modal);
+        if (close) close.focus();
+        loadManifest().then(function (m) {
+          if (state.open && state.btn === btn) build(m);
+        }).catch(function (err) {
+          console.warn('[MediVia] results gallery:', err);
+          if (state.open && state.btn === btn) { showStatus('results.error'); localize(); }
+        });
+      }
+
+      function closeGallery() {
+        if (vs.open) closeViewer(true);
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('res-open');
+        state.open = false;
+        if (state.btn && typeof state.btn.focus === 'function') state.btn.focus();
+      }
+
+      triggers.forEach(function (btn) {
+        /* the button sits inside a clickable doctor card — keep that card's own
+           "open profile" handler out of it */
+        btn.addEventListener('click', function (e) { e.stopPropagation(); openGallery(btn); });
+        btn.addEventListener('keydown', function (e) { e.stopPropagation(); });
+      });
+      qa('[data-res-close]', modal).forEach(function (n) { n.addEventListener('click', closeGallery); });
+
+      /* ---- photo viewer ---- */
+      function visibleItems() {
+        var out = [];
+        state.groups.forEach(function (g) {
+          if (g.el.hidden) return;
+          g.items.forEach(function (it) { out.push({ g: g, it: it }); });
+        });
+        return out;
+      }
+
+      function renderViewerText() {
+        var cur = vs.list[vs.index];
+        if (!cur) return;
+        var timing = L(cur.g.entry.timing);
+        vTitle.textContent = L(cur.g.entry.title);
+        vMeta.textContent = (timing ? timing + ' · ' : '') + (vs.index + 1) + ' / ' + vs.list.length;
+        vImg.alt = L(cur.g.entry.title);
+      }
+
+      function renderViewer() {
+        var cur = vs.list[vs.index];
+        if (!cur) return;
+        var my = ++vs.token;
+        var item = cur.it.item;
+        var tw = thumbWidths(item);
+        var largeUrl = url(item, largest(item));
+        /* the grid thumbnail is already cached: show it at once, swap the large one in when it is ready */
+        vImg.src = url(item, tw[tw.length - 1]);
+        viewer.classList.add('is-loading');
+        var big = new Image();
+        var done = function () {
+          if (my !== vs.token) return;
+          viewer.classList.remove('is-loading');
+          preloadNeighbours();
+        };
+        big.onload = function () { if (my === vs.token) vImg.src = largeUrl; done(); };
+        big.onerror = done;
+        big.src = largeUrl;
+        renderViewerText();
+        var multi = vs.list.length > 1;
+        vPrev.hidden = !multi;
+        vNext.hidden = !multi;
+      }
+
+      function preloadNeighbours() {
+        if (vs.list.length < 2) return;
+        [1, -1].forEach(function (d) {
+          var n = vs.list[(vs.index + d + vs.list.length) % vs.list.length];
+          if (n) (new Image()).src = url(n.it.item, largest(n.it.item));
+        });
+      }
+
+      function openViewer(btn) {
+        vs.list = visibleItems();
+        vs.index = 0;
+        vs.list.forEach(function (x, i) { if (x.it.btn === btn) vs.index = i; });
+        vs.lastFocus = btn;
+        vs.open = true;
+        renderViewer();
+        viewer.classList.add('is-open');
+        viewer.setAttribute('aria-hidden', 'false');
+        var close = document.getElementById('resViewerClose');
+        if (close) close.focus();
+      }
+
+      function closeViewer(skipFocus) {
+        vs.open = false;
+        vs.token++;
+        viewer.classList.remove('is-open', 'is-loading');
+        viewer.setAttribute('aria-hidden', 'true');
+        vImg.removeAttribute('src');
+        /* land back on the photo the viewer ended on, so the gallery underneath
+           is exactly where the visitor left it */
+        var cur = vs.list[vs.index];
+        var back = (cur && cur.it.btn) || vs.lastFocus;
+        if (!skipFocus && back) {
+          back.focus({ preventScroll: true });
+          if (back.scrollIntoView) back.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      function step(delta) {
+        if (vs.list.length < 2) return;
+        vs.index = (vs.index + delta + vs.list.length) % vs.list.length;
+        renderViewer();
+      }
+
+      qa('[data-viewer-close]', viewer).forEach(function (n) { n.addEventListener('click', function () { closeViewer(); }); });
+      vPrev.addEventListener('click', function () { step(-1); });
+      vNext.addEventListener('click', function () { step(1); });
+
+      /* swipe: the content follows the finger, so in RTL "next" is a swipe to the right */
+      var tx = 0, ty = 0, tracking = false;
+      viewer.addEventListener('touchstart', function (e) {
+        if (e.touches.length !== 1) { tracking = false; return; }
+        tracking = true; tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+      }, { passive: true });
+      viewer.addEventListener('touchend', function (e) {
+        if (!tracking || !e.changedTouches.length) return;
+        tracking = false;
+        var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        var rtl = document.documentElement.dir === 'rtl';
+        step((dx < 0) !== rtl ? 1 : -1);
+      }, { passive: true });
+
+      /* ---- keyboard (capture phase, like the certificate viewer) ---- */
+      function trap(e, container) {
+        var items = qa('button:not([disabled]):not([hidden])', container).filter(function (n) { return n.offsetParent !== null; });
+        if (!items.length) return;
+        var first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (!state.open) return;
+        var rtl = document.documentElement.dir === 'rtl';
+        if (vs.open) {
+          if (e.key === 'Escape' || e.key === 'Esc') { e.stopPropagation(); closeViewer(); }
+          else if (e.key === 'ArrowLeft') { e.stopPropagation(); e.preventDefault(); step(rtl ? 1 : -1); }
+          else if (e.key === 'ArrowRight') { e.stopPropagation(); e.preventDefault(); step(rtl ? -1 : 1); }
+          else if (e.key === 'Tab') { e.stopPropagation(); trap(e, q('.res-viewer-panel', viewer)); }
+          return;
+        }
+        if (e.key === 'Escape' || e.key === 'Esc') { e.stopPropagation(); closeGallery(); }
+        else if (e.key === 'Tab') { e.stopPropagation(); trap(e, q('.res-panel', modal)); }
+      }, true);
+
+      document.addEventListener('medivia:languagechange', localize);
+      localize();
     })();
   </script>
 

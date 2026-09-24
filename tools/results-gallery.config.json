@@ -1,0 +1,185 @@
+{
+  "_readme": "Source of truth for the Doctor Results gallery. The image files themselves live under work-photo/<Category>/<Specialty>/<Doctor>/<Procedure>/ and are NEVER modified. This file only supplies (a) the English/Arabic wording for the Russian folder names and (b) stable ASCII slugs. To add results: drop the images into work-photo/, add any NEW folder names below, then run: python tools/build-results-gallery.py",
+
+  "sourceDir": "work-photo",
+  "outputDir": "work-photo-web",
+  "publicBase": "work-photo-web/",
+
+  "image": {
+    "thumbWidths": [480, 800],
+    "largeWidth": 1600,
+    "thumbQuality": 80,
+    "largeQuality": 86
+  },
+
+  "categories": {
+    "Plastic & Reconstructive Surgery": { "slug": "plastic-surgery" }
+  },
+
+  "doctors": {
+    "амжад": "amjad",
+    "исбир": "isbir"
+  },
+
+  "specialties": {
+    "Ринопластика": {
+      "slug": "rhinoplasty", "order": 1,
+      "label": { "en": "Rhinoplasty", "ar": "تجميل الأنف" }
+    },
+    "Пластика груди": {
+      "slug": "breast", "order": 2,
+      "label": { "en": "Breast Surgery", "ar": "جراحة الثدي" }
+    },
+    "Лицо и веки": {
+      "slug": "face-eyelids", "order": 3,
+      "label": { "en": "Facial & Eyelid Surgery", "ar": "جراحة الوجه والجفون" }
+    },
+    "Контурная пластика тела": {
+      "slug": "body-contouring", "order": 4,
+      "label": { "en": "Body Contouring", "ar": "نحت وتنسيق الجسم" },
+      "looseImages": {
+        "slug": "body-contouring",
+        "title": { "en": "Body Contouring", "ar": "نحت وتنسيق الجسم" },
+        "timing": null
+      }
+    }
+  },
+
+  "ignoreFilePrefixes": [
+    "Лина Алиевна Исбир"
+  ],
+
+  "procedures": {
+    "Липоскульптура тела с липосакцией всех проблемных зон и липофилингом Ягодиц": {
+      "slug": "body-lipo-sculpting-liposuction-buttock-lipofilling",
+      "title": {
+        "en": "Body lipo-sculpting with liposuction of all problem areas and buttock lipofilling",
+        "ar": "نحت الجسم بشفط الدهون من جميع المناطق المشكلة مع حقن الدهون في الأرداف"
+      },
+      "timing": null
+    },
+    "Липоскульптура тела с липофилингом ягодиц до и через 3 месяца после операции на плановом осмотре": {
+      "slug": "body-lipo-sculpting-buttock-lipofilling",
+      "title": {
+        "en": "Body lipo-sculpting with buttock lipofilling",
+        "ar": "نحت الجسم مع حقن الدهون في الأرداف"
+      },
+      "timing": {
+        "en": "Before and 3 months after surgery (scheduled follow-up visit)",
+        "ar": "قبل العملية وبعد 3 أشهر منها (في زيارة المتابعة المجدولة)"
+      }
+    },
+
+    "верхняя блефаропластика до и через 2 месяца": {
+      "slug": "upper-blepharoplasty",
+      "title": { "en": "Upper blepharoplasty", "ar": "تجميل الجفون العلوية" },
+      "timing": { "en": "Before and 2 months after", "ar": "قبل العملية وبعد شهرين" }
+    },
+    "фейслифтинг и круговая блефаропластика": {
+      "slug": "facelift-circular-blepharoplasty",
+      "title": {
+        "en": "Facelift and circular blepharoplasty",
+        "ar": "شد الوجه وتجميل الجفون الدائري"
+      },
+      "timing": null
+    },
+    "Фейслифтинг и круговая блефаропластика через 2 месяца": {
+      "slug": "facelift-circular-blepharoplasty-2-months",
+      "title": {
+        "en": "Facelift and circular blepharoplasty",
+        "ar": "شد الوجه وتجميل الجفون الدائري"
+      },
+      "timing": { "en": "2 months after", "ar": "بعد شهرين" }
+    },
+    "Фейслифтинг, верхняя и нижняя пластика век, платизмопластика и пластика верхней губы %U00ABBullhorn%U201D через 3,5 месяца": {
+      "slug": "facelift-eyelids-platysmaplasty-bullhorn-lip",
+      "title": {
+        "en": "Facelift, upper and lower eyelid surgery, platysmaplasty and “Bullhorn” upper lip surgery",
+        "ar": "شد الوجه وجراحة الجفون العلوية والسفلية وتجميل عضلة البلاتيزما وجراحة الشفة العليا بتقنية «Bullhorn»"
+      },
+      "timing": { "en": "3.5 months after", "ar": "بعد 3 أشهر ونصف" }
+    },
+    "Височный лифтинг и чек-лифтинг до и спустя 11 дней": {
+      "slug": "temporal-lift-cheek-lift",
+      "title": { "en": "Temporal lift and cheek lift", "ar": "شد الصدغ وشد الخدين" },
+      "timing": { "en": "Before and 11 days after", "ar": "قبل العملية وبعد 11 يومًا" }
+    },
+
+    "Увеличение груди анатомическими имплантами до и после первичной реабилитации": {
+      "slug": "breast-augmentation-anatomical-implants",
+      "title": {
+        "en": "Breast augmentation with anatomical implants",
+        "ar": "تكبير الثدي بغرسات تشريحية"
+      },
+      "timing": {
+        "en": "Before and after initial recovery",
+        "ar": "قبل العملية وبعد مرحلة التعافي الأولى"
+      }
+    },
+    "Увеличение груди имплантами SILIMID(СИЛИМЕД) с одномоментной подтяжкой по ареоле через 4 месяца": {
+      "slug": "breast-augmentation-silimed-periareolar-lift",
+      "title": {
+        "en": "Breast augmentation with SILIMED implants and simultaneous periareolar lift",
+        "ar": "تكبير الثدي بغرسات SILIMED مع شد الثدي حول الهالة في الجلسة الجراحية نفسها"
+      },
+      "timing": { "en": "4 months after", "ar": "بعد 4 أشهر" }
+    },
+
+    "Риносептопластика до и сразу после операции": {
+      "slug": "rhinoseptoplasty-immediate",
+      "title": { "en": "Rhinoseptoplasty", "ar": "رأب الأنف والحاجز الأنفي" },
+      "timing": { "en": "Before and immediately after surgery", "ar": "قبل العملية ومباشرةً بعدها" }
+    },
+    "Женская риносептопластика до и через 6 месяцев после на плановом осмотре": {
+      "slug": "rhinoseptoplasty-female-6-months",
+      "title": {
+        "en": "Rhinoseptoplasty (female patient)",
+        "ar": "رأب الأنف والحاجز الأنفي (مريضة)"
+      },
+      "timing": {
+        "en": "Before and 6 months after (scheduled follow-up visit)",
+        "ar": "قبل العملية وبعد 6 أشهر (في زيارة المتابعة المجدولة)"
+      }
+    },
+    "Мужская риносептопластика совмещенное с липофилингом век до и через 6 месяцев": {
+      "slug": "rhinoseptoplasty-male-eyelid-lipofilling",
+      "title": {
+        "en": "Rhinoseptoplasty combined with eyelid lipofilling (male patient)",
+        "ar": "رأب الأنف والحاجز الأنفي مع حقن الدهون في الجفون (مريض)"
+      },
+      "timing": { "en": "Before and 6 months after", "ar": "قبل العملية وبعد 6 أشهر" }
+    },
+    "Мужская риносептопластика через 2 месяца на плановом осмотре": {
+      "slug": "rhinoseptoplasty-male-2-months",
+      "title": {
+        "en": "Rhinoseptoplasty (male patient)",
+        "ar": "رأب الأنف والحاجز الأنفي (مريض)"
+      },
+      "timing": {
+        "en": "2 months after (scheduled follow-up visit)",
+        "ar": "بعد شهرين (في زيارة المتابعة المجدولة)"
+      }
+    },
+    "ринопластика до и через 7 месяцев": {
+      "slug": "rhinoplasty-7-months",
+      "title": { "en": "Rhinoplasty", "ar": "تجميل الأنف" },
+      "timing": { "en": "Before and 7 months after", "ar": "قبل العملية وبعد 7 أشهر" }
+    },
+    "ринопластики до и через 3 месяца": {
+      "slug": "rhinoplasty-3-months",
+      "title": { "en": "Rhinoplasty", "ar": "تجميل الأنف" },
+      "timing": { "en": "Before and 3 months after", "ar": "قبل العملية وبعد 3 أشهر" }
+    },
+    "Структурная риносептопластика до и через 1,5 года на плановом осмотре": {
+      "slug": "structural-rhinoseptoplasty",
+      "title": {
+        "en": "Structural rhinoseptoplasty",
+        "ar": "رأب الأنف والحاجز الأنفي الهيكلي"
+      },
+      "timing": {
+        "en": "Before and 1.5 years after (scheduled follow-up visit)",
+        "ar": "قبل العملية وبعد سنة ونصف (في زيارة المتابعة المجدولة)"
+      }
+    }
+  }
+}
