@@ -2203,6 +2203,79 @@
       color: var(--copper);
     }
 
+    /* ══ PROCEDURE → DOCTOR FILTER ══ procedure cards become selectors; the
+       results reuse .doc-card markup/styling and the existing doctor modals */
+    .feat-proc {
+      cursor: pointer;
+    }
+
+    .feat-proc:focus-visible {
+      outline: 2px solid var(--copper);
+      outline-offset: 3px;
+    }
+
+    .feat-proc[aria-pressed="true"] {
+      border-color: var(--copper);
+      box-shadow: var(--shadow);
+    }
+
+    .feat-proc[aria-pressed="true"]::before {
+      scale: 1 1;
+    }
+
+    .proc-docs {
+      margin-top: clamp(28px, 3.4vw, 44px);
+      scroll-margin-top: 96px;
+    }
+
+    .proc-docs[hidden],
+    .proc-docs [hidden] {
+      display: none;
+    }
+
+    .proc-docs-title {
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+      color: var(--ink);
+      margin-bottom: clamp(18px, 2vw, 26px);
+      padding-block-end: 14px;
+      border-block-end: 1px solid var(--line);
+    }
+
+    .proc-docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+      gap: clamp(18px, 2.2vw, 28px);
+    }
+
+    .proc-docs-grid .doc-card,
+    .proc-docs-grid .doc-card:nth-child(3) {
+      grid-column: auto;
+    }
+
+    .doc-hospital {
+      margin-top: 10px;
+      font-size: .8rem;
+      line-height: 1.5;
+      color: var(--aqua-ink);
+    }
+
+    .doc-hospital b {
+      font-weight: 600;
+      color: var(--muted);
+      margin-inline-end: 6px;
+    }
+
+    .proc-docs-empty {
+      padding: 20px 24px;
+      color: var(--muted);
+      background: var(--fog);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      max-width: 60ch;
+    }
+
     /* ══ DOCTOR PROFILE MODAL ══ one dialog per doctor, opened from its card.
        Palette is limited to fog / mist / sage / deep aqua / copper, the same
        five tokens the rest of the page draws from — a sophisticated, concierge
@@ -3602,7 +3675,7 @@
     .clinic-photo {
       border-radius: 5px;
       overflow: hidden;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(200, 138, 102, .5);
       box-shadow: var(--shadow);
       aspect-ratio: 41/60;
       background: var(--mist)
@@ -4120,7 +4193,7 @@
       <div class="rv">
         <div class="clinic-photo">
           <img alt="Damas Medical Center entrance in Moscow"
-                src="photo/plastic-surgery/2.webp"
+                src="photo/plastic-surgery/2.webp">
         </div>
       </div>
     </div>
@@ -4565,30 +4638,44 @@
         </p>
       </div>
       <div class="feat-grid">
-        <article class="feat rv">
+        <article class="feat feat-proc rv" data-procedure-id="rhinoplasty" role="button" tabindex="0" aria-pressed="false"
+          aria-controls="procDoctors">
           <h3 data-i18n="p1.t">Rhinoplasty</h3>
           <p data-i18n="p1.x">Reshaping and functional correction of the nose, balancing profile and breathing.</p>
         </article>
-        <article class="feat rv">
+        <article class="feat feat-proc rv" data-procedure-id="faceEyelids" role="button" tabindex="0" aria-pressed="false"
+          aria-controls="procDoctors">
           <h3 data-i18n="p2.t">Face & Eyelids</h3>
           <p data-i18n="p2.x">Facelift, blepharoplasty and rejuvenation for a natural, well-rested look.</p>
         </article>
-        <article class="feat rv">
+        <article class="feat feat-proc rv" data-procedure-id="breastSurgery" role="button" tabindex="0" aria-pressed="false"
+          aria-controls="procDoctors">
           <h3 data-i18n="p3.t">Breast Surgery</h3>
           <p data-i18n="p3.x">Augmentation, reduction, lift and reconstruction, tailored to each patient.</p>
         </article>
-        <article class="feat rv">
+        <article class="feat feat-proc rv" data-procedure-id="bodyContouring" role="button" tabindex="0" aria-pressed="false"
+          aria-controls="procDoctors">
           <h3 data-i18n="p4.t">Body Contouring</h3>
           <p data-i18n="p4.x">Liposuction, abdominoplasty and post–weight-loss contouring of the figure.</p>
         </article>
-        <article class="feat rv">
+        <article class="feat feat-proc rv" data-procedure-id="reconstructiveSurgery" role="button" tabindex="0" aria-pressed="false"
+          aria-controls="procDoctors">
           <h3 data-i18n="p5.t">Reconstructive Surgery</h3>
           <p data-i18n="p5.x">Restoring form and function after trauma, surgery or congenital differences.</p>
         </article>
-        <article class="feat rv">
+        <article class="feat feat-proc rv" data-procedure-id="hairTransplantation" role="button" tabindex="0" aria-pressed="false"
+          aria-controls="procDoctors">
           <h3 data-i18n="p6.t">Hair Transplantation</h3>
           <p data-i18n="p6.x">Modern follicular techniques for natural, lasting hair restoration.</p>
         </article>
+      </div>
+
+      <!-- filtered doctors for the selected procedure — filled by the
+           procedure → doctor → hospital script; cards reuse the doctor modals -->
+      <div class="proc-docs" id="procDoctors" aria-live="polite" hidden>
+        <h3 class="proc-docs-title" id="procDoctorsTitle" data-i18n="pdocs.title">Doctors specializing in this procedure</h3>
+        <div class="proc-docs-grid" id="procDoctorsGrid"></div>
+        <p class="proc-docs-empty" id="procDoctorsEmpty" data-i18n="pdocs.empty" hidden></p>
       </div>
     </div>
   </section>
@@ -4997,7 +5084,7 @@
 
   <script src="js/supabase-config.js"></script>
   <script>
-    const TR = { "en": { "seo.title": "Plastic Surgery · Damas Medical Center — MediVia", "nav.about": "Who we are", "nav.how": "How it works", "nav.treatments": "Treatments", "nav.start": "Start a case", "lang.ar": "العربية", "crumb.home": "Home", "crumb.treat": "Treatments", "crumb.cur": "Plastic Surgery", "hero.eyebrow": "Treatments · Plastic Surgery", "hero.title": "Plastic &amp; <em>Reconstructive</em> Surgery", "hero.lead": "World-class aesthetic and reconstructive care in Moscow — coordinated end to end by MediVia, from your first message to your flight home.", "hero.cta1": "Start a case — free review", "hero.cta2": "WhatsApp us", "hero.back": "Back to all treatments", "psv.eyebrow": "WATCH", "psv.heading": "See how MediVia works", "psv.text": "See how we support you from your first contact through your complete treatment journey.", "psv.title": "MediVia — a short introduction", "psv.play": "Play video", "doc.eyebrow": "Our medical team", "doc.title": "Our doctors", "doc.intro": "The specialists who look after your treatment at Damas Medical Center.", "doc1.n": "Amjad Al-Yusef", "doc1.s": "Plastic Surgeon, Maxillofacial Surgeon, Oncologist", "doc1.y": "16 years experience", "doc1.b": "Leading Plastic Surgeon and Founder of Damas Medical Center for Innovative Medicine, Chief Physician. Highest Category · Candidate of Medical Sciences.", "doc2.n": "Doctor 02", "doc2.s": "Specialist", "doc2.y": "12+ years experience", "doc2.b": "Short professional description.", "doc3.n": "Lina Aliyevna Isbir", "doc3.s": "Plastic Surgeon", "doc3.y": "16 years experience", "doc3.b": "Plastic Surgeon, Otorhinolaryngologist.", "doc4.n": "Doctor 04", "doc4.s": "Specialist", "doc4.y": "18+ years experience", "doc4.b": "Short professional description.", "doc5.n": "Anna Petrovna Pershukova", "doc5.s": "Plastic Surgeon", "doc5.y": "12 years experience", "doc5.b": "Plastic surgeon with 12 years of professional experience, working across facial, breast and body procedures at Damas Medical Center for Innovative Medicine.", "newsletter.eyebrow": "Stay informed", "newsletter.title": "Stay updated with MediVia", "newsletter.description": "Leave your email and we'll keep you informed about what's new.", "newsletter.emailPlaceholder": "Email address", "newsletter.button": "Subscribe", "newsletter.sending": "Subscribing…", "newsletter.success": "You're subscribed. We'll keep you updated.", "newsletter.alreadySubscribed": "You're already subscribed.", "newsletter.invalid": "Please enter a valid email address.", "newsletter.error": "We couldn't complete your subscription. Please try again.", "newsletter.notConfigured": "Subscriptions are not configured yet. Please contact us on WhatsApp.", "stat1.l": "Patients treated", "stat2.l": "Annual visits", "stat3.l": "Years of experience", "clinic.tag": "Partner clinic", "clinic.loc": "Moscow · Russia", "clinic.desc": "A premium multidisciplinary centre in Moscow, specialising in aesthetic and reconstructive medicine — where experienced surgeons, modern operating suites and a calm, private setting come together under one roof.", "clinic.desc2": "Through MediVia, international patients reach Damas Medical Center with everything handled around them: one coordinator, one agreed price, and their documents protected at every step.", "clinic.specTitle": "Key specialties", "spec.0": "Plastic & Reconstructive Surgery", "spec.1": "Hair Transplantation", "spec.2": "Aesthetic Medicine & Cosmetology", "spec.3": "Dermatology & Trichology", "spec.4": "Vascular Surgery & Phlebology", "spec.5": "Gynecology — Outpatient & Surgical Care", "gallery.eyebrow": "Inside the clinic", "gallery.title": "A closer look at Damas Medical Center", "gallery.intro": "A quiet, private environment built around the patient — from the first consultation to the operating suite.", "shot1.b": "Clinic entrance", "shot1.t": "The Damas Medical Center in Moscow — discreet and easy to reach.", "shot2.b": "Specialist consultation", "shot2.t": "Every plan starts with an unhurried conversation with your surgeon.", "shot3.b": "Operating suite", "shot3.t": "Modern, fully-equipped theatres held to international standards.", "proc.eyebrow": "What we coordinate", "proc.title": "Procedures within plastic surgery", "proc.intro": "Damas Medical Center covers the full spectrum of aesthetic and reconstructive work. These are the areas patients most often ask us to coordinate — your final plan is always set with your surgeon.", "p1.t": "Rhinoplasty", "p1.x": "Reshaping and functional correction of the nose, balancing profile and breathing.", "p2.t": "Face & Eyelids", "p2.x": "Facelift, blepharoplasty and rejuvenation for a natural, well-rested look.", "p3.t": "Breast Surgery", "p3.x": "Augmentation, reduction, lift and reconstruction, tailored to each patient.", "p4.t": "Body Contouring", "p4.x": "Liposuction, abdominoplasty and post–weight-loss contouring of the figure.", "p5.t": "Reconstructive Surgery", "p5.x": "Restoring form and function after trauma, surgery or congenital differences.", "p6.t": "Hair Transplantation", "p6.x": "Modern follicular techniques for natural, lasting hair restoration.", "cost.eyebrow": "Indicative treatment costs", "cost.title": "Transparent starting prices", "cost.intro": "Clear starting points, agreed with you before anything begins — no surprises later.", "price.from": "From", "pr1.t": "Plastic Surgery", "pr2.t": "Hair Transplantation", "pr3.t": "Aesthetic Medicine & Cosmetology", "cost.disc": "Final treatment costs depend on the individual case, the selected physician and the treatment plan. MediVia confirms one agreed price with you before anything begins.", "proc2.eyebrow": "With MediVia beside you", "proc2.title": "How your journey works", "s1.t": "You reach out", "s1.x": "Send your case and any documents. A coordinator replies within the hour.", "s2.t": "Medical review", "s2.x": "Your file is reviewed with Damas surgeons, and a clear plan and price are prepared.", "s3.t": "Your visit", "s3.x": "We arrange the invitation, travel, translation and everything around your surgery.", "s4.t": "Recovery & home", "s4.x": "Aftercare, follow-up and a smooth return — we stay with you to full recovery.", "form.eyebrow": "Start a case", "form.title": "Open your case file", "intake.label": "Patient intake", "intake.conf": "Confidential · Reviewed by a coordinator", "ref.b": "Reference", "form.paneH": "Tell us about you and your case", "form.paneS": "Plain words are enough — we handle the medical language.", "form.first": "First name", "form.last": "Last name", "form.nat": "Nationality", "form.age": "Age", "form.sex": "Sex", "form.male": "Male", "form.female": "Female", "form.sexHint": "Hospitals require this on every referral — a clinical field, not a preference.", "form.wa": "WhatsApp number", "form.waHint": "Optional — but it's how we reply fastest.", "form.email": "Email", "form.interest": "Area of interest", "form.problem": "The procedure or concern, in one line", "form.problemPh": "e.g. Rhinoplasty · or facelift consultation", "form.problemHint": "Up to 140 characters.", "form.details": "The full story", "form.detailsPh": "What you're hoping for, anything you've already been told, past procedures, medications and other conditions.", "form.detailsHint": "Take the space you need.", "form.consent": "I agree that MediVia may review my information to assess and coordinate my case. I understand MediVia is a coordination service and does not provide medical diagnosis or treatment.", "form.send": "Send my case", "v.first": "Please enter your first name.", "v.last": "Please enter your last name.", "v.nat": "Please enter your nationality.", "v.age": "Enter an age between 0 and 120.", "v.sex": "Please select one.", "v.problem": "Please describe it in one line.", "v.details": "Please tell us a little more — at least a few sentences.", "v.consent": "Please agree before sending.", "done.title": "Your file is open.", "done.text": "A coordinator has it now. You'll hear back within the hour — and the first message will come from a person, with your name on it.", "done.ref": "Reference", "contact.eyebrow": "Speak to MediVia today", "contact.title": "Not ready for a form? Write to a person.", "chan.wa": "WhatsApp", "chan.email": "Email", "chan.web": "Website", "foot.sub": "Medical Concierge · Russia", "foot.disc": "MediVia is a medical concierge and coordination service. It does not provide medical diagnosis or treatment. Damas Medical Center is a licensed partner clinic in Moscow.", "foot.rights": "© 2026 MediVia · Medical Concierge" }, "ar": { "seo.title": "الجراحة التجميلية · مركز داماس الطبي — مديفيا", "nav.about": "من نحن", "nav.how": "آلية العمل", "nav.treatments": "التخصصات الطبية", "nav.start": "املأ ملفك الطبي", "lang.ar": "English", "crumb.home": "الرئيسية", "crumb.treat": "التخصصات", "crumb.cur": "الجراحة التجميلية", "hero.eyebrow": "التخصصات · الجراحة التجميلية", "hero.title": "الجراحة التجميلية <em>والترميمية</em>", "hero.lead": "رعاية تجميلية وترميمية بمعايير عالمية في موسكو — تُنسّقها مديفيا من أول رسالة حتى عودتك إلى بلدك.", "hero.cta1": "ابدأ ملفك — مراجعة مجانية", "hero.cta2": "تواصل عبر واتساب", "hero.back": "العودة إلى كل التخصصات", "psv.eyebrow": "شاهد", "psv.heading": "تعرّف على MediVia", "psv.text": "شاهد كيف نرافقك من أول تواصل حتى اكتمال رحلتك العلاجية.", "psv.title": "MediVia — مقدّمة قصيرة", "psv.play": "تشغيل الفيديو", "doc.eyebrow": "فريقنا الطبي", "doc.title": "أطباؤنا", "doc.intro": "الأخصائيون الذين يشرفون على علاجك في مركز داماس الطبي.", "doc1.n": "أمجد اليوسف", "doc1.s": "جراح تجميل، جراح الوجه والفكين، طبيب أورام", "doc1.y": "خبرة 16 عامًا", "doc1.b": "جراح التجميل الرئيسي ومؤسس مركز Damas Medical Center للطب الابتكاري، والطبيب الرئيسي. أعلى فئة طبية · مرشح في العلوم الطبية.", "doc2.n": "الطبيب ٠٢", "doc2.s": "أخصائي", "doc2.y": "خبرة أكثر من ١٢ سنة", "doc2.b": "وصف مهني مختصر.", "doc3.n": "لينا علييفنا إسبر", "doc3.s": "جراح تجميل", "doc3.y": "خبرة 16 عامًا", "doc3.b": "جراح تجميل، وطبيب أنف وأذن وحنجرة.", "doc4.n": "الطبيب ٠٤", "doc4.s": "أخصائي", "doc4.y": "خبرة أكثر من ١٨ سنة", "doc4.b": "وصف مهني مختصر.", "doc5.n": "آنا بيتروفنا بيرشوكوفا", "doc5.s": "جرّاحة تجميل", "doc5.y": "خبرة 12 عامًا", "doc5.b": "جرّاحة تجميل تتمتع بخبرة مهنية تمتد إلى 12 عاماً، تعمل في مجالات جراحة الوجه والثدي والجسم في مركز Damas Medical Center للطب الابتكاري.", "newsletter.eyebrow": "ابقَ على اطلاع", "newsletter.title": "ابقَ على اطلاع مع MediVia", "newsletter.description": "اترك بريدك الإلكتروني وسنطلعك على كل جديد.", "newsletter.emailPlaceholder": "البريد الإلكتروني", "newsletter.button": "اشتراك", "newsletter.sending": "جارٍ الاشتراك…", "newsletter.success": "تم الاشتراك بنجاح. سنبقيك على اطلاع بكل جديد.", "newsletter.alreadySubscribed": "هذا البريد مشترك بالفعل.", "newsletter.invalid": "يرجى إدخال بريد إلكتروني صحيح.", "newsletter.error": "تعذّر إكمال الاشتراك. يرجى المحاولة مرة أخرى.", "newsletter.notConfigured": "خدمة الاشتراك غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.", "stat1.l": "مريض تمّت رعايته", "stat2.l": "زيارة سنوية", "stat3.l": "سنوات من الخبرة", "clinic.tag": "المستشفى الشريك", "clinic.loc": "موسكو · روسيا", "clinic.desc": "مركز راقٍ متعدّد التخصصات في موسكو، متخصّص في الطب التجميلي والترميمي — يجمع بين جرّاحين ذوي خبرة، وغرف عمليات حديثة، وأجواء هادئة وخاصة تحت سقف واحد.", "clinic.desc2": "من خلال مديفيا، يصل المرضى من خارج روسيا إلى مركز داماس الطبي وكل شيء مُنظّم حولهم: منسّق واحد، وسعر واحد متّفق عليه، ومستنداتهم محمية في كل خطوة.", "clinic.specTitle": "أبرز التخصصات", "spec.0": "الجراحة التجميلية والترميمية", "spec.1": "زراعة الشعر", "spec.2": "الطب التجميلي والكوزمتولوجي", "spec.3": "الأمراض الجلدية وطب الشعر", "spec.4": "جراحة الأوعية والدوالي", "spec.5": "أمراض النساء — رعاية عيادية وجراحية", "gallery.eyebrow": "داخل المستشفى", "gallery.title": "نظرة أقرب على مركز داماس الطبي", "gallery.intro": "بيئة هادئة وخاصة مبنية حول المريض — من أول استشارة حتى غرفة العمليات.", "shot1.b": "مدخل المستشفى", "shot1.t": "مركز داماس الطبي في موسكو — بموقع هادئ يسهل الوصول إليه.", "shot2.b": "استشارة تخصصية", "shot2.t": "كل خطة تبدأ بحديث متأنٍّ مع جرّاحك.", "shot3.b": "غرفة العمليات", "shot3.t": "غرف عمليات حديثة ومجهّزة بالكامل وفق المعايير العالمية.", "proc.eyebrow": "ما ننسّقه لك", "proc.title": "الإجراءات ضمن الجراحة التجميلية", "proc.intro": "يغطّي مركز داماس الطبي مجال الجراحة التجميلية والترميمية بالكامل. هذه أكثر المجالات التي يطلب المرضى تنسيقها معنا — وتُحدَّد خطتك النهائية دائماً مع جرّاحك.", "p1.t": "تجميل الأنف", "p1.x": "إعادة تشكيل الأنف وتصحيح وظيفته بما يوازن بين الشكل والتنفّس.", "p2.t": "الوجه والجفون", "p2.x": "شدّ الوجه وتجميل الجفون وإجراءات التجديد للحصول على مظهر طبيعي ومرتاح.", "p3.t": "جراحة الثدي", "p3.x": "التكبير والتصغير والرفع وإعادة البناء بما يناسب كل مريضة.", "p4.t": "نحت الجسم", "p4.x": "شفط الدهون وشدّ البطن ونحت القوام بعد إنقاص الوزن.", "p5.t": "الجراحة الترميمية", "p5.x": "استعادة الشكل والوظيفة بعد الإصابات أو العمليات أو الحالات الخِلقية.", "p6.t": "زراعة الشعر", "p6.x": "تقنيات حديثة لزراعة البصيلات لاستعادة طبيعية ودائمة للشعر.", "cost.eyebrow": "التكاليف التقريبية", "cost.title": "أسعار بداية واضحة وشفافة", "cost.intro": "نقاط بداية واضحة يُتّفق عليها معك قبل أن يبدأ أي شيء — دون مفاجآت لاحقة.", "price.from": "تبدأ من", "pr1.t": "الجراحة التجميلية", "pr2.t": "زراعة الشعر", "pr3.t": "الطب التجميلي والكوزمتولوجي", "cost.disc": "تعتمد التكلفة النهائية على الحالة الفردية والطبيب المختار وخطة العلاج. تؤكّد مديفيا معك سعراً واحداً متّفقاً عليه قبل أن يبدأ أي شيء.", "proc2.eyebrow": "مديفيا إلى جانبك", "proc2.title": "كيف تسير رحلتك", "s1.t": "تتواصل معنا", "s1.x": "أرسل حالتك وأي مستندات لديك، ويردّ عليك منسّق خلال ساعة.", "s2.t": "المراجعة الطبية", "s2.x": "تُراجَع حالتك مع جرّاحي داماس، ويُجهَّز لك خطة واضحة وسعر متّفق عليه.", "s3.t": "زيارتك", "s3.x": "نرتّب الدعوة والسفر والترجمة وكل ما يحيط بعمليتك.", "s4.t": "التعافي والعودة", "s4.x": "رعاية بعد العملية ومتابعة وعودة سلسة — نبقى معك حتى التعافي الكامل.", "form.eyebrow": "ابدأ ملفك", "form.title": "افتح ملفك الطبي", "intake.label": "استقبال المريض", "intake.conf": "سرّي · يراجعه منسّق", "ref.b": "المرجع", "form.paneH": "أخبرنا عنك وعن حالتك", "form.paneS": "كلماتك البسيطة تكفي — نحن نتولّى الصياغة الطبية.", "form.first": "الاسم الأول", "form.last": "اسم العائلة", "form.nat": "الجنسية", "form.age": "العمر", "form.sex": "الجنس", "form.male": "ذكر", "form.female": "أنثى", "form.sexHint": "تطلب المستشفيات هذا في كل إحالة — حقل سريري وليس تفضيلاً.", "form.wa": "رقم واتساب", "form.waHint": "اختياري — لكنه أسرع وسيلة للردّ عليك.", "form.email": "البريد الإلكتروني", "form.interest": "مجال الاهتمام", "form.problem": "الإجراء أو ما يشغلك، في سطر واحد", "form.problemPh": "مثال: تجميل أنف · أو استشارة شدّ وجه", "form.problemHint": "حتى ١٤٠ حرفاً.", "form.details": "التفاصيل كاملة", "form.detailsPh": "ما الذي تأمله، وأي شيء قيل لك سابقاً، والإجراءات السابقة والأدوية والحالات الأخرى.", "form.detailsHint": "خذ المساحة التي تحتاجها.", "form.consent": "أوافق على أن تطّلع مديفيا على معلوماتي لتقييم حالتي وتنسيقها. وأفهم أن مديفيا خدمة تنسيق ولا تقدّم تشخيصاً أو علاجاً طبياً.", "form.send": "أرسل حالتي", "v.first": "يرجى إدخال اسمك الأول.", "v.last": "يرجى إدخال اسم العائلة.", "v.nat": "يرجى إدخال جنسيتك.", "v.age": "أدخل عمراً بين ٠ و ١٢٠.", "v.sex": "يرجى اختيار واحد.", "v.problem": "يرجى وصف الأمر في سطر واحد.", "v.details": "أخبرنا بالمزيد — بضع جمل على الأقل.", "v.consent": "يرجى الموافقة قبل الإرسال.", "done.title": "تم فتح ملفك.", "done.text": "وصل ملفك إلى أحد المنسّقين الآن. ستسمع منّا خلال ساعة — وأول رسالة ستصلك من شخص حقيقي يحمل اسمك.", "done.ref": "المرجع", "contact.eyebrow": "تحدّث إلى مديفيا اليوم", "contact.title": "لست مستعداً للنموذج؟ راسل شخصاً مباشرة.", "chan.wa": "واتساب", "chan.email": "البريد", "chan.web": "الموقع", "foot.sub": "خدمة تنسيق طبي · روسيا", "foot.disc": "مديفيا خدمة تنسيق ورعاية طبية، ولا تقدّم تشخيصاً أو علاجاً طبياً. مركز داماس الطبي هو مستشفى شريك مرخّص في موسكو.", "foot.rights": "© 2026 مديفيا · خدمة تنسيق طبي" } };
+    const TR = { "en": { "seo.title": "Plastic Surgery · Damas Medical Center — MediVia", "nav.about": "Who we are", "nav.how": "How it works", "nav.treatments": "Treatments", "nav.start": "Start a case", "lang.ar": "العربية", "crumb.home": "Home", "crumb.treat": "Treatments", "crumb.cur": "Plastic Surgery", "hero.eyebrow": "Treatments · Plastic Surgery", "hero.title": "Plastic &amp; <em>Reconstructive</em> Surgery", "hero.lead": "World-class aesthetic and reconstructive care in Moscow — coordinated end to end by MediVia, from your first message to your flight home.", "hero.cta1": "Start a case — free review", "hero.cta2": "WhatsApp us", "hero.back": "Back to all treatments", "psv.eyebrow": "WATCH", "psv.heading": "See how MediVia works", "psv.text": "See how we support you from your first contact through your complete treatment journey.", "psv.title": "MediVia — a short introduction", "psv.play": "Play video", "doc.eyebrow": "Our medical team", "doc.title": "Our doctors", "doc.intro": "The specialists who look after your treatment at Damas Medical Center.", "doc1.n": "Amjad Al-Yusef", "doc1.s": "Plastic Surgeon, Maxillofacial Surgeon, Oncologist", "doc1.y": "16 years experience", "doc1.b": "Leading Plastic Surgeon and Founder of Damas Medical Center for Innovative Medicine, Chief Physician. Highest Category · Candidate of Medical Sciences.", "doc2.n": "Doctor 02", "doc2.s": "Specialist", "doc2.y": "12+ years experience", "doc2.b": "Short professional description.", "doc3.n": "Lina Ali Isber", "doc3.s": "Plastic Surgeon", "doc3.y": "16 years experience", "doc3.b": "Plastic Surgeon, Otorhinolaryngologist.", "doc4.n": "Doctor 04", "doc4.s": "Specialist", "doc4.y": "18+ years experience", "doc4.b": "Short professional description.", "doc5.n": "Anna Petrovna Pershukova", "doc5.s": "Plastic Surgeon", "doc5.y": "12 years experience", "doc5.b": "Plastic surgeon with 12 years of professional experience, working across facial, breast and body procedures at Damas Medical Center for Innovative Medicine.", "newsletter.eyebrow": "Stay informed", "newsletter.title": "Stay updated with MediVia", "newsletter.description": "Leave your email and we'll keep you informed about what's new.", "newsletter.emailPlaceholder": "Email address", "newsletter.button": "Subscribe", "newsletter.sending": "Subscribing…", "newsletter.success": "You're subscribed. We'll keep you updated.", "newsletter.alreadySubscribed": "You're already subscribed.", "newsletter.invalid": "Please enter a valid email address.", "newsletter.error": "We couldn't complete your subscription. Please try again.", "newsletter.notConfigured": "Subscriptions are not configured yet. Please contact us on WhatsApp.", "stat1.l": "Patients treated", "stat2.l": "Annual visits", "stat3.l": "Years of experience", "clinic.tag": "Partner clinic", "clinic.loc": "Moscow · Russia", "clinic.desc": "A premium multidisciplinary centre in Moscow, specialising in aesthetic and reconstructive medicine — where experienced surgeons, modern operating suites and a calm, private setting come together under one roof.", "clinic.desc2": "Through MediVia, international patients reach Damas Medical Center with everything handled around them: one coordinator, one agreed price, and their documents protected at every step.", "clinic.specTitle": "Key specialties", "spec.0": "Plastic & Reconstructive Surgery", "spec.1": "Hair Transplantation", "spec.2": "Aesthetic Medicine & Cosmetology", "spec.3": "Dermatology & Trichology", "spec.4": "Vascular Surgery & Phlebology", "spec.5": "Gynecology — Outpatient & Surgical Care", "gallery.eyebrow": "Inside the clinic", "gallery.title": "A closer look at Damas Medical Center", "gallery.intro": "A quiet, private environment built around the patient — from the first consultation to the operating suite.", "shot1.b": "Clinic entrance", "shot1.t": "The Damas Medical Center in Moscow — discreet and easy to reach.", "shot2.b": "Specialist consultation", "shot2.t": "Every plan starts with an unhurried conversation with your surgeon.", "shot3.b": "Operating suite", "shot3.t": "Modern, fully-equipped theatres held to international standards.", "proc.eyebrow": "What we coordinate", "proc.title": "Procedures within plastic surgery", "proc.intro": "Damas Medical Center covers the full spectrum of aesthetic and reconstructive work. These are the areas patients most often ask us to coordinate — your final plan is always set with your surgeon.", "p1.t": "Rhinoplasty", "p1.x": "Reshaping and functional correction of the nose, balancing profile and breathing.", "p2.t": "Face & Eyelids", "p2.x": "Facelift, blepharoplasty and rejuvenation for a natural, well-rested look.", "p3.t": "Breast Surgery", "p3.x": "Augmentation, reduction, lift and reconstruction, tailored to each patient.", "p4.t": "Body Contouring", "p4.x": "Liposuction, abdominoplasty and post–weight-loss contouring of the figure.", "p5.t": "Reconstructive Surgery", "p5.x": "Restoring form and function after trauma, surgery or congenital differences.", "p6.t": "Hair Transplantation", "p6.x": "Modern follicular techniques for natural, lasting hair restoration.", "cost.eyebrow": "Indicative treatment costs", "cost.title": "Transparent starting prices", "cost.intro": "Clear starting points, agreed with you before anything begins — no surprises later.", "price.from": "From", "pr1.t": "Plastic Surgery", "pr2.t": "Hair Transplantation", "pr3.t": "Aesthetic Medicine & Cosmetology", "cost.disc": "Final treatment costs depend on the individual case, the selected physician and the treatment plan. MediVia confirms one agreed price with you before anything begins.", "proc2.eyebrow": "With MediVia beside you", "proc2.title": "How your journey works", "s1.t": "You reach out", "s1.x": "Send your case and any documents. A coordinator replies within the hour.", "s2.t": "Medical review", "s2.x": "Your file is reviewed with Damas surgeons, and a clear plan and price are prepared.", "s3.t": "Your visit", "s3.x": "We arrange the invitation, travel, translation and everything around your surgery.", "s4.t": "Recovery & home", "s4.x": "Aftercare, follow-up and a smooth return — we stay with you to full recovery.", "form.eyebrow": "Start a case", "form.title": "Open your case file", "intake.label": "Patient intake", "intake.conf": "Confidential · Reviewed by a coordinator", "ref.b": "Reference", "form.paneH": "Tell us about you and your case", "form.paneS": "Plain words are enough — we handle the medical language.", "form.first": "First name", "form.last": "Last name", "form.nat": "Nationality", "form.age": "Age", "form.sex": "Sex", "form.male": "Male", "form.female": "Female", "form.sexHint": "Hospitals require this on every referral — a clinical field, not a preference.", "form.wa": "WhatsApp number", "form.waHint": "Optional — but it's how we reply fastest.", "form.email": "Email", "form.interest": "Area of interest", "form.problem": "The procedure or concern, in one line", "form.problemPh": "e.g. Rhinoplasty · or facelift consultation", "form.problemHint": "Up to 140 characters.", "form.details": "The full story", "form.detailsPh": "What you're hoping for, anything you've already been told, past procedures, medications and other conditions.", "form.detailsHint": "Take the space you need.", "form.consent": "I agree that MediVia may review my information to assess and coordinate my case. I understand MediVia is a coordination service and does not provide medical diagnosis or treatment.", "form.send": "Send my case", "v.first": "Please enter your first name.", "v.last": "Please enter your last name.", "v.nat": "Please enter your nationality.", "v.age": "Enter an age between 0 and 120.", "v.sex": "Please select one.", "v.problem": "Please describe it in one line.", "v.details": "Please tell us a little more — at least a few sentences.", "v.consent": "Please agree before sending.", "done.title": "Your file is open.", "done.text": "A coordinator has it now. You'll hear back within the hour — and the first message will come from a person, with your name on it.", "done.ref": "Reference", "contact.eyebrow": "Speak to MediVia today", "contact.title": "Not ready for a form? Write to a person.", "chan.wa": "WhatsApp", "chan.email": "Email", "chan.web": "Website", "foot.sub": "Medical Concierge · Russia", "foot.disc": "MediVia is a medical concierge and coordination service. It does not provide medical diagnosis or treatment. Damas Medical Center is a licensed partner clinic in Moscow.", "foot.rights": "© 2026 MediVia · Medical Concierge" }, "ar": { "seo.title": "الجراحة التجميلية · مركز داماس الطبي — مديفيا", "nav.about": "من نحن", "nav.how": "آلية العمل", "nav.treatments": "التخصصات الطبية", "nav.start": "املأ ملفك الطبي", "lang.ar": "English", "crumb.home": "الرئيسية", "crumb.treat": "التخصصات", "crumb.cur": "الجراحة التجميلية", "hero.eyebrow": "التخصصات · الجراحة التجميلية", "hero.title": "الجراحة التجميلية <em>والترميمية</em>", "hero.lead": "رعاية تجميلية وترميمية بمعايير عالمية في موسكو — تُنسّقها مديفيا من أول رسالة حتى عودتك إلى بلدك.", "hero.cta1": "ابدأ ملفك — مراجعة مجانية", "hero.cta2": "تواصل عبر واتساب", "hero.back": "العودة إلى كل التخصصات", "psv.eyebrow": "شاهد", "psv.heading": "تعرّف على MediVia", "psv.text": "شاهد كيف نرافقك من أول تواصل حتى اكتمال رحلتك العلاجية.", "psv.title": "MediVia — مقدّمة قصيرة", "psv.play": "تشغيل الفيديو", "doc.eyebrow": "فريقنا الطبي", "doc.title": "أطباؤنا", "doc.intro": "الأخصائيون الذين يشرفون على علاجك في مركز داماس الطبي.", "doc1.n": "أمجد اليوسف", "doc1.s": "جراح تجميل، جراح الوجه والفكين، طبيب أورام", "doc1.y": "خبرة 16 عامًا", "doc1.b": "جراح التجميل الرئيسي ومؤسس مركز Damas Medical Center للطب الابتكاري، والطبيب الرئيسي. أعلى فئة طبية · مرشح في العلوم الطبية.", "doc2.n": "الطبيب ٠٢", "doc2.s": "أخصائي", "doc2.y": "خبرة أكثر من ١٢ سنة", "doc2.b": "وصف مهني مختصر.", "doc3.n": "لينا علي إسبر", "doc3.s": "جراح تجميل", "doc3.y": "خبرة 16 عامًا", "doc3.b": "جراح تجميل، وطبيب أنف وأذن وحنجرة.", "doc4.n": "الطبيب ٠٤", "doc4.s": "أخصائي", "doc4.y": "خبرة أكثر من ١٨ سنة", "doc4.b": "وصف مهني مختصر.", "doc5.n": "آنا بيتروفنا بيرشوكوفا", "doc5.s": "جرّاحة تجميل", "doc5.y": "خبرة 12 عامًا", "doc5.b": "جرّاحة تجميل تتمتع بخبرة مهنية تمتد إلى 12 عاماً، تعمل في مجالات جراحة الوجه والثدي والجسم في مركز Damas Medical Center للطب الابتكاري.", "newsletter.eyebrow": "ابقَ على اطلاع", "newsletter.title": "ابقَ على اطلاع مع MediVia", "newsletter.description": "اترك بريدك الإلكتروني وسنطلعك على كل جديد.", "newsletter.emailPlaceholder": "البريد الإلكتروني", "newsletter.button": "اشتراك", "newsletter.sending": "جارٍ الاشتراك…", "newsletter.success": "تم الاشتراك بنجاح. سنبقيك على اطلاع بكل جديد.", "newsletter.alreadySubscribed": "هذا البريد مشترك بالفعل.", "newsletter.invalid": "يرجى إدخال بريد إلكتروني صحيح.", "newsletter.error": "تعذّر إكمال الاشتراك. يرجى المحاولة مرة أخرى.", "newsletter.notConfigured": "خدمة الاشتراك غير مهيّأة بعد. يرجى التواصل معنا عبر واتساب.", "stat1.l": "مريض تمّت رعايته", "stat2.l": "زيارة سنوية", "stat3.l": "سنوات من الخبرة", "clinic.tag": "المستشفى الشريك", "clinic.loc": "موسكو · روسيا", "clinic.desc": "مركز راقٍ متعدّد التخصصات في موسكو، متخصّص في الطب التجميلي والترميمي — يجمع بين جرّاحين ذوي خبرة، وغرف عمليات حديثة، وأجواء هادئة وخاصة تحت سقف واحد.", "clinic.desc2": "من خلال مديفيا، يصل المرضى من خارج روسيا إلى مركز داماس الطبي وكل شيء مُنظّم حولهم: منسّق واحد، وسعر واحد متّفق عليه، ومستنداتهم محمية في كل خطوة.", "clinic.specTitle": "أبرز التخصصات", "spec.0": "الجراحة التجميلية والترميمية", "spec.1": "زراعة الشعر", "spec.2": "الطب التجميلي والكوزمتولوجي", "spec.3": "الأمراض الجلدية وطب الشعر", "spec.4": "جراحة الأوعية والدوالي", "spec.5": "أمراض النساء — رعاية عيادية وجراحية", "gallery.eyebrow": "داخل المستشفى", "gallery.title": "نظرة أقرب على مركز داماس الطبي", "gallery.intro": "بيئة هادئة وخاصة مبنية حول المريض — من أول استشارة حتى غرفة العمليات.", "shot1.b": "مدخل المستشفى", "shot1.t": "مركز داماس الطبي في موسكو — بموقع هادئ يسهل الوصول إليه.", "shot2.b": "استشارة تخصصية", "shot2.t": "كل خطة تبدأ بحديث متأنٍّ مع جرّاحك.", "shot3.b": "غرفة العمليات", "shot3.t": "غرف عمليات حديثة ومجهّزة بالكامل وفق المعايير العالمية.", "proc.eyebrow": "ما ننسّقه لك", "proc.title": "الإجراءات ضمن الجراحة التجميلية", "proc.intro": "يغطّي مركز داماس الطبي مجال الجراحة التجميلية والترميمية بالكامل. هذه أكثر المجالات التي يطلب المرضى تنسيقها معنا — وتُحدَّد خطتك النهائية دائماً مع جرّاحك.", "p1.t": "تجميل الأنف", "p1.x": "إعادة تشكيل الأنف وتصحيح وظيفته بما يوازن بين الشكل والتنفّس.", "p2.t": "الوجه والجفون", "p2.x": "شدّ الوجه وتجميل الجفون وإجراءات التجديد للحصول على مظهر طبيعي ومرتاح.", "p3.t": "جراحة الثدي", "p3.x": "التكبير والتصغير والرفع وإعادة البناء بما يناسب كل مريضة.", "p4.t": "نحت الجسم", "p4.x": "شفط الدهون وشدّ البطن ونحت القوام بعد إنقاص الوزن.", "p5.t": "الجراحة الترميمية", "p5.x": "استعادة الشكل والوظيفة بعد الإصابات أو العمليات أو الحالات الخِلقية.", "p6.t": "زراعة الشعر", "p6.x": "تقنيات حديثة لزراعة البصيلات لاستعادة طبيعية ودائمة للشعر.", "cost.eyebrow": "التكاليف التقريبية", "cost.title": "أسعار بداية واضحة وشفافة", "cost.intro": "نقاط بداية واضحة يُتّفق عليها معك قبل أن يبدأ أي شيء — دون مفاجآت لاحقة.", "price.from": "تبدأ من", "pr1.t": "الجراحة التجميلية", "pr2.t": "زراعة الشعر", "pr3.t": "الطب التجميلي والكوزمتولوجي", "cost.disc": "تعتمد التكلفة النهائية على الحالة الفردية والطبيب المختار وخطة العلاج. تؤكّد مديفيا معك سعراً واحداً متّفقاً عليه قبل أن يبدأ أي شيء.", "proc2.eyebrow": "مديفيا إلى جانبك", "proc2.title": "كيف تسير رحلتك", "s1.t": "تتواصل معنا", "s1.x": "أرسل حالتك وأي مستندات لديك، ويردّ عليك منسّق خلال ساعة.", "s2.t": "المراجعة الطبية", "s2.x": "تُراجَع حالتك مع جرّاحي داماس، ويُجهَّز لك خطة واضحة وسعر متّفق عليه.", "s3.t": "زيارتك", "s3.x": "نرتّب الدعوة والسفر والترجمة وكل ما يحيط بعمليتك.", "s4.t": "التعافي والعودة", "s4.x": "رعاية بعد العملية ومتابعة وعودة سلسة — نبقى معك حتى التعافي الكامل.", "form.eyebrow": "ابدأ ملفك", "form.title": "افتح ملفك الطبي", "intake.label": "استقبال المريض", "intake.conf": "سرّي · يراجعه منسّق", "ref.b": "المرجع", "form.paneH": "أخبرنا عنك وعن حالتك", "form.paneS": "كلماتك البسيطة تكفي — نحن نتولّى الصياغة الطبية.", "form.first": "الاسم الأول", "form.last": "اسم العائلة", "form.nat": "الجنسية", "form.age": "العمر", "form.sex": "الجنس", "form.male": "ذكر", "form.female": "أنثى", "form.sexHint": "تطلب المستشفيات هذا في كل إحالة — حقل سريري وليس تفضيلاً.", "form.wa": "رقم واتساب", "form.waHint": "اختياري — لكنه أسرع وسيلة للردّ عليك.", "form.email": "البريد الإلكتروني", "form.interest": "مجال الاهتمام", "form.problem": "الإجراء أو ما يشغلك، في سطر واحد", "form.problemPh": "مثال: تجميل أنف · أو استشارة شدّ وجه", "form.problemHint": "حتى ١٤٠ حرفاً.", "form.details": "التفاصيل كاملة", "form.detailsPh": "ما الذي تأمله، وأي شيء قيل لك سابقاً، والإجراءات السابقة والأدوية والحالات الأخرى.", "form.detailsHint": "خذ المساحة التي تحتاجها.", "form.consent": "أوافق على أن تطّلع مديفيا على معلوماتي لتقييم حالتي وتنسيقها. وأفهم أن مديفيا خدمة تنسيق ولا تقدّم تشخيصاً أو علاجاً طبياً.", "form.send": "أرسل حالتي", "v.first": "يرجى إدخال اسمك الأول.", "v.last": "يرجى إدخال اسم العائلة.", "v.nat": "يرجى إدخال جنسيتك.", "v.age": "أدخل عمراً بين ٠ و ١٢٠.", "v.sex": "يرجى اختيار واحد.", "v.problem": "يرجى وصف الأمر في سطر واحد.", "v.details": "أخبرنا بالمزيد — بضع جمل على الأقل.", "v.consent": "يرجى الموافقة قبل الإرسال.", "done.title": "تم فتح ملفك.", "done.text": "وصل ملفك إلى أحد المنسّقين الآن. ستسمع منّا خلال ساعة — وأول رسالة ستصلك من شخص حقيقي يحمل اسمك.", "done.ref": "المرجع", "contact.eyebrow": "تحدّث إلى مديفيا اليوم", "contact.title": "لست مستعداً للنموذج؟ راسل شخصاً مباشرة.", "chan.wa": "واتساب", "chan.email": "البريد", "chan.web": "الموقع", "foot.sub": "خدمة تنسيق طبي · روسيا", "foot.disc": "مديفيا خدمة تنسيق ورعاية طبية، ولا تقدّم تشخيصاً أو علاجاً طبياً. مركز داماس الطبي هو مستشفى شريك مرخّص في موسكو.", "foot.rights": "© 2026 مديفيا · خدمة تنسيق طبي" } };
     (function () {
       const $ = s => document.querySelector(s);
       const $$ = s => [...document.querySelectorAll(s)];
@@ -5052,7 +5139,7 @@
           "doc1.modal.expertise1": "Plastic Surgery", "doc1.modal.expertise2": "Maxillofacial Surgery", "doc1.modal.expertise3": "Oncology",
           "doc3.modal.position": "Plastic Surgeon, Otorhinolaryngologist.",
           "doc3.modal.experienceValue": "16 years",
-          "doc3.modal.overview": "Dr. Lina Aliyevna Isbir combines 16 years of experience across plastic surgery and otorhinolaryngology (ENT), bringing a dual surgical perspective to facial and nasal procedures at Damas Medical Center. Her cross-disciplinary background allows her to weigh aesthetic outcomes alongside functional ear, nose and throat health when planning a patient's care.",
+          "doc3.modal.overview": "Dr. Lina Ali Isber combines 16 years of experience across plastic surgery and otorhinolaryngology (ENT), bringing a dual surgical perspective to facial and nasal procedures at Damas Medical Center. Her cross-disciplinary background allows her to weigh aesthetic outcomes alongside functional ear, nose and throat health when planning a patient's care.",
           "doc3.modal.expertise1": "Plastic Surgery", "doc3.modal.expertise2": "Otorhinolaryngology (ENT)",
           "doc5.modal.position": "Plastic Surgeon at Damas Medical Center for Innovative Medicine.",
           "doc5.modal.experienceValue": "12 years",
@@ -5068,7 +5155,11 @@
           "results.viewLarger": "View larger — {{title}} (photo {{n}} of {{total}})",
           "results.viewer": "Result photo viewer", "results.prev": "Previous photo", "results.next": "Next photo",
           "results.loading": "Loading results…", "results.empty": "No results are available yet.",
-          "results.error": "The results gallery couldn't be loaded. Please try again in a moment."
+          "results.error": "The results gallery couldn't be loaded. Please try again in a moment.",
+          "hosp.damas": "Damas Medical Center",
+          "pdocs.title": "Doctors specializing in this procedure", "pdocs.titleFor": "Doctors specializing in {{procedure}}",
+          "pdocs.hospital": "Hospital", "pdocs.hint": "Select a procedure to see the doctors who perform it.",
+          "pdocs.empty": "Doctor assignment for this procedure is being confirmed. Contact us and we will match you with the right specialist."
         },
         ar: {
           "intake.confidential": "سرّي · يراجعه منسّق",
@@ -5116,7 +5207,7 @@
           "doc1.modal.expertise1": "جراحة تجميلية", "doc1.modal.expertise2": "جراحة الوجه والفكين", "doc1.modal.expertise3": "طب الأورام",
           "doc3.modal.position": "جراح تجميل، وطبيب أنف وأذن وحنجرة.",
           "doc3.modal.experienceValue": "16 عامًا",
-          "doc3.modal.overview": "تجمع الدكتورة لينا علييفنا إسبر بين خبرة 16 عامًا في الجراحة التجميلية وطب الأنف والأذن والحنجرة، لتقدّم منظورًا جراحيًا مزدوجًا لإجراءات الوجه والأنف في مركز داماس الطبي. وتتيح لها خلفيتها متعددة التخصصات مراعاة النتائج الجمالية إلى جانب صحة الأنف والأذن والحنجرة الوظيفية عند التخطيط لرعاية كل مريضة.",
+          "doc3.modal.overview": "تجمع الدكتورة لينا علي إسبر بين خبرة 16 عامًا في الجراحة التجميلية وطب الأنف والأذن والحنجرة، لتقدّم منظورًا جراحيًا مزدوجًا لإجراءات الوجه والأنف في مركز داماس الطبي. وتتيح لها خلفيتها متعددة التخصصات مراعاة النتائج الجمالية إلى جانب صحة الأنف والأذن والحنجرة الوظيفية عند التخطيط لرعاية كل مريضة.",
           "doc3.modal.expertise1": "جراحة تجميلية", "doc3.modal.expertise2": "طب الأنف والأذن والحنجرة",
           "doc5.modal.position": "جرّاحة تجميل في مركز Damas Medical Center للطب الابتكاري.",
           "doc5.modal.experienceValue": "12 عامًا",
@@ -5132,7 +5223,11 @@
           "results.viewLarger": "عرض أكبر — {{title}} (الصورة {{n}} من {{total}})",
           "results.viewer": "عارض صور النتائج", "results.prev": "الصورة السابقة", "results.next": "الصورة التالية",
           "results.loading": "جارٍ تحميل النتائج…", "results.empty": "لا توجد نتائج متاحة بعد.",
-          "results.error": "تعذّر تحميل معرض النتائج. يرجى المحاولة بعد قليل."
+          "results.error": "تعذّر تحميل معرض النتائج. يرجى المحاولة بعد قليل.",
+          "hosp.damas": "مركز داماس الطبي",
+          "pdocs.title": "الأطباء المتخصصون في هذا الإجراء", "pdocs.titleFor": "الأطباء المتخصصون في {{procedure}}",
+          "pdocs.hospital": "المستشفى", "pdocs.hint": "اختر إجراءً لعرض الأطباء الذين يجرونه.",
+          "pdocs.empty": "جارٍ تأكيد الأطباء المعتمدين لهذا الإجراء. تواصل معنا وسنوجّهك إلى الأخصائي المناسب."
         }
       };
 
@@ -5525,7 +5620,7 @@
         }
       }
 
-      cards.forEach(function (card) {
+      function bindCard(card) {
         var modal = document.getElementById(card.getAttribute('data-modal-target'));
         if (!modal) return;
         card.addEventListener('click', function () { openDoctor(modal, card); });
@@ -5535,7 +5630,10 @@
             openDoctor(modal, card);
           }
         });
-      });
+      }
+      cards.forEach(bindCard);
+      /* lets dynamically rendered cards (procedure results) use this same modal system */
+      window.MediViaBindDoctorCard = bindCard;
 
       modals.forEach(function (modal) {
         qa('[data-modal-close]', modal).forEach(function (el) {
@@ -5554,6 +5652,144 @@
           else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
         }
       });
+    })();
+  </script>
+
+  <!-- ══ PROCEDURE → DOCTOR → HOSPITAL ══ data-driven filter. Doctor identity
+       (photo, name, specialty, years) is read from the existing #doctors cards
+       and their data-i18n keys — never duplicated here. Rendered cards carry
+       data-modal-target and are bound by the existing doctor-modal script. -->
+  <script>
+    (function () {
+      /* SPECIALTY → HOSPITALS. Add hospitals here later; the logic below is generic. */
+      var SPECIALTIES = {
+        plasticSurgery: { hospitals: ['damas-medical-center'] }
+      };
+      /* HOSPITALS — name is an i18n key; doctors reference hospitals by id */
+      var HOSPITALS = {
+        'damas-medical-center': { nameKey: 'hosp.damas' }
+      };
+      /* DOCTORS — hospitalId + the existing modal; everything else is read from the DOM card */
+      var DOCTORS = {
+        /* amjad / lina: procedure assignments confirmed by the client (see PROCEDURES) */
+        amjad: { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-amjad' },
+        lina:  { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-lina' },
+        anna:  { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-anna' }
+      };
+      /* PROCEDURES — explicit doctorIds, only for confirmed assignments. Do not infer. */
+      var PROCEDURES = {
+        rhinoplasty:    { specialtyId: 'plasticSurgery', titleKey: 'p1.t', doctorIds: ['lina', 'amjad'] },
+        faceEyelids:    { specialtyId: 'plasticSurgery', titleKey: 'p2.t', doctorIds: ['anna', 'lina', 'amjad'] },
+        breastSurgery:  { specialtyId: 'plasticSurgery', titleKey: 'p3.t', doctorIds: ['anna', 'lina', 'amjad'] },
+        bodyContouring: { specialtyId: 'plasticSurgery', titleKey: 'p4.t', doctorIds: ['anna', 'lina', 'amjad'] },
+        reconstructiveSurgery: { specialtyId: 'plasticSurgery', titleKey: 'p5.t', doctorIds: ['lina', 'amjad'] },
+        /* TODO: requires a confirmed doctor assignment — not stated for any doctor in the page data */
+        hairTransplantation:   { specialtyId: 'plasticSurgery', titleKey: 'p6.t', doctorIds: [] }
+      };
+
+      var panel = document.getElementById('procDoctors');
+      var grid = document.getElementById('procDoctorsGrid');
+      var empty = document.getElementById('procDoctorsEmpty');
+      var title = document.getElementById('procDoctorsTitle');
+      var selectors = Array.prototype.slice.call(document.querySelectorAll('[data-procedure-id]'));
+      if (!panel || !grid || !selectors.length) return;
+      var current = null;
+
+      function tr(key, vars) { return typeof window.t === 'function' ? window.t(key, vars) : key; }
+      function el(tag, cls, key) {
+        var n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (key) { n.setAttribute('data-i18n', key); n.textContent = tr(key); }
+        return n;
+      }
+      /* the authoritative doctor card in #doctors (identity source of truth) */
+      function sourceCard(doc) {
+        return document.querySelector('#doctors .doc-card[data-modal-target="' + doc.modalId + '"]');
+      }
+      function keyOf(card, sel) {
+        var n = card.querySelector(sel);
+        return n ? n.getAttribute('data-i18n') : null;
+      }
+
+      function buildCard(doc) {
+        var src = sourceCard(doc), hosp = HOSPITALS[doc.hospitalId];
+        if (!src || !hosp || !document.getElementById(doc.modalId)) return null;
+        var nameKey = keyOf(src, '.doc-name'), specKey = keyOf(src, '.doc-spec'), yearsKey = keyOf(src, '.doc-years');
+        var card = el('article', 'doc-card');
+        card.setAttribute('data-modal-target', doc.modalId);
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-haspopup', 'dialog');
+
+        var shot = el('div', 'doc-shot');
+        var srcImg = src.querySelector('.doc-shot img');
+        if (srcImg) {
+          var img = document.createElement('img');
+          img.src = srcImg.getAttribute('src'); img.alt = '';
+          img.loading = 'lazy'; img.decoding = 'async';
+          img.width = 640; img.height = 800;
+          img.addEventListener('error', function () { img.classList.add('is-missing'); });
+          shot.appendChild(img);
+        }
+        var body = el('div', 'doc-body');
+        var name = el('h3', 'doc-name', nameKey);
+        name.id = 'procDocName-' + doc.modalId;
+        card.setAttribute('aria-labelledby', name.id);
+        body.appendChild(name);
+        body.appendChild(el('p', 'doc-spec', specKey));
+        if (yearsKey) body.appendChild(el('p', 'doc-years', yearsKey));
+        var h = el('p', 'doc-hospital');
+        h.appendChild(el('b', null, 'pdocs.hospital'));
+        h.appendChild(el('span', null, hosp.nameKey));
+        body.appendChild(h);
+        body.appendChild(el('span', 'doc-view', 'doc.card.view'));
+        card.appendChild(shot);
+        card.appendChild(body);
+        if (typeof window.MediViaBindDoctorCard === 'function') window.MediViaBindDoctorCard(card);
+        return card;
+      }
+
+      function render() {
+        var proc = PROCEDURES[current];
+        grid.textContent = '';
+        if (!proc) { panel.hidden = true; return; }
+        title.removeAttribute('data-i18n');
+        title.textContent = tr('pdocs.titleFor', { procedure: tr(proc.titleKey) });
+        var n = 0;
+        proc.doctorIds.forEach(function (id) {
+          var doc = DOCTORS[id];
+          var card = doc && buildCard(doc);
+          if (card) { grid.appendChild(card); n++; }
+        });
+        empty.textContent = tr('pdocs.empty');
+        empty.hidden = n > 0;
+        grid.hidden = n === 0;
+        panel.hidden = false;
+      }
+
+      function select(id, scroll) {
+        if (!PROCEDURES[id]) return;
+        current = id;
+        selectors.forEach(function (s) {
+          s.setAttribute('aria-pressed', String(s.getAttribute('data-procedure-id') === id));
+        });
+        render();
+        if (scroll) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      selectors.forEach(function (s) {
+        var id = s.getAttribute('data-procedure-id');
+        s.addEventListener('click', function () { select(id, true); });
+        s.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); select(id, true); }
+        });
+      });
+      /* re-render so translated names / title follow the language switch */
+      document.addEventListener('medivia:languagechange', function () { if (current) render(); });
+
+      /* deep link: ?procedure=rhinoplasty (or #procedure=rhinoplasty) */
+      var m = /procedure=([\w-]+)/.exec(location.search) || /procedure=([\w-]+)/.exec(location.hash);
+      if (m) select(m[1], false);
     })();
   </script>
 
