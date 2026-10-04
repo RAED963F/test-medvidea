@@ -2853,6 +2853,37 @@
       flex: none;
     }
 
+    /* compact variant beside the doctor's name in the #doctors cards only
+       (the procedure-panel button keeps the full-width style above) */
+    .doc-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+
+    .doc-head .doc-name {
+      min-width: 0;
+    }
+
+    .doc-head .doc-results {
+      width: auto;
+      margin-top: 0;
+      flex: none;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: .7rem;
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+
+    .doc-head .doc-results svg {
+      width: 14px;
+      height: 14px;
+    }
+
     body.res-open {
       overflow-y: hidden;
     }
@@ -4217,15 +4248,17 @@
               height="800" />
           </div>
           <div class="doc-body">
-            <h3 class="doc-name" id="docName-lina" data-i18n="doc3.n">Doctor 03</h3>
+            <div class="doc-head">
+              <h3 class="doc-name" id="docName-lina" data-i18n="doc3.n">Doctor 03</h3>
+              <button type="button" class="doc-results" data-results-doctor="isbir" aria-haspopup="dialog">
+                <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M12 4.5v15M6.5 15l2.5-3 2 2.4M14.5 15l2-2.6 2 2.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg>
+                <span data-i18n="results.btn">View Results</span>
+              </button>
+            </div>
             <p class="doc-spec" data-i18n="doc3.s">Specialist</p>
             <p class="doc-years" data-i18n="doc3.y">15+ years experience</p>
             <p class="doc-bio" data-i18n="doc3.b">Short professional description.</p>
             <span class="doc-view" data-i18n="doc.card.view">View profile</span>
-            <button type="button" class="doc-results" data-results-doctor="isbir" aria-haspopup="dialog">
-              <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M12 4.5v15M6.5 15l2.5-3 2 2.4M14.5 15l2-2.6 2 2.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg>
-              <span data-i18n="results.btn">View Results</span>
-            </button>
           </div>
         </article>
         <article class="doc-card" data-modal-target="doc-modal-amjad" role="button" tabindex="0"
@@ -4235,15 +4268,17 @@
               height="800" />
           </div>
           <div class="doc-body">
-            <h3 class="doc-name" id="docName-amjad" data-i18n="doc1.n">Doctor 01</h3>
+            <div class="doc-head">
+              <h3 class="doc-name" id="docName-amjad" data-i18n="doc1.n">Doctor 01</h3>
+              <button type="button" class="doc-results" data-results-doctor="amjad" aria-haspopup="dialog">
+                <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M12 4.5v15M6.5 15l2.5-3 2 2.4M14.5 15l2-2.6 2 2.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg>
+                <span data-i18n="results.btn">View Results</span>
+              </button>
+            </div>
             <p class="doc-spec" data-i18n="doc1.s">Specialist</p>
             <p class="doc-years" data-i18n="doc1.y">10+ years experience</p>
             <p class="doc-bio" data-i18n="doc1.b">Short professional description.</p>
             <span class="doc-view" data-i18n="doc.card.view">View profile</span>
-            <button type="button" class="doc-results" data-results-doctor="amjad" aria-haspopup="dialog">
-              <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M12 4.5v15M6.5 15l2.5-3 2 2.4M14.5 15l2-2.6 2 2.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg>
-              <span data-i18n="results.btn">View Results</span>
-            </button>
           </div>
         </article>
         <article class="doc-card" data-modal-target="doc-modal-anna" role="button" tabindex="0"
@@ -5672,8 +5707,9 @@
       /* DOCTORS — hospitalId + the existing modal; everything else is read from the DOM card */
       var DOCTORS = {
         /* amjad / lina: procedure assignments confirmed by the client (see PROCEDURES) */
-        amjad: { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-amjad' },
-        lina:  { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-lina' },
+        /* resultsId = the existing results gallery's doctor key (Anna has no gallery) */
+        amjad: { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-amjad', resultsId: 'amjad' },
+        lina:  { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-lina', resultsId: 'isbir' },
         anna:  { specialtyId: 'plasticSurgery', hospitalId: 'damas-medical-center', modalId: 'doc-modal-anna' }
       };
       /* PROCEDURES — explicit doctorIds, only for confirmed assignments. Do not infer. */
@@ -5743,6 +5779,22 @@
         h.appendChild(el('span', null, hosp.nameKey));
         body.appendChild(h);
         body.appendChild(el('span', 'doc-view', 'doc.card.view'));
+        /* same "View Results" button as the doctor card, opening the doctor's existing gallery */
+        if (doc.resultsId) {
+          var rb = el('button', 'doc-results');
+          rb.type = 'button';
+          rb.setAttribute('data-results-doctor', doc.resultsId);
+          rb.setAttribute('aria-haspopup', 'dialog');
+          rb.setAttribute('aria-label', tr('results.btn') + ' — ' + tr(nameKey));
+          rb.innerHTML = '<svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M12 4.5v15M6.5 15l2.5-3 2 2.4M14.5 15l2-2.6 2 2.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg>';
+          rb.appendChild(el('span', null, 'results.btn'));
+          rb.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (typeof window.MediViaOpenResults === 'function') window.MediViaOpenResults(rb);
+          });
+          rb.addEventListener('keydown', function (e) { e.stopPropagation(); });
+          body.appendChild(rb);
+        }
         card.appendChild(shot);
         card.appendChild(body);
         if (typeof window.MediViaBindDoctorCard === 'function') window.MediViaBindDoctorCard(card);
@@ -6122,6 +6174,9 @@
         state.open = false;
         if (state.btn && typeof state.btn.focus === 'function') state.btn.focus();
       }
+
+      /* lets the procedure panel's doctor cards open this same gallery */
+      window.MediViaOpenResults = openGallery;
 
       triggers.forEach(function (btn) {
         /* the button sits inside a clickable doctor card — keep that card's own

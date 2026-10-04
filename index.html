@@ -1866,6 +1866,67 @@
       color: var(--copper)
     }
 
+    /* ── "available" state of the linked card: a faint copper edge at rest,
+       slightly stronger on hover, a quiet status line and a nudging arrow ── */
+    .tcard-link {
+      border-color: rgba(200, 138, 102, .28);
+      cursor: pointer
+    }
+
+    .tcard-link:hover {
+      transform: translateY(-3px);
+      border-color: rgba(200, 138, 102, .6)
+    }
+
+    .tcard-link .tcard-anchor:focus-visible {
+      outline: 2px solid var(--copper);
+      outline-offset: -5px
+    }
+
+    .tavail {
+      align-self: flex-start;
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--body);
+      font-size: .74rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--copper-ink)
+    }
+
+    .tavail::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--copper)
+    }
+
+    .tavail+.tview {
+      margin-top: 10px
+    }
+
+    .tcard-link .tview::after {
+      transition: translate .25s
+    }
+
+    .tcard-link:hover .tview::after,
+    .tcard-link .tcard-anchor:focus-visible .tview::after {
+      translate: 3px 0
+    }
+
+    /* inline-end/block-end borders land bottom-left in RTL: turn the chevron to point left */
+    [dir="rtl"] .tcard-link .tview::after {
+      rotate: 45deg
+    }
+
+    [dir="rtl"] .tcard-link:hover .tview::after,
+    [dir="rtl"] .tcard-link .tcard-anchor:focus-visible .tview::after {
+      translate: -3px 0
+    }
+
 
     /* ══ ADDED · VIDEO CARD + NEWSLETTER ═══════════════════════
        The page's single video lives in a wide landscape two-layer card that
@@ -2606,7 +2667,8 @@
               Russia by nature itself, has set the highest bar for Russian plastic surgeons in performing any type of
               procedure. A Russian plastic surgeon is a surgeon equipped with acrylic technologies* in the field of
               plastic surgery, possessing an exceptionally high level of understanding of aesthetics.</p>
-            <span class="tview"><span data-i18n="common.readMore">Read more</span></span>
+            <span class="tavail" data-i18n="treatments.plastic.available">Available Now</span>
+            <span class="tview"><span data-i18n="treatments.plastic.cta">Explore Specialty</span></span>
           </a>
         </article>
         <article class="tcard rv">
